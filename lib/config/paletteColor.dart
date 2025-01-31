@@ -9,4 +9,5 @@ class PaletaDeColores {
   final Color colorNegro = Color.fromARGB(255, 11, 11, 11);
   final Color colorTextSecundary = Color(0xFFFFFFFF);
   final Color colorContornoBlanco = Color(0xFFD4D4D4);
+  final Color colorTextRojo = Color.fromARGB(255, 184, 30, 30);
 }

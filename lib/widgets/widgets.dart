@@ -3,7 +3,7 @@ import 'package:tortillapp/config/paletteColor.dart';
 
 class CustomWidgets extends StatelessWidget {
   final PaletaDeColores colores = PaletaDeColores();
-
+  bool _isPasswordVisible = false;
   // Método para TextField con icono opcional
   Widget TextfieldPrimary({
     required TextEditingController controller,
@@ -77,29 +77,38 @@ class CustomWidgets extends StatelessWidget {
   }
 
   // Método para ElevatedButton
-  Widget ButtonPrimary({
-    required String text,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: colores.colorFondo,
-        backgroundColor: colores.colorPrincipal, // Color del texto
-        minimumSize: Size(double.infinity,
-            48), // Tamaño mínimo del botón (igual al tamaño del TextField)
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-              15), // Radio de borde para que sea consistente con el TextField
+Widget ButtonPrimary({
+  required String text,
+  required VoidCallback onPressed,
+  Icon? icon, // Parámetro opcional para el icono
+}) {
+  return ElevatedButton(
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+      foregroundColor: colores.colorFondo,
+      backgroundColor: colores.colorPrincipal, // Color del texto
+      minimumSize: Size(double.infinity, 48), // Tamaño mínimo del botón
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15), // Radio de borde
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          icon!, // Si el icono está presente, se muestra
+          SizedBox(width: 8), // Espacio entre el icono y el texto
+        ],
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16, // Ajusta el tamaño del texto si es necesario
+          ),
         ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-            fontSize: 16), // Ajusta el tamaño del texto si lo necesitas
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
 // Tittle widget
   Widget Tittle({required String text, required Color color}) {

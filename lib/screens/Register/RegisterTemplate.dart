@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
-import 'package:tortillapp/screens/Register/RegisterEmail.dart';
-
-class LoginScreen extends StatefulWidget {
+class Template extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _TemplateState createState() => _TemplateState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _TemplateState extends State<Template> {
   final PaletaDeColores colores = PaletaDeColores();
 
   final TextEditingController _emailController = TextEditingController();
@@ -92,25 +90,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: const Color.fromARGB(255, 61, 61, 61),
                         fontSize: 16
                       )),
-                  GestureDetector(
-  onTap: () {
-   //Navegar a RegisterScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => RegisterScreen()),
-    );
-  },
-  child: Text(
-    'Regístrate aquí',
-    style: TextStyle(
-      color: colores.colorPrincipal,
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    ),
-  ),
-)
-
-                      
+                  Text('Regístrate aquí',
+                      style: TextStyle(
+                        color: colores.colorPrincipal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
+                      )),
                 ],
               ),
             ),
