@@ -69,6 +69,8 @@ flutter:
     #Register Screen
       - lib/assets/icons/email_add.svg
       - lib/assets/icons/lock_icon.svg
+      - lib/assets/icons/code_icon.svg
+      - lib/assets/icons/rocket_icon.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

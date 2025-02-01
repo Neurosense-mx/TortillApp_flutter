@@ -110,6 +110,45 @@ Widget ButtonPrimary({
   );
 }
 
+ // Método para ElevatedButton con borde de 1px de color.colorPrincipal
+Widget ButtonSecondary({
+  required String text,
+  required VoidCallback onPressed,
+  Icon? icon, // Parámetro opcional para el icono
+}) {
+  return ElevatedButton(
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+      foregroundColor: colores.colorPrincipal,
+      backgroundColor: colores.colorFondo, // Color de fondo
+      minimumSize: Size(double.infinity, 48),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15), // Radio de borde
+        side: BorderSide( // Define el borde de 1px con colorPrincipal
+          color: colores.colorPrincipal,
+          width: 1,
+        ),
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          icon!, // Si el icono está presente, se muestra
+          SizedBox(width: 8), // Espacio entre el icono y el texto
+        ],
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16, // Ajusta el tamaño del texto si es necesario
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
 // Tittle widget
   Widget Tittle({required String text, required Color color}) {
     return Text(

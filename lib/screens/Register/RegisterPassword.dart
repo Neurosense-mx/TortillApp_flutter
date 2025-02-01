@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
+import 'package:tortillapp/screens/Register/RegisterCode.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -22,11 +23,13 @@ class _RegisterPasswordState extends State<RegisterPassword>
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
 
+
   String _email = "";
 
   @override
   void initState() {
     super.initState();
+    
     _email = widget.registerModel.getEmail();
 
     // Inicializar el AnimationController
@@ -94,6 +97,25 @@ class _RegisterPasswordState extends State<RegisterPassword>
 
   // Si pasa todas las validaciones, continuar con el registro
   print("Contraseña válida, continuar con el registro...");
+  widget.registerModel.setPassword(pass1);
+  Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return RegisterCode(registerModel: widget.registerModel);
+                    },
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+                      const end = Offset.zero;
+                      const curve = Curves.easeInOut;
+
+                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(position: offsetAnimation, child: child);
+                    },
+                  ),
+                );
 }
 
 
@@ -121,114 +143,105 @@ class _RegisterPasswordState extends State<RegisterPassword>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+@override
+Widget build(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: colores.colorFondo,
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Container(
-              width: screenWidth * 0.8,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: 80),
-                  // Usar AnimatedBuilder para optimizar la animación
-                 
-                  // Usar AnimatedBuilder para optimizar la animación
-                  AnimatedBuilder(
-                    animation: _progressAnimation,
-                    builder: (context, child) {
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 150,
-                            height: 150,
-                            child: CircularProgressIndicator(
-                              value: _progressAnimation
-                                  .value, // Usar el valor animado
-                              backgroundColor: Color(0xFFF1F1F3),
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  colores.colorPrincipal),
-                              strokeWidth: 5.0,
-                              strokeCap: StrokeCap.round,
-                            ),
+  return Scaffold(
+    backgroundColor: colores.colorFondo,
+    resizeToAvoidBottomInset: true,
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Container(
+            width: screenWidth * 0.8, // 80% del ancho de la pantalla
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: 80),
+                AnimatedBuilder(
+                  animation: _progressAnimation,
+                  builder: (context, child) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 150,
+                          height: 150,
+                          child: CircularProgressIndicator(
+                            value: _progressAnimation.value,
+                            backgroundColor: Color(0xFFF1F1F3),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                colores.colorPrincipal),
+                            strokeWidth: 5.0,
+                            strokeCap: StrokeCap.round,
                           ),
-                          // Agregar el icono dentro del progress bar
-                          SvgPicture.asset(
-                            'lib/assets/icons/lock_icon.svg',
-                            width: 40, // Ajusta el tamaño del icono
-                            height: 40, // Ajusta el tamaño del icono
-                          ),
-                        ],
-                      );
-                    },
+                        ),
+                        SvgPicture.asset(
+                          'lib/assets/icons/lock_icon.svg',
+                          width: 40,
+                          height: 40,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 50),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: CustomWidgets().Tittle(
+                    text: 'Paso 2',
+                    color: colores.colorPrincipal,
                   ),
-                  SizedBox(height: 50),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: CustomWidgets().Tittle(
-                      text: 'Paso 2',
-                      color: colores.colorPrincipal,
-                    ),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: CustomWidgets().Subtittle(
+                    text: 'Crea tus credenciales de acceso.',
+                    color: colores.colorPrincipal,
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: CustomWidgets().Subtittle(
-                      text: 'Crea tus credenciales de acceso.',
-                      color: colores.colorPrincipal,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  Text(_email,
-                      style: TextStyle(
-                          color: colores.colorPrincipal,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold)),
-                  SizedBox(height: 30),
-                  CustomWidgets().TextfieldPass(
-                    controller: _pass1Controller,
-                    label: 'Contraseña',
-                    hasIcon: true,
-                    icon: Icons.lock,
-                  ),
-                  SizedBox(height: 20),
-                  CustomWidgets().TextfieldPass(
-                    controller: _pass2Controller,
-                    label: 'Confirmar contraseña',
-                    hasIcon: true,
-                    icon: Icons.lock,
-                  ),
-                  SizedBox(height: 50),
-                  CustomWidgets().ButtonPrimary(
+                ),
+                SizedBox(height: 30),
+                Text(_email,
+                    style: TextStyle(
+                        color: colores.colorPrincipal,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(height: 30),
+                CustomWidgets().TextfieldPass(
+                  controller: _pass1Controller,
+                  label: 'Contraseña',
+                  hasIcon: true,
+                  icon: Icons.lock,
+                ),
+                SizedBox(height: 20),
+                CustomWidgets().TextfieldPass(
+                  controller: _pass2Controller,
+                  label: 'Confirmar contraseña',
+                  hasIcon: true,
+                  icon: Icons.lock,
+                ),
+                SizedBox(height: 60),
+                // Botón siempre alineado al fondo con separación de 10px
+                Container(
+                  width: screenWidth * 0.8, // 80% del ancho de la pantalla
+                  child: CustomWidgets().ButtonPrimary(
                     text: 'Continuar',
                     onPressed: () {
                       _confirmPass();
                     },
                   ),
-                  SizedBox(height: 20),
-                  Text('¿Ya tienes cuenta?',
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 61, 61, 61),
-                          fontSize: 16)),
-                  Text('Ingresa aquí',
-                      style: TextStyle(
-                          color: colores.colorPrincipal,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16)),
-                ],
-              ),
+                ),
+               // Separación de 10px después del botón
+              ],
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

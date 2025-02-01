@@ -99,57 +99,71 @@ Future<void> _searchEmail() async {
     _showCupertinoDialog('Atención', message);
   } else {
     // Mostrar diálogo de confirmación para continuar con el registro
-    showDialog(
-      context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text('Confirmación de correo', style: TextStyle(fontSize: 18)),
-          content: Text('\n¿Registrar con este correo? $email', style: TextStyle(fontSize: 15)),
-          actions: [
-            CupertinoDialogAction(
-              onPressed: () => Navigator.pop(context), // Cerrar el diálogo
-              child: Text('Cancelar', style: TextStyle(color: colores.colorTextRojo)),
-            ),
-            CupertinoDialogAction(
-              onPressed: () {
-                // Ir a la siguiente pantalla RegisterPassword()
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return RegisterPassword(registerModel: registerModel);
-                    },
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
-                      const end = Offset.zero;
-                      const curve = Curves.easeInOut;
+ showDialog(
+  context: context,
+  builder: (context) {
+    return FadeTransition(
+      opacity: Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: ModalRoute.of(context)!.animation!,
+          curve: Curves.easeInOut,
+        ),
+      ),
+      child: CupertinoAlertDialog(
+        title: Text('Confirmación de correo', style: TextStyle(fontSize: 18)),
+        content: Text('\n¿Registrar con este correo? $email', style: TextStyle(fontSize: 15)),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.pop(context), // Cerrar el diálogo
+            child: Text('Cancelar', style: TextStyle(color: colores.colorTextRojo)),
+          ),
+          CupertinoDialogAction(
+            onPressed: () {
+              // Ir a la siguiente pantalla RegisterPassword()
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return RegisterPassword(registerModel: registerModel);
+                  },
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
 
-                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
+                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
 
-                      return SlideTransition(position: offsetAnimation, child: child);
-                    },
-                  ),
-                );
-              },
-              child: Text('Continuar', style: TextStyle(color: colores.colorPrincipal)),
-            ),
-          ],
-        );
-      },
+                    return SlideTransition(position: offsetAnimation, child: child);
+                  },
+                ),
+              );
+            },
+            child: Text('Continuar', style: TextStyle(color: colores.colorPrincipal)),
+          ),
+        ],
+      ),
     );
+  },
+);
+
   }
 }
 
 
   // Método para mostrar el dialogo en caso de error
-  void _showCupertinoDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
+void _showCupertinoDialog(String title, String message) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return FadeTransition(
+        opacity: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+          parent: ModalRoute.of(context)!.animation!,
+          curve: Curves.easeIn,
+        )),
+        child: CupertinoAlertDialog(
           title: Text(title, style: TextStyle(fontSize: 18)),
-          content: Text('\n'+message, style: TextStyle(fontSize: 15)),
+          content: Text('\n' + message, style: TextStyle(fontSize: 15)),
           actions: [
             CupertinoDialogAction(
               onPressed: () {
@@ -158,107 +172,117 @@ Future<void> _searchEmail() async {
               child: Text('Aceptar', style: TextStyle(color: colores.colorPrincipal)),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: colores.colorFondo,
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Container(
-              width: screenWidth * 0.8,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: 80),
-                  // Usar AnimatedBuilder para optimizar la animación
-                  AnimatedBuilder(
-                    animation: _progressAnimation,
-                    builder: (context, child) {
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 150,
-                            height: 150,
-                            child: CircularProgressIndicator(
-                              value: _progressAnimation
-                                  .value, // Usar el valor animado
-                              backgroundColor: Color(0xFFF1F1F3),
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  colores.colorPrincipal),
-                              strokeWidth: 5.0,
-                              strokeCap: StrokeCap.round,
-                            ),
+@override
+Widget build(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
+
+  return Scaffold(
+    backgroundColor: colores.colorFondo,
+    resizeToAvoidBottomInset: true,
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Container(
+            width: screenWidth * 0.8,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: 80),
+                // Usar AnimatedBuilder para optimizar la animación
+                AnimatedBuilder(
+                  animation: _progressAnimation,
+                  builder: (context, child) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 150,
+                          height: 150,
+                          child: CircularProgressIndicator(
+                            value: _progressAnimation
+                                .value, // Usar el valor animado
+                            backgroundColor: Color(0xFFF1F1F3),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                colores.colorPrincipal),
+                            strokeWidth: 5.0,
+                            strokeCap: StrokeCap.round,
                           ),
-                          // Agregar el icono dentro del progress bar
-                          SvgPicture.asset(
-                            'lib/assets/icons/email_add.svg',
-                            width: 40, // Ajusta el tamaño del icono
-                            height: 40, // Ajusta el tamaño del icono
-                          ),
-                        ],
-                      );
-                    },
+                        ),
+                        // Agregar el icono dentro del progress bar
+                        SvgPicture.asset(
+                          'lib/assets/icons/email_add.svg',
+                          width: 40, // Ajusta el tamaño del icono
+                          height: 40, // Ajusta el tamaño del icono
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 50),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: CustomWidgets().Tittle(
+                    text: 'Paso 1',
+                    color: colores.colorPrincipal,
                   ),
-                  SizedBox(height: 50),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: CustomWidgets().Tittle(
-                      text: 'Paso 1',
-                      color: colores.colorPrincipal,
-                    ),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: CustomWidgets().Subtittle(
+                    text:
+                        'Ingresa tu email, para vincularlo a tu nueva cuenta.',
+                    color: colores.colorPrincipal,
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: CustomWidgets().Subtittle(
-                      text:
-                          'Ingresa tu email, para vincularlo a tu nueva cuenta.',
-                      color: colores.colorPrincipal,
-                    ),
+                ),
+                SizedBox(height: 40),
+                CustomWidgets().TextfieldPrimary(
+                  controller: _emailController,
+                  label: 'Correo electrónico',
+                  hasIcon: true,
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 120), // Ajuste para separación
+                CustomWidgets().ButtonPrimary(
+                  text: 'Continuar',
+                  onPressed: () {
+                    _searchEmail();
+                  },
+                  icon: Icon(Icons.search), // Agregar el icono de lupa
+                ),
+                SizedBox(height: 10), // Separación del botón
+                // Texto adicional
+                Text(
+                  '¿Ya tienes cuenta?',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 61, 61, 61),
+                    fontSize: 16,
                   ),
-                  SizedBox(height: 40),
-                  CustomWidgets().TextfieldPrimary(
-                    controller: _emailController,
-                    label: 'Correo electrónico',
-                    hasIcon: true,
-                    icon: Icons.email,
-                    keyboardType: TextInputType.emailAddress,
+                ),
+                Text(
+                  'Ingresa aquí',
+                  style: TextStyle(
+                    color: colores.colorPrincipal,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  SizedBox(height: 140),
-                  CustomWidgets().ButtonPrimary(
-                    text: 'Buscar',
-                    onPressed: () {
-                      _searchEmail();
-                    },
-                    icon: Icon(Icons.search), // Agregar el icono de lupa
-                  ),
-                  SizedBox(height: 20),
-                  Text('¿Ya tienes cuenta?',
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 61, 61, 61),
-                          fontSize: 16)),
-                  Text('Ingresa aquí',
-                      style: TextStyle(
-                          color: colores.colorPrincipal,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16)),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

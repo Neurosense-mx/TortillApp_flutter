@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/backend.dart';
@@ -53,20 +54,92 @@ class RegisterModel {
     }
   }
 
-// Gets de los atributos
+//Funcion para setear el password
+  void setPassword(String password) {
+    //print("Password: $password");
+    this.password = password;
+  }
+
+//funcion para enviar un code al email
+  Future<Map<String, dynamic>> sendCode() async {
+    final url = Uri.parse(ApiConfig.backendUrl + '/register/sendCode/' + this.email);
+    try {
+      // Realizamos la solicitud HTTP POST
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},     
+      );
+
+      if (response.statusCode == 200) {
+        print("Se envio el codigo");
+        var data = json.decode(response.body);
+        this.code = data['code'].toString();
+        //imprimir el codigo
+        print("--------------------------------------"+ data['code'].toString());
+          return {
+            'statusCode': 200, // OK
+            'message': 'El correo electrónico está disponible.'
+          };
+        
+      } else {
+        // Si la respuesta no es exitosa
+        return {
+          'statusCode': response.statusCode,
+          'message': 'Error en la solicitud: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      // Si ocurre un error en la conexión o la solicitud
+      return {'statusCode': 500, 'message': 'Error en la conexión: $e'};
+    }
+  }
+
+
+
+//Set para id_suscription
+  void setIdSuscription(int id_suscription) {
+    this.id_suscription = id_suscription;
+  }
+// ----------------------------------------------------------------------------- Gets de los atributos
   String getEmail() {
     return this.email;
   }
 
-//Regresar el json
-  Map<String, dynamic> _registro_to_JSON() {
-    return {
-      'email': this.email,
-      'password': this.password,
-      'codeVerify': this.codeVerify,
-      'code': this.code,
-      'id_suscription': this.id_suscription
-    };
+  String getCode() {
+    return this.code;
+  }
+
+  //Funcion para enviar los datos al backend
+  Future<Map<String, dynamic>> sendRegister() async {
+    final url = Uri.parse(ApiConfig.backendUrl + '/register/adduser');
+    try {
+      // Realizamos la solicitud HTTP POST
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': this.email,
+          'password': this.password,
+          'id_suscripcion': this.id_suscription
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return {
+          'statusCode': 200, // OK
+          'message': 'Registro exitoso, por favor inicia sesión.'
+        };
+      } else {
+        // Si la respuesta no es exitosa
+        return {
+          'statusCode': response.statusCode,
+          'message': 'Error en la solicitud: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      // Si ocurre un error en la conexión o la solicitud
+      return {'statusCode': 500, 'message': 'Error en la conexión: $e'};
+    }
   }
 }
 
