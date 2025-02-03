@@ -3,7 +3,7 @@ import 'dart:ui';
 class PaletaDeColores {
   //color de fondo para la aplicación
   final Color colorFondo = Color(0xFFFEFEFE);
-  final Color colorInputs= Color(0xFFECECEE);
+  final Color colorInputs= Color.fromARGB(255, 241, 241, 242);
   final Color colorInputsIcon = Color(0xFFB9B9BA);
   final Color colorPrincipal = Color(0xFF1B374D);
   final Color colorNegro = Color.fromARGB(255, 11, 11, 11);

@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Fondo de color #FF3434
-      backgroundColor: Color(0xFFFF3434),
+      backgroundColor: Color.fromARGB(255, 226, 226, 226),
       body: Center(
         child: Container(
           height: MediaQuery.of(context).size.height, // Ocupa el 100% del alto de la pantalla

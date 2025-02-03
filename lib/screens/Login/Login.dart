@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Login/LoginModel.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
 import 'package:tortillapp/screens/Register/RegisterEmail.dart';
@@ -15,7 +17,68 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {}
+  Future<void> _login() async {
+    //validar que los campos no esten vacios
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
+      return;
+    }
+    //validar que tenga fromato de correo
+    if (!_emailController.text.contains('@')) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
+      return;
+    }
+    // Instanciamos el modelo de Login
+    LoginModel loginModel = LoginModel();
+    loginModel.setEmail(_emailController.text);
+    loginModel.setPassword(_passwordController.text);
+    //Bajar en un Map la respuesta
+    Map<String, dynamic> response = await loginModel.login();
+    //Mostrar la respuesta
+    print(response);
+
+    //Si la respuesta es 200
+    if (response['statusCode'] == 200) { //-------------------------------------- Inicio de sesion exitoso
+
+      //Obtener el tipo de usuario con el rol
+        
+      //---------------------------------------- User admin
+      //Obtener el name del usuario, si esta "", redirigir a la pantalla de primeros pasos
+      //Si no, redirigir a la pantalla de home_admin
+
+      // ---------------------------------------- User normal
+      //Mostrar un dialogo de bienvenida
+      _showCupertinoDialog('Bienvenido', 'Inicio de sesión exitoso.');
+    } else {
+      //Mostrar un dialogo de error
+      //print(response['message']);
+      _showCupertinoDialog('Error', response['message']);
+    }
+  }
+
+    void _showCupertinoDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(title, style: TextStyle(fontSize: 18)),
+          content: Text('\n' + message, style: TextStyle(fontSize: 15)),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () {
+                Navigator.pop(context); // Cerrar el diálogo
+              },
+              child: Text(
+                'Aceptar',
+                style: TextStyle(color: colores.colorPrincipal),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Usamos el widget customButton desde CustomWidgets
                   CustomWidgets().ButtonPrimary(
                     text: 'Iniciar sesión',
-                    onPressed: () {
-                      print("Botón presionado");
+                    onPressed: () async {
+                      await _login();
                     },
                   ),
                   SizedBox(height: 20),
