@@ -301,6 +301,7 @@ Navigator.push(
                     }),
                   ),
                   SizedBox(height: 50),
+                  Text('Espera algunos segundos para recibir el código.'),
                   ElevatedButton(
   onPressed: _isButtonDisabled ? null : _sendCode,
   style: ElevatedButton.styleFrom(
@@ -315,8 +316,9 @@ Navigator.push(
       ),
     ),
   ),
+  
   child: Text(
-    _isButtonDisabled ? 'Reenviar en $_remainingTime s' : 'Enviar código',
+    _isButtonDisabled ? 'Reenviar en $_remainingTime s' : 'Reenviar código',
     style: TextStyle(fontSize: 16),
   ),
 ),
