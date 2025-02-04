@@ -35,20 +35,59 @@ class _LoginScreenState extends State<LoginScreen> {
     //Bajar en un Map la respuesta
     Map<String, dynamic> response = await loginModel.login();
     //Mostrar la respuesta
-    print(response);
-
+    print("Response: ---------------------" + response.toString());
+    // var config = response['user']['config'];
+    //print(config);
     //Si la respuesta es 200
-    if (response['statusCode'] == 200) { //-------------------------------------- Inicio de sesion exitoso
+    if (response['statusCode'] == 200) {
+      var id_role = response['user']['id_rol'].toString(); //Obtener el rol
 
-      //Obtener el tipo de usuario con el rol
-        
-      //---------------------------------------- User admin
-      //Obtener el name del usuario, si esta "", redirigir a la pantalla de primeros pasos
-      //Si no, redirigir a la pantalla de home_admin
+      print("Mi rol es : " + id_role);
+      //-------------------------------------- Inicio de sesion exitoso
+      if (id_role == "1") {
+        // ---------------------------------------- User admin
+        // Obtener el nombre para ver si ya lo configuro
+        var nombre = response['user']['nombre'];
+        //Si el nombre es "" entonces no ha configurado su cuenta, enviarlo
+        if (nombre == "") {
+          _showCupertinoDialog('Bienvenido', 'No configurado name');
+          //enviar a configurar nombre
+        }
+        //Si el nombre es diferente de "" entonces ya configuro su cuenta
+        if (nombre != "") {
+          //Obtener la configuracion
+          var config = response['user']['config'];
+          //obtener negocio, sucursal, precio, productos, gastos, empleados
+          var negocio = config['negocio'];
+          var sucursal = config['sucursal'];
+          var precio = config['precio'];
+          var productos = config['productos'];
+          var gastos = config['gastos'];
+          var empleados = config['empleados'];
 
-      // ---------------------------------------- User normal
+          // if todo es 1 entonces ya configuro su cuenta
+          if (negocio == 1 &&
+              sucursal == 1 &&
+              precio == 1 &&
+              productos == 1 &&
+              gastos == 1 &&
+              empleados == 1) {
+            _showCupertinoDialog('Bienvenido', 'Mostrar home normal');
+          }
+          else{
+            //No configurada, mostrar dialogo
+            _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc');
+          }
+
+          _showCupertinoDialog('Bienvenido', 'Configurado name');
+        }
+      } else {
+        // ---------------------------------------- User normal
+      }
+
       //Mostrar un dialogo de bienvenida
-      _showCupertinoDialog('Bienvenido', 'Inicio de sesión exitoso.');
+//      _showCupertinoDialog('Bienvenido', 'Inicio de sesión exitoso.');
+      //_showCupertinoDialog("data: ", response.toString());
     } else {
       //Mostrar un dialogo de error
       //print(response['message']);
@@ -56,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-    void _showCupertinoDialog(String title, String message) {
+  void _showCupertinoDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (context) {
@@ -79,15 +118,16 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: colores.colorFondo,
-      resizeToAvoidBottomInset: true, // Esto asegura que la pantalla se ajuste al aparecer el teclado
-      body: SingleChildScrollView( // Esto permite que el contenido sea desplazable
+      resizeToAvoidBottomInset:
+          true, // Esto asegura que la pantalla se ajuste al aparecer el teclado
+      body: SingleChildScrollView(
+        // Esto permite que el contenido sea desplazable
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
@@ -103,15 +143,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 50),
                   Container(
-                    alignment: Alignment.centerLeft, // Alineación a la izquierda
+                    alignment:
+                        Alignment.centerLeft, // Alineación a la izquierda
                     child: CustomWidgets().Tittle(
                       text: 'Login',
                       color: colores.colorPrincipal,
                     ),
                   ),
-                  SizedBox(height: 10), 
+                  SizedBox(height: 10),
                   Container(
-                    alignment: Alignment.centerLeft, // Alineación a la izquierda
+                    alignment:
+                        Alignment.centerLeft, // Alineación a la izquierda
                     child: CustomWidgets().Subtittle(
                       text: 'Por favor inicia sesión para continuar.',
                       color: colores.colorPrincipal,
@@ -137,10 +179,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   Text('¿Olvidaste tu contraseña?',
                       style: TextStyle(
-                        color: colores.colorPrincipal,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 16
-                      )),
+                          color: colores.colorPrincipal,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 16)),
                   SizedBox(height: 30),
                   // Usamos el widget customButton desde CustomWidgets
                   CustomWidgets().ButtonPrimary(
@@ -152,44 +193,46 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   Text('¿No tienes una cuenta?',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 61, 61, 61),
-                        fontSize: 16
-                      )),
+                          color: const Color.fromARGB(255, 61, 61, 61),
+                          fontSize: 16)),
                   GestureDetector(
-  onTap: () {
-   //Navegar a RegisterScreen
-    Navigator.push(
-  context,
-  PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return RegisterScreen(); // La página a la que vas
-    },
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      // Aquí definimos cómo se realiza la animación de la transición
-      const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
-      const end = Offset.zero;
-      const curve = Curves.easeInOut;
+                    onTap: () {
+                      //Navegar a RegisterScreen
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) {
+                            return RegisterScreen(); // La página a la que vas
+                          },
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            // Aquí definimos cómo se realiza la animación de la transición
+                            const begin =
+                                Offset(1.0, 0.0); // Deslizar desde la derecha
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
 
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      var offsetAnimation = animation.drive(tween);
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
 
-      // Aquí puedes modificar la animación a tu gusto
-      return SlideTransition(position: offsetAnimation, child: child);
-    },
-  ),
-);
-  },
-  child: Text(
-    'Regístrate aquí',
-    style: TextStyle(
-      color: colores.colorPrincipal,
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    ),
-  ),
-)
-
-                      
+                            // Aquí puedes modificar la animación a tu gusto
+                            return SlideTransition(
+                                position: offsetAnimation, child: child);
+                          },
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Regístrate aquí',
+                      style: TextStyle(
+                        color: colores.colorPrincipal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

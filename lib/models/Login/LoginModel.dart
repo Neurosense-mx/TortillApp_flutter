@@ -35,12 +35,13 @@ class LoginModel {
 
       var data = json.decode(response.body);
 
-     print("Codigo: " + response.statusCode.toString());
-      print(data);
+      //print("Codigo: " + response.statusCode.toString());
+      //print(data['user']['config']);
 
       if (response.statusCode == 200) {
         //baja el diccionario de user
         var user = data['user'];
+        var config = data['user']['config'];
         return {
           'statusCode': 200, // OK
           'token': data['token'],
@@ -49,7 +50,15 @@ class LoginModel {
             'nombre': user['nombre'],
             'email': user['email'],
             'id_rol': user['id_rol'],
-          }
+          },
+          'config': {
+            'negocio': config['negocio'],
+            'sucursal': config['sucursal'],
+            'precio': config['precio'],
+            'productos': config['productos'],
+            'gastos': config['gastos'],
+            'empleados': config['empleados'],
+            },
         };
       } else {
         //print(data['error']);
@@ -72,14 +81,16 @@ class LoginModel {
     await prefs.setString('name', name); //Guardar el nombre
     await prefs.setInt('id_rol', id_rol); //Guardar el id_rol
   }
+
   //Funcion para guardar saveDataAdminPrimerosPasos
   Future<void> saveIdNegocio(int id_negocio) async {
-   SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('id_negocio', id_negocio); //Guardar el id_negocio
   }
 
   //Funcion para guardar saveDataUser
-  Future<void> saveDataUser(String token, String name, int id_rol, int id_negocio, int id_sucursal) async {
+  Future<void> saveDataUser(String token, String name, int id_rol,
+      int id_negocio, int id_sucursal) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token); //Guardar el token
     await prefs.setString('name', name); //Guardar el nombre
