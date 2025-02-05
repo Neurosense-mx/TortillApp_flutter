@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/Login/LoginModel.dart';
+import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
 import 'package:tortillapp/screens/Register/RegisterEmail.dart';
@@ -50,7 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
         var nombre = response['user']['nombre'];
         //Si el nombre es "" entonces no ha configurado su cuenta, enviarlo
         if (nombre == "") {
-          _showCupertinoDialog('Bienvenido', 'No configurado name');
+          //_showCupertinoDialog('Bienvenido', 'No configurado name');
+          //Navegar a PP_Nombre_Screen()
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
           //enviar a configurar nombre
         }
         //Si el nombre es diferente de "" entonces ya configuro su cuenta
