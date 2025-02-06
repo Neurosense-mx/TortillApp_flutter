@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
+import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Productos.dart';
+import 'package:tortillapp/screens/Admin/PrimerosPasos/PreciosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
 import 'package:tortillapp/screens/Register/RegisterPassword.dart';
 import 'package:tortillapp/widgets/widgets.dart';
@@ -31,9 +33,25 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
   },
   {
     "id": 2,
-    "nombre": "Salsa de d",
+    "nombre": "Salsa de tomate",
     "precio": 10.5,
-  }
+  },
+  {
+    "id": 3,
+    "nombre": "Salsa de tomate",
+    "precio": 10.5,
+  },
+  {
+    "id": 4,
+    "nombre": "Salsa de tomate",
+    "precio": 10.5,
+  },
+  {
+    "id": 5,
+    "nombre": "Salsa de tomate",
+    "precio": 10.5,
+  },
+  
 ];
 
   //Instanciar el modelo
@@ -149,177 +167,174 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+  Future<void> _omitir() async {
+    await _animationController.forward();
+    //validar si animacion esta completa
 
-    return Scaffold(
-      backgroundColor: colores.colorFondo,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return NotificationListener<ScrollUpdateNotification>(
-              onNotification: (notification) {
-                setState(() {
-                  _isKeyboardVisible =
-                      MediaQuery.of(context).viewInsets.bottom > 0;
-                });
-                return false;
-              },
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(0),
-                physics: BouncingScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Center(
-                      // Aquí envolvemos todo en un Center para centrarlo
-                      child: Container(
-                        width: screenWidth *
-                            0.8, // El ancho es el 80% del ancho de la pantalla
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 80),
-                            AnimatedBuilder(
-                              animation: _progressAnimation,
-                              builder: (context, child) {
-                                return Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Container(
-                                      width: 150,
-                                      height: 150,
-                                      child: CircularProgressIndicator(
-                                        value: _progressAnimation.value,
-                                        backgroundColor: Color(0xFFF1F1F3),
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                colores.colorPrincipal),
-                                        strokeWidth: 5.0,
-                                        strokeCap: StrokeCap.round,
-                                      ),
-                                    ),
-                                    SvgPicture.asset(
-                                      'lib/assets/icons/product_icon.svg',
-                                      width: 40,
-                                      height: 40,
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                            SizedBox(height: 50),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: CustomWidgets().Tittle(
-                                text: "Productos",
-                                color: colores.colorPrincipal,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: CustomWidgets().Subtittle(
-                                text: 'Todo los productos adicionales (0)',
-                                color: colores.colorPrincipal,
-                              ),
-                            ),
-                            //AQui el containter conla lista de productos
-                            SizedBox(height: 15),
-Container(
-  padding: EdgeInsets.all(0),
-  decoration: BoxDecoration(
-    color: const Color.fromARGB(255, 85, 66, 66),
-    borderRadius: BorderRadius.circular(10),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black12,
-        blurRadius: 5,
-        spreadRadius: 2,
-      ),
-    ],
-  ),
-  child: Column(
-    children: [
-      Container(
-        height: 150, // Altura ajustable
-        child: ListView.builder(
-          itemCount: productos.length,
-          itemBuilder: (context, index) {
-            return Container(
-              width: double.infinity, // Ocupa todo el ancho disponible
-              decoration: BoxDecoration(
-                color: Color(0xFFEBF1FD), // Fondo del ítem
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Color(0xFFDDE5FD)), // Borde
-              ),
-              margin: EdgeInsets.symmetric(vertical: 5),
-              padding: EdgeInsets.symmetric(horizontal: 16), // Aumento el espacio lateral
-              child: ListTile(
-                contentPadding: EdgeInsets.zero, // Evita márgenes internos
-                leading: SvgPicture.asset(
-                  "lib/assets/icons/etiqueta_icon.svg",
-                  width: 24, // Ajusta el tamaño según sea necesario
-                  height: 24,
-                  colorFilter: ColorFilter.mode(Color(0xFF1B374D), BlendMode.srcIn), // Color del ícono
-                ),
-                title: Text(productos[index]["nombre"]),
-                subtitle: Text("\$${productos[index]["precio"].toString()}"),
-                trailing: Icon(Icons.delete, color: Color(0xFFABB9D4)), // Ícono de eliminar
-                onTap: () {
-                  // Acción al tocar el producto
-                },
-              ),
-            );
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return PP_AddProductos_Screen();
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(position: offsetAnimation, child: child);
           },
         ),
-      ),
-    ],
-  ),
-),
-                            Spacer(),
-                            CustomWidgets().ButtonSecondary(
-                              text: 'Agregar producto',
-                              onPressed: () {
-                                
-                              },
-                            ),
-                            SizedBox(height: 10),
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-
-                              height: _isKeyboardVisible
-                                  ? 30
-                                  : 50, // Reduce tamaño cuando teclado está abierto
-
-                              width: double.infinity,
-                              child: CustomWidgets().ButtonPrimary(
-                                text: 'Continuar',
-                                onPressed: () {
-                                  // Acción del botón
-                                  _savePrice();
-                                },
-                              ),
-                            ),
-                            SizedBox(height: keyboardHeight > 0 ? 30 : 30),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
+      );
+    
   }
 
+@override
+Widget build(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width * 0.8;
+  double screenHeight = MediaQuery.of(context).size.height;
+  double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
+  return Scaffold(
+    backgroundColor: colores.colorFondo,
+    body: SafeArea(
+      child: Center( // Centra el contenido principal en la pantalla
+        child: Container(
+          width: screenWidth, // Ocupa el 80% del ancho de la pantalla
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 80),
+              AnimatedBuilder(
+                animation: _progressAnimation,
+                builder: (context, child) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 150,
+                        child: CircularProgressIndicator(
+                          value: _progressAnimation.value,
+                          backgroundColor: Color(0xFFF1F1F3),
+                          valueColor: AlwaysStoppedAnimation<Color>(colores.colorPrincipal),
+                          strokeWidth: 5.0,
+                          strokeCap: StrokeCap.round,
+                        ),
+                      ),
+                      SvgPicture.asset(
+                        'lib/assets/icons/product_icon.svg',
+                        width: 40,
+                        height: 40,
+                      ),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: 50),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: _isKeyboardVisible ? 30 : 50,
+                width: screenWidth,
+                child: CustomWidgets().Tittle(
+                  text: "Productos",
+                  color: colores.colorPrincipal,
+                ),
+              ),
+              
+              SizedBox(height: 10),
+              
+              Align(
+                alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+                child: CustomWidgets().Subtittle(
+                  text: 'Todos los productos adicionales (${productos.length})',
+                  color: colores.colorPrincipal,
+                ),
+              ),
+              SizedBox(height: 15),
+              Expanded(
+                child: Container(
+                  width: screenWidth,
+                  child: productos.isNotEmpty
+                      ? ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: productos.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: screenWidth,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFEBF1FD),
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(color: Color(0xFFDDE5FD)),
+                              ),
+                              margin: EdgeInsets.symmetric(vertical: 5),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: SvgPicture.asset(
+                                  "lib/assets/icons/etiqueta_icon.svg",
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: ColorFilter.mode(Color(0xFF1B374D), BlendMode.srcIn),
+                                ),
+                                title: Text(productos[index]["nombre"]),
+                                subtitle: Text("\$${productos[index]["precio"].toString()}"),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Color(0xFFABB9D4)),
+                                  onPressed: () {
+                                    setState(() {
+                                      productos.removeAt(index);
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text(
+                            "No hay productos agregados",
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                        ),
+                ),
+              ),
+              
+              SizedBox(height: 10),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: _isKeyboardVisible ? 30 : 50,
+                width: screenWidth,
+                child: CustomWidgets().ButtonSecondary(
+                  text: 'Agregar producto',
+                  onPressed: () {
+                    // Acción para agregar producto
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: _isKeyboardVisible ? 30 : 50,
+                width: screenWidth,
+                child: CustomWidgets().ButtonPrimary(
+                  text: 'Continuar',
+                  onPressed: () {
+
+                    _omitir();
+                  },
+                ),
+              ),
+              SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
 }
