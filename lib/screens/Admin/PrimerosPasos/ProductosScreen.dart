@@ -3,18 +3,17 @@ import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/ProductosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
 import 'package:tortillapp/screens/Register/RegisterPassword.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
-class PP_Precio_Screen extends StatefulWidget {
+class PP_Productos_Screen extends StatefulWidget {
   @override
-  _PP_Precio_ScreenState createState() => _PP_Precio_ScreenState();
+  _PP_Productos_ScreenState createState() => _PP_Productos_ScreenState();
 }
 
-class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
+class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
@@ -23,6 +22,19 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
+
+  List<Map<String, dynamic>> productos = [
+  {
+    "id": 1,
+    "nombre": "Salsa de tomate",
+    "precio": 10.5,
+  },
+  {
+    "id": 2,
+    "nombre": "Salsa de d",
+    "precio": 10.5,
+  }
+];
 
   //Instanciar el modelo
   final PP_Model pp_model = PP_Model();
@@ -120,7 +132,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return PP_Productos_Screen();
+          return PP_Sucursal_Screen();
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
@@ -194,7 +206,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
                                       ),
                                     ),
                                     SvgPicture.asset(
-                                      'lib/assets/icons/tortillas_icon.svg',
+                                      'lib/assets/icons/product_icon.svg',
                                       width: 40,
                                       height: 40,
                                     ),
@@ -206,7 +218,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
                             Align(
                               alignment: Alignment.centerLeft,
                               child: CustomWidgets().Tittle(
-                                text: "Precio",
+                                text: "Productos",
                                 color: colores.colorPrincipal,
                               ),
                             ),
@@ -214,26 +226,71 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
                             Align(
                               alignment: Alignment.centerLeft,
                               child: CustomWidgets().Subtittle(
-                                text: 'Ingresa el precio por kilo de tortillas',
+                                text: 'Todo los productos adicionales (0)',
                                 color: colores.colorPrincipal,
                               ),
                             ),
-                            SizedBox(height: 30),
-                            CustomWidgets().TextfieldNumber(
-                              controller: _publicoController,
-                              label: 'Precio Público',
-                              hasIcon: true,
-                              icon: Icons.price_change,
-                            ),
-                            SizedBox(height: 20),
-                            CustomWidgets().TextfieldNumber(
-                              controller: _tiendaController,
-                              label: 'Precio Tienda',
-                              hasIcon: true,
-                              icon: Icons.price_change,
-                            ),
-                            SizedBox(height: 20),
+                            //AQui el containter conla lista de productos
+                            SizedBox(height: 15),
+Container(
+  padding: EdgeInsets.all(0),
+  decoration: BoxDecoration(
+    color: const Color.fromARGB(255, 85, 66, 66),
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 5,
+        spreadRadius: 2,
+      ),
+    ],
+  ),
+  child: Column(
+    children: [
+      Container(
+        height: 150, // Altura ajustable
+        child: ListView.builder(
+          itemCount: productos.length,
+          itemBuilder: (context, index) {
+            return Container(
+              width: double.infinity, // Ocupa todo el ancho disponible
+              decoration: BoxDecoration(
+                color: Color(0xFFEBF1FD), // Fondo del ítem
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Color(0xFFDDE5FD)), // Borde
+              ),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 16), // Aumento el espacio lateral
+              child: ListTile(
+                contentPadding: EdgeInsets.zero, // Evita márgenes internos
+                leading: SvgPicture.asset(
+                  "lib/assets/icons/etiqueta_icon.svg",
+                  width: 24, // Ajusta el tamaño según sea necesario
+                  height: 24,
+                  colorFilter: ColorFilter.mode(Color(0xFF1B374D), BlendMode.srcIn), // Color del ícono
+                ),
+                title: Text(productos[index]["nombre"]),
+                subtitle: Text("\$${productos[index]["precio"].toString()}"),
+                trailing: Icon(Icons.delete, color: Color(0xFFABB9D4)), // Ícono de eliminar
+                onTap: () {
+                  // Acción al tocar el producto
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    ],
+  ),
+),
                             Spacer(),
+                            CustomWidgets().ButtonSecondary(
+                              text: 'Agregar producto',
+                              onPressed: () {
+                                
+                              },
+                            ),
+                            SizedBox(height: 10),
                             AnimatedContainer(
                               duration: Duration(milliseconds: 300),
 
@@ -264,4 +321,5 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
       ),
     );
   }
+
 }

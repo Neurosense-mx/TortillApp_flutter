@@ -10,6 +10,8 @@ class PP_Model {
   String nombreSucursal = ""; //Nombre de la sucursal
   double latitud = 0.0; //Latitud del negocio
   double longitud = 0.0; //Longitud del negocio
+  double precio_publico = 0.0; //Precio al público
+  double precio_tienda = 0.0; //Precio en la tienda
 
  //Set para nombre
   void setNombre(String nombre) {
@@ -30,6 +32,14 @@ class PP_Model {
   //Set para longitud
   void setLongitud(double longitud) {
     this.longitud = longitud;
+  }
+  //Set para precio_publico
+  void setPrecioPublico(double precio_publico) {
+    this.precio_publico = precio_publico;
+  }
+  //Set para precio_tienda
+  void setPrecioTienda(double precio_tienda) {
+    this.precio_tienda = precio_tienda;
   }
 }
 

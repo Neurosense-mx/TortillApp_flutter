@@ -78,6 +78,9 @@ flutter:
       - lib/assets/icons/icon_person.svg
       - lib/assets/icons/icon_negocio.svg
       - lib/assets/icons/marker_icon.svg
+      - lib/assets/icons/tortillas_icon.svg
+      - lib/assets/icons/product_icon.svg
+      - lib/assets/icons/etiqueta_icon.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

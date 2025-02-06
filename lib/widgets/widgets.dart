@@ -40,6 +40,40 @@ class CustomWidgets extends StatelessWidget {
       cursorColor: colores.colorPrincipal, // Cambia el color del puntero aquí
     );
   }
+  
+Widget TextfieldNumber({
+  required TextEditingController controller,
+  required String label,
+  bool hasIcon = false,
+  IconData? icon,
+}) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: colores.colorNegro),
+      filled: true,
+      fillColor: colores.colorInputs,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+      prefixIcon: hasIcon
+          ? Icon(
+              icon,
+              color: colores.colorInputsIcon,
+            )
+          : null,
+    ),
+    keyboardType: TextInputType.number,
+    cursorColor: colores.colorPrincipal,
+  );
+}
 
 // Método para TextField de tipo Password (TextfieldPass)
   Widget TextfieldPass({
