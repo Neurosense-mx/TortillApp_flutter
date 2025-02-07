@@ -41,6 +41,7 @@ dependencies:
   geolocator: ^7.4.1 
   google_maps_flutter: ^2.6.0
   permission_handler: ^11.0.1
+  confetti: ^0.7.0
   
 dev_dependencies:
   flutter_test:

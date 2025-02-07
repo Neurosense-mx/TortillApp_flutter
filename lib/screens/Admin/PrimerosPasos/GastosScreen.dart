@@ -4,19 +4,19 @@ import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Productos.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/GastosScreen.dart';
+import 'package:tortillapp/screens/Admin/PrimerosPasos/EmpleadosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/PreciosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
 import 'package:tortillapp/screens/Register/RegisterPassword.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
-class PP_Productos_Screen extends StatefulWidget {
+class PP_Gastos_Screen extends StatefulWidget {
   @override
-  _PP_Productos_ScreenState createState() => _PP_Productos_ScreenState();
+  _PP_Gastos_ScreenState createState() => _PP_Gastos_ScreenState();
 }
 
-class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
+class _PP_Gastos_ScreenState extends State<PP_Gastos_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
@@ -69,7 +69,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.56, end: 0.7).animate(
+    _progressAnimation = Tween(begin: 0.7, end: 0.84).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -79,13 +79,14 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     // Agregar un listener al controlador de texto
     _tiendaController.addListener(_updateProgress);
     _publicoController.addListener(_updateProgress);
- 
+
+  
 
     Future.delayed(Duration(seconds: 1), () {
     if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
       _showCupertinoDialog(
-      'Configuración de productos', 
-      'En esta sección podrás agregar los productos que ofreces en tu negocio adicionales a las tortillas. \n Puedes omitir este paso seleccionando el botón "Continuar", más adelante podrás agregarlos nuevamente.'
+      'Configuración de gastos', 
+      'En esta sección podrás agregar los tipos de gastos que tienes. \n Puedes omitir este paso seleccionando el botón "Continuar", más adelante podrás agregarlos nuevamente.'
     );
     }
   });
@@ -108,7 +109,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     if (_tiendaController.text.isNotEmpty &&
         _publicoController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
-     // _animationController.forward();
+      //_animationController.forward();
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -189,7 +190,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) {
-            return PP_Gastos_Screen();
+            return PP_Empleados_Screen();
           },
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
@@ -255,7 +256,7 @@ Widget build(BuildContext context) {
                 height: _isKeyboardVisible ? 30 : 50,
                 width: screenWidth,
                 child: CustomWidgets().Tittle(
-                  text: "Productos",
+                  text: "Gastos",
                   color: colores.colorPrincipal,
                 ),
               ),

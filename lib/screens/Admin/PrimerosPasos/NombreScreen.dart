@@ -22,7 +22,7 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
 
-  var _nombre = "{nombre}";
+  var _nombre = "";
 
   //Instanciar el modelo
   final PP_Model pp_model = PP_Model();
@@ -30,9 +30,9 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
   @override
   void initState() {
     super.initState();
-  setState(() {
-    _nombre = "{nombre}";
-  });
+    //mostrar un message
+    
+  
     // Inicializar el AnimationController
     _animationController = AnimationController(
       vsync: this,
@@ -40,7 +40,7 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.0, end: 0.3).animate(
+    _progressAnimation = Tween(begin: 0.0, end: 0.14).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -49,6 +49,16 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
 
     // Agregar un listener al controlador de texto
     _nombreController.addListener(_updateProgress);
+// Espera 2 segundos antes de mostrar el diálogo
+ // Espera 2 segundos antes de mostrar el diálogo
+  Future.delayed(Duration(seconds: 1), () {
+    if (mounted) { // Verifica que el widget aún esté en pantalla
+      _showCupertinoDialog(
+        '¡Bienvenido a TortillApp!', 
+        'Vamos a configurar tu cuenta. Empieza por decirnos tu nombre.'
+      );
+    }
+  });
   }
 
   @override
@@ -71,7 +81,7 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
     if (_nombreController.text.isNotEmpty) {
       
       // Iniciar la animación hacia el 25%
-      _animationController.forward();
+      
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -106,7 +116,7 @@ void _showCupertinoDialog(String title, String message) {
   );
 }
 
-void _saveName() {
+Future<void> _saveName() async {
   //Verificar que no este vacio
   if (_nombreController.text.isEmpty) {
     _showCupertinoDialog('Error', 'El nombre no puede estar vacío.');
@@ -119,6 +129,7 @@ void _saveName() {
     //Guardar el nombre en el modelo
     pp_model.setNombre(_nombreController.text);
     //Mostrar la siguiente pantalla PP_Negocio_Screen()
+    await _animationController.forward();
     Navigator.push(
                   context,
                   PageRouteBuilder(

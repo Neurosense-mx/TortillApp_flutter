@@ -38,7 +38,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.3, end: 0.6).animate(
+    _progressAnimation = Tween(begin: 0.42, end: 0.56).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -48,6 +48,17 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
     // Agregar un listener al controlador de texto
     _tiendaController.addListener(_updateProgress);
     _publicoController.addListener(_updateProgress);
+
+ 
+
+    Future.delayed(Duration(seconds: 1), () {
+    if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
+      _showCupertinoDialog(
+      'Configuración de precio', 
+      'Por favor registra el precio por kilo de tortillas para continuar.'
+    );
+    }
+  });
   }
 
   @override
@@ -67,7 +78,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
     if (_tiendaController.text.isNotEmpty &&
         _publicoController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
-      _animationController.forward();
+     // _animationController.forward();
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -102,7 +113,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
     );
   }
 
-  void _savePrice() {
+  Future<void> _savePrice() async {
     //Verificar que no este vacio
     if (_tiendaController.text.isEmpty) {
       _showCupertinoDialog(
@@ -116,6 +127,7 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
     //Guardar el nombre en el modelo
     pp_model.setPrecioPublico(double.parse(_publicoController.text));
     pp_model.setPrecioTienda(double.parse(_tiendaController.text));
+     await _animationController.forward();
     Navigator.push(
       context,
       PageRouteBuilder(

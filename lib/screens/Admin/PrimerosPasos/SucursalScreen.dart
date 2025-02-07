@@ -46,7 +46,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.6, end: 1.0).animate(
+    _progressAnimation = Tween(begin: 0.28, end: 0.42).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -55,6 +55,16 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
 
     // Agregar un listener al controlador de texto
     _nombreNegocioController.addListener(_updateProgress);
+
+
+    Future.delayed(Duration(seconds: 1), () {
+    if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
+      _showCupertinoDialog(
+      'Configuración de negocio', 
+      'Excelente, ahora registra el nombre de tu sucursal y selecciona la ubicación.'
+    );
+    }
+  });
   }
 
   Future<void> _checkAndRequestPermissions() async {
@@ -87,7 +97,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     // Verificar si el campo de email está lleno
     if (_nombreNegocioController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
-      _animationController.forward();
+     // _animationController.forward();
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -122,7 +132,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     );
   }
 
-  void _saveSucursal() {
+  Future<void> _saveSucursal() async {
     //Verificar que no este vacio
     if (_nombreNegocioController.text.isEmpty) {
       _showCupertinoDialog(
@@ -143,7 +153,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     pp_model.setLongitud(longitude);
 
     //Ir a la siguiente pantalla
-
+   await _animationController.forward();
   Navigator.push(
                   context,
                   PageRouteBuilder(

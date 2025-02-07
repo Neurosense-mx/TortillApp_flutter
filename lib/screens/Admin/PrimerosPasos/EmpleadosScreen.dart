@@ -1,22 +1,24 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Productos.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/GastosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/PreciosScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
 import 'package:tortillapp/screens/Register/RegisterPassword.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
-class PP_Productos_Screen extends StatefulWidget {
+class PP_Empleados_Screen extends StatefulWidget {
   @override
-  _PP_Productos_ScreenState createState() => _PP_Productos_ScreenState();
+  _PP_Empleados_ScreenState createState() => _PP_Empleados_ScreenState();
 }
 
-class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
+class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
@@ -25,6 +27,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
+  late ConfettiController _confettiController;
 
   List<Map<String, dynamic>> productos = [
   {
@@ -61,7 +64,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
   @override
   void initState() {
     super.initState();
-
+_confettiController = ConfettiController(duration: Duration(seconds: 2));
     // Inicializar el AnimationController
     _animationController = AnimationController(
       vsync: this,
@@ -69,7 +72,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.56, end: 0.7).animate(
+    _progressAnimation = Tween(begin: 0.84, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -79,13 +82,14 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     // Agregar un listener al controlador de texto
     _tiendaController.addListener(_updateProgress);
     _publicoController.addListener(_updateProgress);
+
  
 
     Future.delayed(Duration(seconds: 1), () {
     if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
       _showCupertinoDialog(
-      'Configuración de productos', 
-      'En esta sección podrás agregar los productos que ofreces en tu negocio adicionales a las tortillas. \n Puedes omitir este paso seleccionando el botón "Continuar", más adelante podrás agregarlos nuevamente.'
+      'Configuración de empleados', 
+      'En esta sección podrás agregar empleados a tu sucursal. \n Puedes omitir este paso seleccionando el botón "Continuar", más adelante podrás agregarlos nuevamente.'
     );
     }
   });
@@ -96,11 +100,15 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     // Limpiar el listener y el AnimationController
     _tiendaController.removeListener(_updateProgress);
     _publicoController.removeListener(_updateProgress);
-
+  _confettiController.dispose();
     _tiendaController.dispose();
     _publicoController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+void _showConfetti() {
+    _confettiController.play();
   }
 
   void _updateProgress() {
@@ -108,7 +116,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
     if (_tiendaController.text.isNotEmpty &&
         _publicoController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
-     // _animationController.forward();
+      //_animationController.forward();
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -144,41 +152,14 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
   }
 
   Future<void> _savePrice() async {
-    //Verificar que no este vacio
-    if (_tiendaController.text.isEmpty) {
-      _showCupertinoDialog(
-          'Error', 'Por favor, ingresa el nombre de tu negocio.');
-      return;
-    }
-    if (_publicoController.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa el precio al público.');
-      return;
-    }
+    
     //Guardar el nombre en el modelo
-    pp_model.setPrecioPublico(double.parse(_publicoController.text));
-    pp_model.setPrecioTienda(double.parse(_tiendaController.text));
+    
 
      await _animationController.forward();
-     
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return PP_Sucursal_Screen();
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var offsetAnimation = animation.drive(tween);
-
-          return SlideTransition(position: offsetAnimation, child: child);
-        },
-      ),
-    );
+     //mostrar confetti
+      _showConfetti();
+   
   }
 
   Future<void> _omitir() async {
@@ -189,7 +170,7 @@ class _PP_Productos_ScreenState extends State<PP_Productos_Screen>
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) {
-            return PP_Gastos_Screen();
+            return PP_AddProductos_Screen();
           },
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
@@ -255,7 +236,7 @@ Widget build(BuildContext context) {
                 height: _isKeyboardVisible ? 30 : 50,
                 width: screenWidth,
                 child: CustomWidgets().Tittle(
-                  text: "Productos",
+                  text: "Empleados",
                   color: colores.colorPrincipal,
                 ),
               ),
@@ -330,6 +311,24 @@ Widget build(BuildContext context) {
                   },
                 ),
               ),
+               // Confetti Widget
+         Positioned(
+      top: -70, // Eleva el confeti más arriba de la pantalla
+      left: 0,
+      right: 0,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConfettiWidget(
+          confettiController: _confettiController,
+          blastDirection: -pi / 2, // Hacia arriba
+          emissionFrequency: 0.05, // Frecuencia de partículas
+          numberOfParticles: 30, // Cantidad de partículas
+          gravity: 0.05, // Menos gravedad para que suban más
+          maxBlastForce: 30, // Aumenta la fuerza inicial del confeti
+          minBlastForce: 20, // Evita que caigan rápido
+        ),
+      ),
+    ),
               SizedBox(height: 10),
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
@@ -339,7 +338,7 @@ Widget build(BuildContext context) {
                   text: 'Continuar',
                   onPressed: () {
 
-                    _omitir();
+                    _savePrice();
                   },
                 ),
               ),

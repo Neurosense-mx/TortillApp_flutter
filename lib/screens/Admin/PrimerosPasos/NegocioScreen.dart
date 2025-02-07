@@ -30,9 +30,7 @@ class _PP_Negocio_ScreenState extends State<PP_Negocio_Screen>
   @override
   void initState() {
     super.initState();
-  setState(() {
-    _nombreNegocio = "{Nombre}";
-  });
+ 
     // Inicializar el AnimationController
     _animationController = AnimationController(
       vsync: this,
@@ -40,7 +38,7 @@ class _PP_Negocio_ScreenState extends State<PP_Negocio_Screen>
     );
 
     // Definir la animación con un Tween
-    _progressAnimation = Tween(begin: 0.3, end: 0.6).animate(
+    _progressAnimation = Tween(begin: 0.14, end: 0.28).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeOutCubic, // Usa una curva más suave
@@ -49,6 +47,17 @@ class _PP_Negocio_ScreenState extends State<PP_Negocio_Screen>
 
     // Agregar un listener al controlador de texto
     _nombreNegocioController.addListener(_updateProgress);
+
+   // Espera 2 segundos antes de mostrar el diálogo
+  // Espera 2 segundos antes de mostrar el diálogo
+  Future.delayed(Duration(seconds: 1), () {
+    if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
+      _showCupertinoDialog(
+        'Configuración de negocio', 
+        'Por favor registra el nombre de tu negocio para continuar.'
+      );
+    }
+  });
   }
 
   @override
@@ -71,7 +80,7 @@ class _PP_Negocio_ScreenState extends State<PP_Negocio_Screen>
     if (_nombreNegocioController.text.isNotEmpty) {
       
       // Iniciar la animación hacia el 25%
-      _animationController.forward();
+     // _animationController.forward();
     } else {
       // Reiniciar la animación al valor inicial
       _animationController.reverse();
@@ -106,7 +115,7 @@ void _showCupertinoDialog(String title, String message) {
   );
 }
 
-void _saveName() {
+Future<void> _saveName() async {
   //Verificar que no este vacio
   if (_nombreNegocioController.text.isEmpty) {
     _showCupertinoDialog('Error', 'Por favor, ingresa el nombre de tu negocio.');
@@ -115,6 +124,7 @@ void _saveName() {
   
   //Guardar el nombre en el modelo
   pp_model.setNombreNegocio(_nombreNegocioController.text);
+   await _animationController.forward();
   Navigator.push(
                   context,
                   PageRouteBuilder(
