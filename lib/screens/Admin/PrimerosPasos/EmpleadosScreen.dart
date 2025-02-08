@@ -181,6 +181,9 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
   }
 
   Future<void> _continue() async {
+    //pasar la lsita de empleados a models
+    widget.pp_model.setEmpleados(empleados);
+    //Enviar todo al server
     _showConfetti();
     await _animationController.forward();
     // Mostrar confeti

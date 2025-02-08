@@ -1,41 +1,52 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class PDFGenerator {
-  // Método para generar el PDF y guardarlo en la carpeta de Descargas
-  Future<String> generatePDF() async {
+  // Método para generar el PDF con datos del empleado
+  Future<String> generatePDF({
+    required String downloadPath,
+    required String nombre,
+    required String email,
+    required String password,
+    required String puesto,
+  }) async {
     final pdf = pw.Document(); // Crea un nuevo documento PDF
 
-    // Agrega una página con un texto simple
+    // Formatear la fecha y hora actual
+    String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    
+    // Nombre del archivo: usuario_fecha_hora.pdf
+    String fileName = "${nombre}_$timestamp.pdf";
+    String filePath = "$downloadPath/$fileName";
+
+    // Agrega una página con la información del empleado
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
           return pw.Center(
-            child: pw.Text(
-              '¡Hola, este es un PDF de ejemplo!',
-              style: pw.TextStyle(fontSize: 40, fontWeight: pw.FontWeight.bold),
+            child: pw.Column(
+              mainAxisAlignment: pw.MainAxisAlignment.center,
+              children: [
+                pw.Text('Datos del Empleado' ),
+                pw.SizedBox(height: 20),
+                pw.Text(' Nombre: $nombre'),
+                pw.Text(' Email: $email'),
+                pw.Text(' Contraseña: $password'),
+                pw.Text('Puesto: $puesto'),
+              ],
             ),
-          ); // El contenido de la página
+          );
         },
       ),
     );
 
-    // Obtén la carpeta de descargas en el dispositivo
-    final directory = await getExternalStorageDirectory();
-    final downloadsDir = Directory('${directory?.parent.path}/Download');
-    
-    // Verifica si la carpeta de "Descargas" existe, si no la crea
-    if (!await downloadsDir.exists()) {
-      await downloadsDir.create(recursive: true);
-    }
+    final outputFile = File(filePath);
 
-    final outputFile = File("${downloadsDir.path}/ejemplo.pdf");
-
-    // Guarda el PDF en la carpeta de Descargas
+    // Guarda el PDF en la ruta especificada
     await outputFile.writeAsBytes(await pdf.save());
 
-    return outputFile.path; // Retorna la ruta donde se guardó el PDF
+    return filePath; // Retorna la ruta donde se guardó el PDF
   }
 }

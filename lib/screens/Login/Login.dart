@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tortillapp/config/Notification.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/main.dart';
 import 'package:tortillapp/models/Login/LoginModel.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
@@ -18,6 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
+  
   Future<void> _login() async {
     //validar que los campos no esten vacios
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -124,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-
+    
     return Scaffold(
       backgroundColor: colores.colorFondo,
       resizeToAvoidBottomInset:
@@ -190,7 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomWidgets().ButtonPrimary(
                     text: 'Iniciar sesión',
                     onPressed: () async {
-                      await _login();
+                     await _login();
+                    
                     },
                   ),
                   SizedBox(height: 20),

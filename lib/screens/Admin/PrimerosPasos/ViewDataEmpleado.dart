@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
+
 import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:share/share.dart';
+import 'package:tortillapp/config/Notification.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/pdf/Pdf_Genertor.dart';
 import 'package:tortillapp/widgets/widgets.dart';
@@ -27,29 +33,99 @@ class _PP_Detalle_EmpleadoState extends State<PP_Detalle_Empleado> {
   final PaletaDeColores colores = PaletaDeColores();
 
   PDFGenerator pdfGenerator = PDFGenerator();
-
-void GenerarPDF() async {
-    String path = await pdfGenerator.generatePDF();
-    print("PDF generado en: $path");
-    
-  }
-
-void CompartirPDF() async {
-  String path = await pdfGenerator.generatePDF();
+    NotificationService notificationService = NotificationService();
   
-  await FlutterShare.shareFile(
-    title: 'Mira el PDF generado',
-    filePath: path,
-    fileType: 'application/pdf',
+Future<void> _mostrarNotificacion(String titulo, String mensaje) async {
+  // Inicializar el servicio de notificaciones
+  await notificationService.init();
+
+  // Llamar a la función para mostrar la notificación
+  await notificationService.mostrarNotificacion(
+    idCanal: 0, // ID de la notificación
+    id: 'general_channel', // ID del canal
+    titulo: titulo, // Título
+    mensaje: mensaje, // Mensaje
   );
 }
 
-  Future<void> verPDF() async {
-    // Acción para ver el PDF
-    print("Ver PDF generado");
-    String path = await pdfGenerator.generatePDF();
-    OpenFile.open(path);
+
+//Metodo para obtener la ruta de la carpeta de descargas
+  Future<String> getDownloadsDirectory() async {
+    Directory? downloadsDir = Directory('/storage/emulated/0/Download');
+    if (await downloadsDir.exists()) {
+      return downloadsDir.path;
+    } else {
+      throw Exception("La carpeta de Descargas no existe.");
+    }
   }
+
+  Future<void> _download_PDF() async {
+    // verificar si ya se han concedido los permisos
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      //print
+      print("No se han concedido los permisos");
+      // si no se han concedido los permisos, solicitarlos
+      await Permission.storage.request();
+    }
+    String downloadsPath = await getDownloadsDirectory();
+    print("📂 Ruta de descargas: $downloadsPath");
+    try {
+      String pdfPath = await pdfGenerator.generatePDF(
+        downloadPath: downloadsPath,
+        nombre: widget.nombre,
+        email: widget.email,
+        password: widget.password,
+        puesto: widget.puesto,
+      );
+
+      print("✅ PDF guardado en: $pdfPath");
+     //mostrar notificacion
+     _mostrarNotificacion("PDF Descargado", "El PDF se ha guardado en la carpeta de Descargas");
+    } catch (e) {
+      print("❌ Error al guardar el PDF: $e");
+    }
+  }
+
+  Future<void> _CompartirPDF() async {
+// verificar si ya se han concedido los permisos
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      //print
+      print("No se han concedido los permisos");
+      // si no se han concedido los permisos, solicitarlos
+      await Permission.storage.request();
+    }
+    String downloadsPath = await getDownloadsDirectory();
+    print("📂 Ruta de descargas: $downloadsPath");
+    try {
+      String pdfPath = await pdfGenerator.generatePDF(
+        downloadPath: downloadsPath,
+        nombre: widget.nombre,
+        email: widget.email,
+        password: widget.password,
+        puesto: widget.puesto,
+      );
+
+      print("✅ PDF guardado en: $pdfPath");
+      Share.shareFiles([pdfPath]);
+    } catch (e) {
+      print("❌ Error al guardar el PDF: $e");
+    }
+  }
+
+  void _OpenPDF() async {
+    String downloadsPath = await getDownloadsDirectory();
+    String pdfPath = await pdfGenerator.generatePDF(
+      downloadPath: downloadsPath,
+      nombre: widget.nombre,
+      email: widget.email,
+      password: widget.password,
+      puesto: widget.puesto,
+    );
+    OpenFile.open(pdfPath);
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -123,7 +199,7 @@ void CompartirPDF() async {
                           ),
                         ),
                         SizedBox(height: 20),
- Row(
+                        Row(
                           children: [
                             Icon(Icons.person, color: colores.colorPrincipal),
                             SizedBox(width: 10),
@@ -206,8 +282,8 @@ void CompartirPDF() async {
                   children: [
                     // Botón de Descargar
                     ElevatedButton.icon(
-                      onPressed: () {
-                        GenerarPDF();
+                      onPressed: () async {
+                        await _download_PDF();
                       },
                       icon: Icon(Icons.download, color: Colors.white),
                       label: Text(
@@ -216,7 +292,8 @@ void CompartirPDF() async {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colores.colorPrincipal,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -228,7 +305,7 @@ void CompartirPDF() async {
                       onPressed: () {
                         // Acción para compartir
                         print("Compartir información del empleado");
-                        CompartirPDF();
+                        _CompartirPDF();
                       },
                       icon: Icon(Icons.share, color: Colors.white),
                       label: Text(
@@ -237,7 +314,8 @@ void CompartirPDF() async {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colores.colorPrincipal,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -246,22 +324,22 @@ void CompartirPDF() async {
                   ],
                 ),
                 ElevatedButton.icon(
-                      onPressed: () {
-                        verPDF();
-                      },
-                      icon: Icon(Icons.shower, color: Colors.white),
-                      label: Text(
-                        "Ver PDF",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colores.colorPrincipal,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                  onPressed: () {
+                    _OpenPDF();
+                  },
+                  icon: Icon(Icons.remove_red_eye, color: Colors.white),
+                  label: Text(
+                    "Ver PDF",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colores.colorPrincipal,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                  ),
+                ),
               ],
             ),
           ),

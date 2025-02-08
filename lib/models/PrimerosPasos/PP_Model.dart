@@ -9,6 +9,9 @@ class PP_Model {
   double precio_tienda = 0.0; // Precio en la tienda
   List<Map<String, dynamic>> productos = []; // Lista de productos
   List<Map<String, dynamic>> gastos = []; // Lista de productos
+  //lista de empleados
+  List<Map<String, dynamic>> empleados = [];
+
   // Set para nombre
   void setNombre(String nombre) {
     this.nombre = nombre;
@@ -62,6 +65,14 @@ class PP_Model {
   // Método para establecer la lista completa de gastos
   void setGastos(List<Map<String, dynamic>> gastos) {
     this.gastos = gastos;
+  }
+  // Método para agregar un empleado a la lista
+  void agregarEmpleado(Map<String, dynamic> empleado) {
+    empleados.add(empleado);
+  }
+  // Método para establecer la lista completa de empleados
+  void setEmpleados(List<Map<String, dynamic>> empleados) {
+    this.empleados = empleados;
   }
 
 
