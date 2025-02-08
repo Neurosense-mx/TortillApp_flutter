@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Empleados.dart'; // Importar la pantalla de agregar empleados
+import 'package:tortillapp/screens/Admin/PrimerosPasos/ViewDataEmpleado.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:math';
 
 class PP_Empleados_Screen extends StatefulWidget {
-
-   final PP_Model pp_model;
+  final PP_Model pp_model;
   const PP_Empleados_Screen({super.key, required this.pp_model});
 
   @override
@@ -28,15 +28,12 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
   bool _isKeyboardVisible = false;
   late ConfettiController _confettiController;
   late String _dominioname;
-  List<Map<String, dynamic>> empleados = [
-   
-  ];
-
+  List<Map<String, dynamic>> empleados = [];
 
   @override
   void initState() {
     super.initState();
-     _dominioname = widget.pp_model.getDominio();
+    _dominioname = widget.pp_model.getDominio();
     _confettiController = ConfettiController(duration: Duration(seconds: 2));
 
     // Inicializar el AnimationController
@@ -86,7 +83,8 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
 
   void _updateProgress() {
     // Verificar si el campo de email está lleno y el campo de publico
-    if (_tiendaController.text.isNotEmpty && _publicoController.text.isNotEmpty) {
+    if (_tiendaController.text.isNotEmpty &&
+        _publicoController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
       // _animationController.forward();
     } else {
@@ -154,37 +152,69 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
     );
   }
 
-void _addEmpleado() {
-  Navigator.push(
-    context,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return PP_AddEmpleados_Screen(
-          onSave: (nuevoEmpleado) {
-            setState(() {
-              empleados.add(nuevoEmpleado);
-            });
-          },
-          dominoname: _dominioname, // Pasa el valor aquí
-        );
-      },
-      transitionDuration: Duration(milliseconds: 500),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(-1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-        return SlideTransition(position: offsetAnimation, child: child);
-      },
-    ),
-  );
-}
+  void _addEmpleado() {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return PP_AddEmpleados_Screen(
+            onSave: (nuevoEmpleado) {
+              setState(() {
+                empleados.add(nuevoEmpleado);
+              });
+            },
+            dominoname: _dominioname, // Pasa el valor aquí
+          );
+        },
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(-1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+  }
 
-  Future<void> _savePrice() async {
+  Future<void> _continue() async {
+    _showConfetti();
     await _animationController.forward();
     // Mostrar confeti
-    _showConfetti();
+    
+  }
+
+  void _viewEmployeeDetails(int index) {
+    // Obtener los datos del empleado
+    Map<String, dynamic> empleado = empleados[index];
+    // Navegar a la pantalla de detalles del empleado PP_Detalle_Empleado
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return PP_Detalle_Empleado(
+            nombre: empleado["name"],
+            email: empleado["email"],
+            password: empleado["password"],
+            puesto: empleado["puesto"],
+          );
+        },
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(-1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
   }
 
   @override
@@ -218,13 +248,14 @@ void _addEmpleado() {
                               child: CircularProgressIndicator(
                                 value: _progressAnimation.value,
                                 backgroundColor: Color(0xFFF1F1F3),
-                                valueColor: AlwaysStoppedAnimation<Color>(colores.colorPrincipal),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    colores.colorPrincipal),
                                 strokeWidth: 5.0,
                                 strokeCap: StrokeCap.round,
                               ),
                             ),
                             SvgPicture.asset(
-                              'lib/assets/icons/product_icon.svg',
+                              'lib/assets/icons/user_icon.svg',
                               width: 40,
                               height: 40,
                             ),
@@ -244,7 +275,8 @@ void _addEmpleado() {
                     ),
                     SizedBox(height: 10),
                     Align(
-                      alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+                      alignment: Alignment
+                          .centerLeft, // Alinea el texto a la izquierda
                       child: CustomWidgets().Subtittle(
                         text: 'Todos los empleados (${empleados.length})',
                         color: colores.colorPrincipal,
@@ -264,26 +296,48 @@ void _addEmpleado() {
                                     decoration: BoxDecoration(
                                       color: Color(0xFFEBF1FD),
                                       borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(color: Color(0xFFDDE5FD)),
+                                      border:
+                                          Border.all(color: Color(0xFFDDE5FD)),
                                     ),
                                     margin: EdgeInsets.symmetric(vertical: 5),
-                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
                                     child: ListTile(
                                       contentPadding: EdgeInsets.zero,
                                       leading: SvgPicture.asset(
-                                        "lib/assets/icons/etiqueta_icon.svg",
+                                        "lib/assets/icons/user2_icon.svg",
                                         width: 24,
                                         height: 24,
-                                        colorFilter: ColorFilter.mode(Color(0xFF1B374D), BlendMode.srcIn),
+                                        colorFilter: ColorFilter.mode(
+                                            Color(0xFF1B374D), BlendMode.srcIn),
                                       ),
                                       title: Text(empleados[index]["name"]),
-                                      subtitle: Text(empleados[index]["email"].toString()),
-                                      trailing: IconButton(
-                                        icon: Icon(Icons.delete, color: Color(0xFFABB9D4)),
-                                        onPressed: () {
-                                          // Mostrar el diálogo de confirmación
-                                          _showDeleteConfirmationDialog(index);
-                                        },
+                                      subtitle: Text(
+                                          empleados[index]["puesto"].toString()),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize
+                                            .min, // Asegura que el Row no ocupe más espacio del necesario
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.remove_red_eye,
+                                                color: Color(
+                                                    0xFFABB9D4)), // Icono de ojo
+                                            onPressed: () {
+                                              // Acción para ver detalles del empleado
+                                              _viewEmployeeDetails(index);
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.delete,
+                                                color: Color(
+                                                    0xFFABB9D4)), // Icono de papelera
+                                            onPressed: () {
+                                              // Mostrar el diálogo de confirmación
+                                              _showDeleteConfirmationDialog(
+                                                  index);
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );
@@ -292,7 +346,8 @@ void _addEmpleado() {
                             : Center(
                                 child: Text(
                                   "No hay empleados agregados",
-                                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 16),
                                 ),
                               ),
                       ),
@@ -318,18 +373,13 @@ void _addEmpleado() {
                       child: CustomWidgets().ButtonPrimary(
                         text: 'Continuar',
                         onPressed: () {
-                          _savePrice();
+                          _continue();
                         },
                       ),
                     ),
                     SizedBox(height: 30),
-                  ],
-                ),
-              ),
-            ),
-            // Confetti Widget
-            Positioned(
-              top: -70, // Eleva el confeti más arriba de la pantalla
+                     Positioned(
+              top: -100, // Eleva el confeti más arriba de la pantalla
               left: 0,
               right: 0,
               child: Align(
@@ -337,7 +387,7 @@ void _addEmpleado() {
                 child: ConfettiWidget(
                   confettiController: _confettiController,
                   blastDirection: -pi / 2, // Hacia arriba
-                  emissionFrequency: 0.05, // Frecuencia de partículas
+                  emissionFrequency: 0.06, // Frecuencia de partículas
                   numberOfParticles: 30, // Cantidad de partículas
                   gravity: 0.05, // Menos gravedad para que suban más
                   maxBlastForce: 30, // Aumenta la fuerza inicial del confeti
@@ -345,6 +395,12 @@ void _addEmpleado() {
                 ),
               ),
             ),
+                  ],
+                ),
+              ),
+            ),
+            // Confetti Widget
+           
           ],
         ),
       ),

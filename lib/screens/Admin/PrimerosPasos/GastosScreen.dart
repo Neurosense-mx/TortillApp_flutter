@@ -27,12 +27,7 @@ class _PP_Gastos_ScreenState extends State<PP_Gastos_Screen>
   bool _isKeyboardVisible = false;
 
   List<Map<String, dynamic>> gastos = [
-    {
-      "id": 1,
-      "nombre": "Aromatizante",
-      "tipo_gasto": 1, // 1 fijo, 2 variable
-      "descripcion": "Aromatizante para el negocio",
-    },
+   
   ];
 
 

@@ -4,12 +4,13 @@ import 'package:tortillapp/config/paletteColor.dart';
 class CustomWidgets extends StatelessWidget {
   final PaletaDeColores colores = PaletaDeColores();
   bool _isPasswordVisible = false;
+
   // Método para TextField con icono opcional
   Widget TextfieldPrimary({
     required TextEditingController controller,
     required String label,
-    bool hasIcon = false, // Parámetro para decidir si tiene ícono
-    IconData? icon, // Parámetro para el icono, si se pasa
+    bool hasIcon = false,
+    IconData? icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
@@ -27,64 +28,63 @@ class CustomWidgets extends StatelessWidget {
           borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
           borderRadius: BorderRadius.circular(14),
         ),
-        contentPadding: EdgeInsets.symmetric(
-            vertical: 9, horizontal: 12), // Ajusta el alto aquí
+        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
         prefixIcon: hasIcon
             ? Icon(
-                icon, // Si tiene ícono, lo pasa
+                icon,
                 color: colores.colorInputsIcon,
               )
-            : null, // Si no tiene ícono, no se pasa nada
+            : null,
       ),
       keyboardType: keyboardType,
-      cursorColor: colores.colorPrincipal, // Cambia el color del puntero aquí
+      cursorColor: colores.colorPrincipal,
     );
   }
-  
-Widget TextfieldNumber({
-  required TextEditingController controller,
-  required String label,
-  bool hasIcon = false,
-  IconData? icon,
-}) {
-  return TextField(
-    controller: controller,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: colores.colorNegro),
-      filled: true,
-      fillColor: colores.colorInputs,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
-      prefixIcon: hasIcon
-          ? Icon(
-              icon,
-              color: colores.colorInputsIcon,
-            )
-          : null,
-    ),
-    keyboardType: TextInputType.number,
-    cursorColor: colores.colorPrincipal,
-  );
-}
 
-// Método para TextField de tipo Password (TextfieldPass)
-  Widget TextfieldPass({
+  Widget TextfieldNumber({
     required TextEditingController controller,
     required String label,
-    bool hasIcon = false, // Parámetro para decidir si tiene ícono
-    IconData? icon, // Parámetro para el icono, si se pasa
+    bool hasIcon = false,
+    IconData? icon,
   }) {
     return TextField(
       controller: controller,
-      obscureText: true, // Hacemos que los caracteres se oculten
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: colores.colorNegro),
+        filled: true,
+        fillColor: colores.colorInputs,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+        prefixIcon: hasIcon
+            ? Icon(
+                icon,
+                color: colores.colorInputsIcon,
+              )
+            : null,
+      ),
+      keyboardType: TextInputType.number,
+      cursorColor: colores.colorPrincipal,
+    );
+  }
+
+  // Método para TextField de tipo Password (TextfieldPass)
+  Widget TextfieldPass({
+    required TextEditingController controller,
+    required String label,
+    bool hasIcon = false,
+    IconData? icon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: true,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: colores.colorNegro),
@@ -98,92 +98,91 @@ Widget TextfieldNumber({
           borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
           borderRadius: BorderRadius.circular(15),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12), // Ajusta el alto aquí
+        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
         prefixIcon: hasIcon
             ? Icon(
-                icon, // Si tiene ícono, lo pasa
+                icon,
                 color: colores.colorInputsIcon,
               )
-            : null, // Si no tiene ícono, no se pasa nada
+            : null,
       ),
-      cursorColor: colores.colorPrincipal, // Cambia el color del puntero aquí
+      cursorColor: colores.colorPrincipal,
     );
   }
 
   // Método para ElevatedButton
-Widget ButtonPrimary({
-  required String text,
-  required VoidCallback onPressed,
-  Icon? icon, // Parámetro opcional para el icono
-}) {
-  return ElevatedButton(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      foregroundColor: colores.colorFondo,
-      backgroundColor: colores.colorPrincipal, // Color del texto
-      minimumSize: Size(double.infinity, 48), // Tamaño mínimo del botón
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15), // Radio de borde
-      ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (icon != null) ...[
-          icon!, // Si el icono está presente, se muestra
-          SizedBox(width: 8), // Espacio entre el icono y el texto
-        ],
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16, // Ajusta el tamaño del texto si es necesario
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
- // Método para ElevatedButton con borde de 1px de color.colorPrincipal
-Widget ButtonSecondary({
-  required String text,
-  required VoidCallback onPressed,
-  Icon? icon, // Parámetro opcional para el icono
-}) {
-  return ElevatedButton(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      foregroundColor: colores.colorPrincipal,
-      backgroundColor: colores.colorFondo, // Color de fondo
-      minimumSize: Size(double.infinity, 48),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15), // Radio de borde
-        side: BorderSide( // Define el borde de 1px con colorPrincipal
-          color: colores.colorPrincipal,
-          width: 1,
+  Widget ButtonPrimary({
+    required String text,
+    required VoidCallback onPressed,
+    Icon? icon,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: colores.colorFondo,
+        backgroundColor: colores.colorPrincipal,
+        minimumSize: Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (icon != null) ...[
-          icon!, // Si el icono está presente, se muestra
-          SizedBox(width: 8), // Espacio entre el icono y el texto
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            icon!,
+            SizedBox(width: 8),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
         ],
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16, // Ajusta el tamaño del texto si es necesario
+      ),
+    );
+  }
+
+  // Método para ElevatedButton con borde de 1px de color.colorPrincipal
+  Widget ButtonSecondary({
+    required String text,
+    required VoidCallback onPressed,
+    Icon? icon,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: colores.colorPrincipal,
+        backgroundColor: colores.colorFondo,
+        minimumSize: Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: BorderSide(
+            color: colores.colorPrincipal,
+            width: 1,
           ),
         ),
-      ],
-    ),
-  );
-}
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            icon!,
+            SizedBox(width: 8),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-
-// Tittle widget
+  // Tittle widget
   Widget Tittle({required String text, required Color color}) {
     return Text(
       text,
@@ -207,47 +206,101 @@ Widget ButtonSecondary({
   }
 
   Widget DropdownPrimary({
-  required int value,
-  required List<DropdownMenuItem<int>> items,
-  required Function(int?) onChanged,
-  required String label,
-  bool hasIcon = false,
-  IconData? icon,
-}) {
-  return DropdownButtonFormField<int>(
-    value: value,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: colores.colorNegro),
-      filled: true,
-      fillColor: colores.colorInputs,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
-        borderRadius: BorderRadius.circular(14),
+    required int value,
+    required List<DropdownMenuItem<int>> items,
+    required Function(int?) onChanged,
+    required String label,
+    bool hasIcon = false,
+    IconData? icon,
+  }) {
+    return DropdownButtonFormField<int>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: colores.colorNegro),
+        filled: true,
+        fillColor: colores.colorInputs,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+        prefixIcon: hasIcon
+            ? Icon(
+                icon,
+                color: colores.colorInputsIcon,
+              )
+            : null,
       ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
-        borderRadius: BorderRadius.circular(14),
+      items: items,
+      onChanged: onChanged,
+      dropdownColor: colores.colorInputs,
+      icon: Icon(Icons.arrow_drop_down, color: colores.colorPrincipal),
+      style: TextStyle(
+        color: colores.colorNegro,
+        fontSize: 16,
       ),
-      contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
-      prefixIcon: hasIcon
-          ? Icon(
-              icon,
-              color: colores.colorInputsIcon,
-            )
-          : null,
-    ),
-    items: items,
-    onChanged: onChanged,
-    dropdownColor: colores.colorInputs, // Color del menú desplegable
-    icon: Icon(Icons.arrow_drop_down, color: colores.colorPrincipal), // Ícono del dropdown
-    style: TextStyle(
-      color: colores.colorNegro, // Color del texto seleccionado
-      fontSize: 16,
-    ),
-  );
-}
- 
+    );
+  }
+
+  // Widget para el dropdown de puestos
+  Widget PuestosDropdown({
+    required int value,
+    required List<Map<String, dynamic>> puestos,
+    required Function(int?) onChanged,
+    required String label,
+    bool hasIcon = false,
+    IconData? icon,
+  }) {
+    return DropdownButtonFormField<int>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: colores.colorNegro),
+        filled: true,
+        fillColor: colores.colorInputs,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+        prefixIcon: hasIcon
+            ? Icon(
+                icon,
+                color: colores.colorInputsIcon,
+              )
+            : null,
+      ),
+      items: puestos.map((puesto) {
+        return DropdownMenuItem<int>(
+          value: puesto['id'],
+          child: Text(
+            puesto['nombre'],
+            style: TextStyle(
+              color: colores.colorNegro,
+              fontSize: 16,
+            ),
+          ),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      dropdownColor: colores.colorInputs,
+      icon: Icon(Icons.arrow_drop_down, color: colores.colorPrincipal),
+      style: TextStyle(
+        color: colores.colorNegro,
+        fontSize: 16,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
