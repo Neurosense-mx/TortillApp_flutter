@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
+import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Empleados.dart'; // Importar la pantalla de agregar empleados
 import 'package:tortillapp/screens/Admin/PrimerosPasos/ViewDataEmpleado.dart';
 import 'package:tortillapp/widgets/widgets.dart';
@@ -183,11 +184,45 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
   Future<void> _continue() async {
     //pasar la lsita de empleados a models
     widget.pp_model.setEmpleados(empleados);
-    //Enviar todo al server
-    _showConfetti();
-    await _animationController.forward();
-    // Mostrar confeti
+    //construir el json
+    widget.pp_model.build_json();
+    //enviar datos al server
     
+    var response = await widget.pp_model.enviarData();
+    print(response['statusCode'].toString());
+    if(response['statusCode'] == 200){
+     _showConfetti();
+    await _animationController.forward();
+    print("Se registró correctamente");
+    
+    //Delay para mostrar el confeti
+    await Future.delayed(Duration(seconds: 4));
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return Home_Admin();
+        },
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+    
+
+  }
+    
+    //Enviar todo al server
+   // _showConfetti();
+    //await _animationController.forward();
+    // Mostrar confeti
   }
 
   void _viewEmployeeDetails(int index) {
@@ -315,8 +350,8 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
                                             Color(0xFF1B374D), BlendMode.srcIn),
                                       ),
                                       title: Text(empleados[index]["name"]),
-                                      subtitle: Text(
-                                          empleados[index]["puesto"].toString()),
+                                      subtitle: Text(empleados[index]["puesto"]
+                                          .toString()),
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize
                                             .min, // Asegura que el Row no ocupe más espacio del necesario
@@ -381,29 +416,29 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
                       ),
                     ),
                     SizedBox(height: 30),
-                     Positioned(
-              top: -100, // Eleva el confeti más arriba de la pantalla
-              left: 0,
-              right: 0,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConfettiWidget(
-                  confettiController: _confettiController,
-                  blastDirection: -pi / 2, // Hacia arriba
-                  emissionFrequency: 0.06, // Frecuencia de partículas
-                  numberOfParticles: 30, // Cantidad de partículas
-                  gravity: 0.05, // Menos gravedad para que suban más
-                  maxBlastForce: 30, // Aumenta la fuerza inicial del confeti
-                  minBlastForce: 20, // Evita que caigan rápido
-                ),
-              ),
-            ),
+                    Positioned(
+                      top: -100, // Eleva el confeti más arriba de la pantalla
+                      left: 0,
+                      right: 0,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: ConfettiWidget(
+                          confettiController: _confettiController,
+                          blastDirection: -pi / 2, // Hacia arriba
+                          emissionFrequency: 0.06, // Frecuencia de partículas
+                          numberOfParticles: 30, // Cantidad de partículas
+                          gravity: 0.1, // Menos gravedad para que suban más
+                          maxBlastForce:
+                              30, // Aumenta la fuerza inicial del confeti
+                          minBlastForce: 20, // Evita que caigan rápido
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             // Confetti Widget
-           
           ],
         ),
       ),

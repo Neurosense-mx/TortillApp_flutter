@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:tortillapp/config/backend.dart';
+import 'package:http/http.dart' as http;
+
 class PP_Model {
   String nombre = ""; // Nombre del administrador
   String nombreNegocio = ""; // Nombre del negocio
@@ -11,6 +16,8 @@ class PP_Model {
   List<Map<String, dynamic>> gastos = []; // Lista de productos
   //lista de empleados
   List<Map<String, dynamic>> empleados = [];
+
+  List<Map<String, dynamic>> PP_MODEL_JSON = [];
 
   // Set para nombre
   void setNombre(String nombre) {
@@ -80,5 +87,57 @@ class PP_Model {
   String getDominio() {
     return nombreDominio;
   }
+
+  void  build_json(){
+    PP_MODEL_JSON = [
+      {
+        "nombre": nombre,
+        "nombreNegocio": nombreNegocio,
+        "nombreDominio": nombreDominio,
+        "nombreSucursal": nombreSucursal,
+        "latitud": latitud,
+        "longitud": longitud,
+        "precio_publico": precio_publico,
+        "precio_tienda": precio_tienda,
+        "productos": productos,
+        "gastos": gastos,
+        "empleados": empleados
+      }
+    ];
+    print("Se construyó el JSON");
+    print(PP_MODEL_JSON);
+  }
+
+  //Enviar json al server
+  Future<Map<String, dynamic>> enviarData() async {
+    final url = Uri.parse(ApiConfig.backendUrl + '/admin/firststeps');
+    try {
+      // Realizamos la solicitud HTTP POST
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},   
+        body: json.encode(PP_MODEL_JSON)  
+      );
+
+      if (response.statusCode == 200) {
+       
+        print("Respone: ${response.body}");
+          return {
+            'statusCode': 200, // OK
+            'message': 'El correo electrónico está disponible.'
+          };
+      } else {
+        // Si la respuesta no es exitosa
+        return {
+          'statusCode': response.statusCode,
+          'message': 'Error en la solicitud: ${response.statusCode}'
+        };
+      }
+    } catch (e) {
+      // Si ocurre un error en la conexión o la solicitud
+      return {'statusCode': 500, 'message': 'Error en la conexión: $e'};
+    }
+  }
+
 
 }
