@@ -205,6 +205,48 @@ Widget ButtonSecondary({
       ),
     );
   }
+
+  Widget DropdownPrimary({
+  required int value,
+  required List<DropdownMenuItem<int>> items,
+  required Function(int?) onChanged,
+  required String label,
+  bool hasIcon = false,
+  IconData? icon,
+}) {
+  return DropdownButtonFormField<int>(
+    value: value,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: colores.colorNegro),
+      filled: true,
+      fillColor: colores.colorInputs,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colores.colorContornoBlanco, width: 0),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colores.colorPrincipal, width: 1),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+      prefixIcon: hasIcon
+          ? Icon(
+              icon,
+              color: colores.colorInputsIcon,
+            )
+          : null,
+    ),
+    items: items,
+    onChanged: onChanged,
+    dropdownColor: colores.colorInputs, // Color del menú desplegable
+    icon: Icon(Icons.arrow_drop_down, color: colores.colorPrincipal), // Ícono del dropdown
+    style: TextStyle(
+      color: colores.colorNegro, // Color del texto seleccionado
+      fontSize: 16,
+    ),
+  );
+}
  
   @override
   Widget build(BuildContext context) {

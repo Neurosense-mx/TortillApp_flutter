@@ -1,35 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
-import 'package:tortillapp/models/Register/RegisterModel.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/ProductosScreen.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
-import 'package:tortillapp/screens/Register/RegisterPassword.dart';
 import 'package:tortillapp/widgets/widgets.dart';
-import 'package:flutter/cupertino.dart';
 
-class PP_AddProductos_Screen extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSave; // Callback para guardar el producto
+class PP_AddGastos_Screen extends StatefulWidget {
+  final Function(Map<String, dynamic>) onSave; // Callback para guardar el gasto
 
-  PP_AddProductos_Screen({required this.onSave}); // Recibir el callback
+  PP_AddGastos_Screen({required this.onSave}); // Recibir el callback
 
   @override
-  _PP_AddProductos_ScreenState createState() => _PP_AddProductos_ScreenState();
+  _PP_AddGastos_ScreenState createState() => _PP_AddGastos_ScreenState();
 }
 
-class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
+class _PP_AddGastos_ScreenState extends State<PP_AddGastos_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
-  final TextEditingController _tiendaController = TextEditingController();
-  final TextEditingController _nombreProducto = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
-
-  // Instanciar el modelo
-  final PP_Model pp_model = PP_Model();
+  int _tipoGasto = 1; // 1: Fijo, 2: Variable
 
   @override
   void initState() {
@@ -50,25 +43,25 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
     );
 
     // Agregar un listener al controlador de texto
-    _tiendaController.addListener(_updateProgress);
-    _nombreProducto.addListener(_updateProgress);
+    _nombreController.addListener(_updateProgress);
+    _descripcionController.addListener(_updateProgress);
   }
 
   @override
   void dispose() {
     // Limpiar el listener y el AnimationController
-    _tiendaController.removeListener(_updateProgress);
-    _nombreProducto.removeListener(_updateProgress);
+    _nombreController.removeListener(_updateProgress);
+    _descripcionController.removeListener(_updateProgress);
 
-    _tiendaController.dispose();
-    _nombreProducto.dispose();
+    _nombreController.dispose();
+    _descripcionController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
   void _updateProgress() {
-    // Verificar si el campo de precio y nombre están llenos
-    if (_tiendaController.text.isNotEmpty && _nombreProducto.text.isNotEmpty) {
+    // Verificar si los campos están llenos
+    if (_nombreController.text.isNotEmpty && _descripcionController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
       _animationController.forward();
     } else {
@@ -105,26 +98,27 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
     );
   }
 
-  void _savePrice() {
+  void _saveGasto() {
     // Verificar que los campos no estén vacíos
-    if (_tiendaController.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa el precio.');
+    if (_nombreController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa el nombre del gasto.');
       return;
     }
-    if (_nombreProducto.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa el nombre del producto.');
+    if (_descripcionController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa la descripción del gasto.');
       return;
     }
 
-    // Crear un mapa con los datos del nuevo producto
-    Map<String, dynamic> nuevoProducto = {
+    // Crear un mapa con los datos del nuevo gasto
+    Map<String, dynamic> nuevoGasto = {
       "id": DateTime.now().millisecondsSinceEpoch, // Generar un ID único
-      "nombre": _nombreProducto.text,
-      "precio": double.parse(_tiendaController.text),
+      "nombre": _nombreController.text,
+      "tipo_gasto": _tipoGasto,
+      "descripcion": _descripcionController.text,
     };
 
-    // Llamar al callback con el nuevo producto
-    widget.onSave(nuevoProducto);
+    // Llamar al callback con el nuevo gasto
+    widget.onSave(nuevoGasto);
 
     // Regresar a la pantalla anterior
     Navigator.pop(context);
@@ -141,7 +135,7 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
-          'Agregar nuevo producto',
+          'Agregar nuevo gasto',
           style: TextStyle(
             color: colores.colorPrincipal, // Color del texto
             fontSize: 18, // Tamaño del texto
@@ -189,35 +183,51 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
                             Align(
                               alignment: Alignment.centerLeft,
                               child: CustomWidgets().Subtittle(
-                                text: 'Completa la información del nuevo producto',
+                                text: 'Completa la información del nuevo gasto',
                                 color: colores.colorPrincipal,
                               ),
                             ),
                             SizedBox(height: 30),
                             CustomWidgets().TextfieldPrimary(
-                              controller: _nombreProducto,
-                              label: 'Nombre ',
+                              controller: _nombreController,
+                              label: 'Nombre del gasto',
                               hasIcon: true,
-                              icon: Icons.add,
+                              icon: Icons.attach_money,
                             ),
                             SizedBox(height: 20),
-                            CustomWidgets().TextfieldNumber(
-                              controller: _tiendaController,
-                              label: 'Precio',
+                            CustomWidgets().TextfieldPrimary(
+                              controller: _descripcionController,
+                              label: 'Descripción',
                               hasIcon: true,
-                              icon: Icons.price_change,
+                              icon: Icons.description,
                             ),
                             SizedBox(height: 20),
+                            CustomWidgets().DropdownPrimary(
+  value: _tipoGasto,
+  items: [
+    DropdownMenuItem(value: 1, child: Text('Gasto fijo')),
+    DropdownMenuItem(value: 2, child: Text('Gasto variable')),
+  ],
+  onChanged: (value) {
+    setState(() {
+      _tipoGasto = value!;
+    });
+  },
+  label: 'Tipo de gasto',
+  hasIcon: true,
+  icon: Icons.category,
+),
+SizedBox(height: 20),
                             Spacer(),
                             AnimatedContainer(
                               duration: Duration(milliseconds: 300),
                               height: _isKeyboardVisible ? 30 : 50, // Reduce tamaño cuando teclado está abierto
                               width: double.infinity,
                               child: CustomWidgets().ButtonPrimary(
-                                text: 'Agregar producto',
+                                text: 'Agregar gasto',
                                 onPressed: () {
                                   // Acción del botón
-                                  _savePrice();
+                                  _saveGasto();
                                 },
                               ),
                             ),

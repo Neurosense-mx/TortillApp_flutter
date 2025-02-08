@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tortillapp/widgets/widgets.dart';
+import 'package:tortillapp/config/paletteColor.dart';
 
 class MapScreen extends StatefulWidget {
   final LatLng initialLocation; // Ubicación inicial
@@ -13,7 +14,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   LatLng? _selectedLocation; // Variable para la ubicación seleccionada
-
+final PaletaDeColores colores = PaletaDeColores();
   @override
   void initState() {
     super.initState();
@@ -36,39 +37,60 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Selecciona una ubicación")),
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _selectedLocation!, // Usa la ubicación actual como punto de inicio
-              zoom: 15,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        'Selecciona una ubicación',
+        style: TextStyle(
+          color: colores.colorPrincipal, // Color del texto
+          fontSize: 18, // Tamaño del texto
+          fontWeight: FontWeight.bold, // Negrita
+        ),
+      ),
+      backgroundColor: colores.colorFondo, // Color de fondo del AppBar
+      elevation: 0, // Elimina la sombra del AppBar
+      centerTitle: true, // Centra el título
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back,
+          color: colores.colorPrincipal, // Color del ícono de retroceso
+        ),
+        onPressed: () {
+          Navigator.pop(context); // Acción para volver atrás
+        },
+      ),
+    ),
+    body: Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: _selectedLocation!, // Usa la ubicación actual como punto de inicio
+            zoom: 15,
+          ),
+          onTap: _onMapTapped, // Captura la ubicación al tocar el mapa
+          markers: {
+            Marker(
+              markerId: MarkerId("selected"),
+              position: _selectedLocation!,
             ),
-            onTap: _onMapTapped, // Captura la ubicación al tocar el mapa
-            markers: {
-              Marker(
-                markerId: MarkerId("selected"),
-                position: _selectedLocation!,
-              ),
+          },
+        ),
+        Positioned(
+          bottom: 20,
+          left: 20,
+          right: 20,
+          child: CustomWidgets().ButtonPrimary(
+            text: 'Seleccionar ubicación',
+            onPressed: () {
+              // Acción del botón
+              _confirmSelection();
             },
           ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: CustomWidgets().ButtonPrimary(
-                                text: 'Seleccionar ubicación',
-                                onPressed: () {
-                                  // Acción del botón
-                                  _confirmSelection();
-                                },
-                              ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

@@ -10,6 +10,8 @@ import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 class PP_Precio_Screen extends StatefulWidget {
+   final PP_Model pp_model;
+  const PP_Precio_Screen({super.key, required this.pp_model});
   @override
   _PP_Precio_ScreenState createState() => _PP_Precio_ScreenState();
 }
@@ -23,9 +25,6 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
-
-  //Instanciar el modelo
-  final PP_Model pp_model = PP_Model();
 
   @override
   void initState() {
@@ -125,14 +124,14 @@ class _PP_Precio_ScreenState extends State<PP_Precio_Screen>
       return;
     }
     //Guardar el nombre en el modelo
-    pp_model.setPrecioPublico(double.parse(_publicoController.text));
-    pp_model.setPrecioTienda(double.parse(_tiendaController.text));
+    widget.pp_model.setPrecioPublico(double.parse(_publicoController.text));
+    widget.pp_model.setPrecioTienda(double.parse(_tiendaController.text));
      await _animationController.forward();
     Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return PP_Productos_Screen();
+          return PP_Productos_Screen(pp_model: widget.pp_model,);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0); // Deslizar desde la derecha

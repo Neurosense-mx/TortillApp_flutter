@@ -1,35 +1,29 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
-import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
-import 'package:tortillapp/models/Register/RegisterModel.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/ProductosScreen.dart';
-import 'package:tortillapp/screens/Admin/PrimerosPasos/SucursalScreen.dart';
-import 'package:tortillapp/screens/Register/RegisterPassword.dart';
-import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/widgets/widgets.dart';
 
-class PP_AddProductos_Screen extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSave; // Callback para guardar el producto
+class PP_AddEmpleados_Screen extends StatefulWidget {
+  final Function(Map<String, dynamic>) onSave; // Callback para guardar el empleado
 
-  PP_AddProductos_Screen({required this.onSave}); // Recibir el callback
+   final String dominoname; // Agregamos este nuevo parámetro
+
+  PP_AddEmpleados_Screen({required this.onSave, required this.dominoname}); // Recibir el callback
 
   @override
-  _PP_AddProductos_ScreenState createState() => _PP_AddProductos_ScreenState();
+  _PP_AddEmpleados_ScreenState createState() => _PP_AddEmpleados_ScreenState();
 }
 
-class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
+class _PP_AddEmpleados_ScreenState extends State<PP_AddEmpleados_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
-  final TextEditingController _tiendaController = TextEditingController();
-  final TextEditingController _nombreProducto = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
-
-  // Instanciar el modelo
-  final PP_Model pp_model = PP_Model();
 
   @override
   void initState() {
@@ -50,25 +44,30 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
     );
 
     // Agregar un listener al controlador de texto
-    _tiendaController.addListener(_updateProgress);
-    _nombreProducto.addListener(_updateProgress);
+    _nombreController.addListener(_updateProgress);
+    _emailController.addListener(_updateProgress);
+    _passwordController.addListener(_updateProgress);
   }
 
   @override
   void dispose() {
     // Limpiar el listener y el AnimationController
-    _tiendaController.removeListener(_updateProgress);
-    _nombreProducto.removeListener(_updateProgress);
+    _nombreController.removeListener(_updateProgress);
+    _emailController.removeListener(_updateProgress);
+    _passwordController.removeListener(_updateProgress);
 
-    _tiendaController.dispose();
-    _nombreProducto.dispose();
+    _nombreController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
   void _updateProgress() {
-    // Verificar si el campo de precio y nombre están llenos
-    if (_tiendaController.text.isNotEmpty && _nombreProducto.text.isNotEmpty) {
+    // Verificar si los campos están llenos
+    if (_nombreController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
       // Iniciar la animación hacia el 25%
       _animationController.forward();
     } else {
@@ -105,26 +104,31 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
     );
   }
 
-  void _savePrice() {
+  void _saveEmpleado() {
     // Verificar que los campos no estén vacíos
-    if (_tiendaController.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa el precio.');
+    if (_nombreController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa el nombre del empleado.');
       return;
     }
-    if (_nombreProducto.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa el nombre del producto.');
+    if (_emailController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa el correo electrónico.');
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa la contraseña.');
       return;
     }
 
-    // Crear un mapa con los datos del nuevo producto
-    Map<String, dynamic> nuevoProducto = {
+    // Crear un mapa con los datos del nuevo empleado
+    Map<String, dynamic> nuevoEmpleado = {
       "id": DateTime.now().millisecondsSinceEpoch, // Generar un ID único
-      "nombre": _nombreProducto.text,
-      "precio": double.parse(_tiendaController.text),
+      "name": _nombreController.text,
+      "email": _emailController.text,
+      "password": _passwordController.text,
     };
 
-    // Llamar al callback con el nuevo producto
-    widget.onSave(nuevoProducto);
+    // Llamar al callback con el nuevo empleado
+    widget.onSave(nuevoEmpleado);
 
     // Regresar a la pantalla anterior
     Navigator.pop(context);
@@ -141,7 +145,7 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
-          'Agregar nuevo producto',
+          'Agregar nuevo empleado',
           style: TextStyle(
             color: colores.colorPrincipal, // Color del texto
             fontSize: 18, // Tamaño del texto
@@ -189,23 +193,30 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
                             Align(
                               alignment: Alignment.centerLeft,
                               child: CustomWidgets().Subtittle(
-                                text: 'Completa la información del nuevo producto',
+                                text: 'Completa la información del nuevo empleado',
                                 color: colores.colorPrincipal,
                               ),
                             ),
                             SizedBox(height: 30),
                             CustomWidgets().TextfieldPrimary(
-                              controller: _nombreProducto,
-                              label: 'Nombre ',
+                              controller: _nombreController,
+                              label: 'Nombre del empleado',
                               hasIcon: true,
-                              icon: Icons.add,
+                              icon: Icons.person,
                             ),
                             SizedBox(height: 20),
-                            CustomWidgets().TextfieldNumber(
-                              controller: _tiendaController,
-                              label: 'Precio',
+                            CustomWidgets().TextfieldPrimary(
+                              controller: _emailController,
+                              label: 'Nombre de usuario',
                               hasIcon: true,
-                              icon: Icons.price_change,
+                              icon: Icons.email,
+                            ),
+                            SizedBox(height: 20),
+                            CustomWidgets().TextfieldPass(
+                              controller: _passwordController,
+                              label: 'Contraseña',
+                              hasIcon: true,
+                              icon: Icons.lock,
                             ),
                             SizedBox(height: 20),
                             Spacer(),
@@ -214,10 +225,10 @@ class _PP_AddProductos_ScreenState extends State<PP_AddProductos_Screen>
                               height: _isKeyboardVisible ? 30 : 50, // Reduce tamaño cuando teclado está abierto
                               width: double.infinity,
                               child: CustomWidgets().ButtonPrimary(
-                                text: 'Agregar producto',
+                                text: 'Agregar empleado',
                                 onPressed: () {
                                   // Acción del botón
-                                  _savePrice();
+                                  _saveEmpleado();
                                 },
                               ),
                             ),

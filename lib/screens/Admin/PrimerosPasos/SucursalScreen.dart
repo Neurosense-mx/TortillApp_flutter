@@ -12,6 +12,9 @@ import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 class PP_Sucursal_Screen extends StatefulWidget {
+     final PP_Model pp_model;
+  const PP_Sucursal_Screen({super.key, required this.pp_model});
+
   @override
   _PP_Sucursal_ScreenState createState() => _PP_Sucursal_ScreenState();
 }
@@ -20,8 +23,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
 
-  final TextEditingController _nombreNegocioController =
-      TextEditingController();
+  final TextEditingController _nombreSucursal = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   bool _isKeyboardVisible = false;
@@ -32,7 +34,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
   late bool serviceEnabled;
   late LocationPermission permission;
   //Instanciar el modelo
-  final PP_Model pp_model = PP_Model();
+
 
   @override
   void initState() {
@@ -54,17 +56,15 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     );
 
     // Agregar un listener al controlador de texto
-    _nombreNegocioController.addListener(_updateProgress);
-
+    _nombreSucursal.addListener(_updateProgress);
 
     Future.delayed(Duration(seconds: 1), () {
-    if (mounted) { // Asegura que el widget aún esté en pantalla antes de ejecutar
-      _showCupertinoDialog(
-      'Configuración de negocio', 
-      'Excelente, ahora registra el nombre de tu sucursal y selecciona la ubicación.'
-    );
-    }
-  });
+      if (mounted) {
+        // Asegura que el widget aún esté en pantalla antes de ejecutar
+        _showCupertinoDialog('Configuración de negocio',
+            'Excelente, ahora registra el nombre de tu sucursal y selecciona la ubicación.');
+      }
+    });
   }
 
   Future<void> _checkAndRequestPermissions() async {
@@ -87,19 +87,15 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
   @override
   void dispose() {
     // Limpiar el listener y el AnimationController
-    _nombreNegocioController.removeListener(_updateProgress);
-    _nombreNegocioController.dispose();
+    _nombreSucursal.removeListener(_updateProgress);
+    _nombreSucursal.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
   void _updateProgress() {
     // Verificar si el campo de email está lleno
-    if (_nombreNegocioController.text.isNotEmpty) {
-      // Iniciar la animación hacia el 25%
-     // _animationController.forward();
-    } else {
-      // Reiniciar la animación al valor inicial
+    if (_nombreSucursal.text.isEmpty) {
       _animationController.reverse();
     }
   }
@@ -134,7 +130,7 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
 
   Future<void> _saveSucursal() async {
     //Verificar que no este vacio
-    if (_nombreNegocioController.text.isEmpty) {
+    if (_nombreSucursal.text.isEmpty) {
       _showCupertinoDialog(
           'Error', 'Por favor, ingresa el nombre de tu negocio.');
       return;
@@ -148,35 +144,36 @@ class _PP_Sucursal_ScreenState extends State<PP_Sucursal_Screen>
     }
 
     //Guardar el nombre en el modelo
-    pp_model.setNombreSucursal(_nombreNegocioController.text);
-    pp_model.setLatitud(latitude);
-    pp_model.setLongitud(longitude);
+    widget.pp_model.setNombreSucursal(_nombreSucursal.text);
+    widget.pp_model.setLatitud(latitude);
+    widget.pp_model.setLongitud(longitude);
 
     //Ir a la siguiente pantalla
-   await _animationController.forward();
-  Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return PP_Precio_Screen();
-                    },
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
-                      const end = Offset.zero;
-                      const curve = Curves.easeInOut;
+    await _animationController.forward();
+    //Navegar a la siguiente pantalla
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return PP_Precio_Screen(pp_model: widget.pp_model);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
 
-                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
 
-                      return SlideTransition(position: offsetAnimation, child: child);
-                    },
-                  ),
-                );
-
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
   }
 
-void _goToMap() async {
-   _checkAndRequestPermissions();
+  void _goToMap() async {
+    _checkAndRequestPermissions();
 
     // Verificar si el GPS está activado
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -203,41 +200,43 @@ void _goToMap() async {
     // Obtener ubicación actual
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    
+
     var latitude_actual = position.latitude;
     var longitude_actual = position.longitude;
 
     LatLng currentLocation = LatLng(latitude_actual, longitude_actual);
-  print("------------------------------------------------------------------INICIO");
-  
-  final LatLng? selectedLocation = await Navigator.push(
-    context,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return MapScreen(initialLocation: currentLocation);
-      },
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
+    print(
+        "------------------------------------------------------------------INICIO");
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+    final LatLng? selectedLocation = await Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return MapScreen(initialLocation: currentLocation);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
 
-        return SlideTransition(position: offsetAnimation, child: child);
-      },
-    ),
-  );
-  setState(() {
-    latitude = selectedLocation!.latitude;
-    longitude = selectedLocation.longitude;
-  });
-  print("------------------------------------------------------------------");
-  if (selectedLocation != null) {
-    print("Ubicación seleccionada: ${selectedLocation.latitude}, ${selectedLocation.longitude}");
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+    setState(() {
+      latitude = selectedLocation!.latitude;
+      longitude = selectedLocation.longitude;
+    });
+    print("------------------------------------------------------------------");
+    if (selectedLocation != null) {
+      print(
+          "Ubicación seleccionada: ${selectedLocation.latitude}, ${selectedLocation.longitude}");
+    }
   }
-}
-
 
   Future<void> _getLocationNow() async {
     _checkAndRequestPermissions();
@@ -367,7 +366,7 @@ void _goToMap() async {
                             ),
                             SizedBox(height: 20),
                             CustomWidgets().TextfieldPrimary(
-                              controller: _nombreNegocioController,
+                              controller: _nombreSucursal,
                               label: 'Nombre',
                               hasIcon: true,
                               icon: Icons.store,
@@ -387,6 +386,7 @@ void _goToMap() async {
                                 _goToMap();
                               },
                             ),
+                            SizedBox(height: 20),
                             Spacer(),
                             AnimatedContainer(
                               duration: Duration(milliseconds: 300),
