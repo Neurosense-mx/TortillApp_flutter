@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tortillapp/screens/Admin/Sucursales/Mis_Sucursales.dart';
+import 'package:tortillapp/screens/Admin/Sucursales/PanelSucursal.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,6 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 3), () {
      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
 
+     // Cambiar a la siguiente pantalla
+    //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Panel_Sucursal()));
     });
   }
 

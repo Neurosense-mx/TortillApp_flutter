@@ -36,12 +36,13 @@ class LoginModel {
       var data = json.decode(response.body);
 
       //print("Codigo: " + response.statusCode.toString());
-      //print(data['user']['config']);
-
+    
       if (response.statusCode == 200) {
         //baja el diccionario de user
         var user = data['user'];
         var config = data['user']['config'];
+
+        saveDataAdmin(data['token'], user['id'], user['id_rol']);
         return {
           'statusCode': 200, // OK
           'token': data['token'],
@@ -75,10 +76,10 @@ class LoginModel {
   }
 
   //Funcion para guardar el token en el dispositivo
-  Future<void> saveDataAdmin(String token, String name, int id_rol) async {
+  Future<void> saveDataAdmin(String token, int id_cuenta, int id_rol) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token); //Guardar el token
-    await prefs.setString('name', name); //Guardar el nombre
+    await prefs.setInt('id_cuenta', id_cuenta); //Guardar el nombre
     await prefs.setInt('id_rol', id_rol); //Guardar el id_rol
   }
 

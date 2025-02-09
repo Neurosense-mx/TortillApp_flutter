@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/config/backend.dart';
 import 'package:http/http.dart' as http;
 
@@ -65,32 +66,39 @@ class PP_Model {
   void setProductos(List<Map<String, dynamic>> productos) {
     this.productos = productos;
   }
+
   // Método para agregar un gasto a la lista
   void agregarGasto(Map<String, dynamic> gasto) {
     gastos.add(gasto);
   }
+
   // Método para establecer la lista completa de gastos
   void setGastos(List<Map<String, dynamic>> gastos) {
     this.gastos = gastos;
   }
+
   // Método para agregar un empleado a la lista
   void agregarEmpleado(Map<String, dynamic> empleado) {
     empleados.add(empleado);
   }
+
   // Método para establecer la lista completa de empleados
   void setEmpleados(List<Map<String, dynamic>> empleados) {
     this.empleados = empleados;
   }
-
 
   //gets para el dominio
   String getDominio() {
     return nombreDominio;
   }
 
-  void  build_json(){
+  Future<void> build_json() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? idCuenta = prefs.getInt('id_cuenta');
+
     PP_MODEL_JSON = [
       {
+        "idCuenta": idCuenta,
         "nombre": nombre,
         "nombreNegocio": nombreNegocio,
         "nombreDominio": nombreDominio,
@@ -110,22 +118,32 @@ class PP_Model {
 
   //Enviar json al server
   Future<Map<String, dynamic>> enviarData() async {
+    await build_json();
     final url = Uri.parse(ApiConfig.backendUrl + '/admin/firststeps');
     try {
       // Realizamos la solicitud HTTP POST
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},   
-        body: json.encode(PP_MODEL_JSON)  
-      );
+      final response = await http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(PP_MODEL_JSON[0]));
 
       if (response.statusCode == 200) {
-       
-        print("Respone: ${response.body}");
-          return {
-            'statusCode': 200, // OK
-            'message': 'El correo electrónico está disponible.'
-          };
+        print("es 200");
+        //obtener el response
+
+        final Map<String, dynamic> respuesta = json.decode(response.body);
+        print("Response: ${response.body}");
+
+        if (respuesta.containsKey('idCuenta') &&
+            respuesta.containsKey('idNegocio')) {
+          // Guardar en SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('id_cuenta', respuesta['idCuenta'] ?? 0);
+          await prefs.setInt('id_negocio', respuesta['idNegocio'] ?? 0);
+        }
+        return {
+          'statusCode': 200, // OK
+          'message': 'El correo electrónico está disponible.'
+        };
       } else {
         // Si la respuesta no es exitosa
         return {
@@ -138,6 +156,4 @@ class PP_Model {
       return {'statusCode': 500, 'message': 'Error en la conexión: $e'};
     }
   }
-
-
 }

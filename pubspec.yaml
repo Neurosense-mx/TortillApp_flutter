@@ -50,6 +50,7 @@ dependencies:
   open_file: ^3.2.1
   share: ^2.0.4
   
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -93,6 +94,14 @@ flutter:
       - lib/assets/icons/dinero_icon.svg
       - lib/assets/icons/user_icon.svg
       - lib/assets/icons/user2_icon.svg
+      - lib/assets/menu/empleados_icon.svg
+      - lib/assets/menu/productos_icon.svg
+      - lib/assets/menu/gastos_icon.svg
+      - lib/assets/menu/precios_icon.svg
+      - lib/assets/menu_horizontal/sucursales_icon.svg
+      - lib/assets/menu_horizontal/home_icon.svg
+      - lib/assets/menu_horizontal/estadisticas.svg
+      - lib/assets/menu_horizontal/user.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

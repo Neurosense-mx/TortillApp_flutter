@@ -185,11 +185,10 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
     //pasar la lsita de empleados a models
     widget.pp_model.setEmpleados(empleados);
     //construir el json
-    widget.pp_model.build_json();
-    //enviar datos al server
+    
     
     var response = await widget.pp_model.enviarData();
-    print(response['statusCode'].toString());
+    print(response);
     if(response['statusCode'] == 200){
      _showConfetti();
     await _animationController.forward();
@@ -197,24 +196,14 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
     
     //Delay para mostrar el confeti
     await Future.delayed(Duration(seconds: 4));
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return Home_Admin();
-        },
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var offsetAnimation = animation.drive(tween);
-          return SlideTransition(position: offsetAnimation, child: child);
-        },
-      ),
-    );
+   
+    Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(builder: (context) => Home_Admin()), // Nueva pantalla
+  (Route<dynamic> route) => false, // Esto elimina todas las rutas anteriores
+);
+
+
     
 
   }

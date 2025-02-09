@@ -6,6 +6,7 @@ import 'package:tortillapp/config/Notification.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/main.dart';
 import 'package:tortillapp/models/Login/LoginModel.dart';
+import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
@@ -55,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
         // ---------------------------------------- User admin
         // Obtener el nombre para ver si ya lo configuro
         var nombre = response['user']['nombre'];
+        var config = response['config'];
+        //print(config);
         //Si el nombre es "" entonces no ha configurado su cuenta, enviarlo
         if (nombre == "") {
           //_showCupertinoDialog('Bienvenido', 'No configurado name');
@@ -64,8 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         //Si el nombre es diferente de "" entonces ya configuro su cuenta
         if (nombre != "") {
+          print("Nombre ya configurado");
           //Obtener la configuracion
-          var config = response['user']['config'];
+          
+          print("La config es: " );
+          
           //obtener negocio, sucursal, precio, productos, gastos, empleados
           var negocio = config['negocio'];
           var sucursal = config['sucursal'];
@@ -73,7 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
           var productos = config['productos'];
           var gastos = config['gastos'];
           var empleados = config['empleados'];
-
+          print("obteniendo config...");
+          
           // if todo es 1 entonces ya configuro su cuenta
           if (negocio == 1 &&
               sucursal == 1 &&
@@ -81,14 +88,22 @@ class _LoginScreenState extends State<LoginScreen> {
               productos == 1 &&
               gastos == 1 &&
               empleados == 1) {
-            _showCupertinoDialog('Bienvenido', 'Mostrar home normal');
+                print("Ya configuro su cuenta");
+           // _showCupertinoDialog('Bienvenido', 'Mostrar home normal');
+            Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(builder: (context) => Home_Admin()), // Nueva pantalla
+  (Route<dynamic> route) => false, // Esto elimina todas las rutas anteriores
+);
+
           }
           else{
             //No configurada, mostrar dialogo
             _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc');
           }
+          
 
-          _showCupertinoDialog('Bienvenido', 'Configurado name');
+         
         }
       } else {
         // ---------------------------------------- User normal
