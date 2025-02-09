@@ -49,6 +49,7 @@ dependencies:
   flutter_local_notifications: ^12.0.0
   open_file: ^3.2.1
   share: ^2.0.4
+  fl_chart: ^0.69.1
   
   
 dev_dependencies:

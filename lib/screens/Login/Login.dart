@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/config/Notification.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/main.dart';
 import 'package:tortillapp/models/Login/LoginModel.dart';
 import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
+import 'package:tortillapp/screens/Molinero/MolineroScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
@@ -25,99 +27,123 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   
-  Future<void> _login() async {
-    //validar que los campos no esten vacios
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
-      return;
-    }
-    //validar que tenga fromato de correo
-    if (!_emailController.text.contains('@')) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
-      return;
-    }
-    // Instanciamos el modelo de Login
-    LoginModel loginModel = LoginModel();
-    loginModel.setEmail(_emailController.text);
-    loginModel.setPassword(_passwordController.text);
-    //Bajar en un Map la respuesta
-    Map<String, dynamic> response = await loginModel.login();
-    //Mostrar la respuesta
-    print("Response: ---------------------" + response.toString());
-    // var config = response['user']['config'];
-    //print(config);
-    //Si la respuesta es 200
-    if (response['statusCode'] == 200) {
-      var id_role = response['user']['id_rol'].toString(); //Obtener el rol
-
-      print("Mi rol es : " + id_role);
-      //-------------------------------------- Inicio de sesion exitoso
-      if (id_role == "1") {
-        // ---------------------------------------- User admin
-        // Obtener el nombre para ver si ya lo configuro
-        var nombre = response['user']['nombre'];
-        var config = response['config'];
-        //print(config);
-        //Si el nombre es "" entonces no ha configurado su cuenta, enviarlo
-        if (nombre == "") {
-          //_showCupertinoDialog('Bienvenido', 'No configurado name');
-          //Navegar a PP_Nombre_Screen()
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
-          //enviar a configurar nombre
-        }
-        //Si el nombre es diferente de "" entonces ya configuro su cuenta
-        if (nombre != "") {
-          print("Nombre ya configurado");
-          //Obtener la configuracion
-          
-          print("La config es: " );
-          
-          //obtener negocio, sucursal, precio, productos, gastos, empleados
-          var negocio = config['negocio'];
-          var sucursal = config['sucursal'];
-          var precio = config['precio'];
-          var productos = config['productos'];
-          var gastos = config['gastos'];
-          var empleados = config['empleados'];
-          print("obteniendo config...");
-          
-          // if todo es 1 entonces ya configuro su cuenta
-          if (negocio == 1 &&
-              sucursal == 1 &&
-              precio == 1 &&
-              productos == 1 &&
-              gastos == 1 &&
-              empleados == 1) {
-                print("Ya configuro su cuenta");
-           // _showCupertinoDialog('Bienvenido', 'Mostrar home normal');
-            Navigator.pushAndRemoveUntil(
-  context,
-  MaterialPageRoute(builder: (context) => Home_Admin()), // Nueva pantalla
-  (Route<dynamic> route) => false, // Esto elimina todas las rutas anteriores
-);
-
-          }
-          else{
-            //No configurada, mostrar dialogo
-            _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc');
-          }
-          
-
-         
-        }
-      } else {
-        // ---------------------------------------- User normal
-      }
-
-      //Mostrar un dialogo de bienvenida
-//      _showCupertinoDialog('Bienvenido', 'Inicio de sesión exitoso.');
-      //_showCupertinoDialog("data: ", response.toString());
-    } else {
-      //Mostrar un dialogo de error
-      //print(response['message']);
-      _showCupertinoDialog('Error', response['message']);
-    }
+Future<void> _login() async {
+  if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
+    return;
   }
+  
+  if (!_emailController.text.contains('@')) {
+    _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
+    return;
+  }
+
+  // Mostrar loader
+  _showLoadingDialog();
+
+  // Instanciamos el modelo de Login
+  LoginModel loginModel = LoginModel();
+  loginModel.setEmail(_emailController.text);
+  loginModel.setPassword(_passwordController.text);
+
+  // Realizar la solicitud de login
+  Map<String, dynamic> response = await loginModel.login();
+
+  // Mantener el loader visible 1 segundo adicional
+  await Future.delayed(Duration(seconds: 1));
+
+  // Ocultar loader
+  Navigator.pop(context);
+
+  print("Response: ---------------------" + response.toString());
+
+  if (response['statusCode'] == 200) {
+    var id_role = response['user']['id_rol'].toString();
+    print("Mi rol es : " + id_role);
+
+    if (id_role == "1") {
+      print("Mi rol es : " + id_role);
+      var nombre = response['user']['nombre'];
+      var config = response['config'];
+
+      if (nombre == "") {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
+      } else {
+        var negocio = config['negocio'];
+        var sucursal = config['sucursal'];
+        var precio = config['precio'];
+        var productos = config['productos'];
+        var gastos = config['gastos'];
+        var empleados = config['empleados'];
+
+        if (negocio == 1 && sucursal == 1 && precio == 1 && productos == 1 && gastos == 1 && empleados == 1) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Home_Admin()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc.');
+        }
+      }
+    } else {
+      // Lógica para usuario normal si aplica
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nombre', response['user']['nombre']); //Guardar el token
+    print("Nombre: " + response['user']['nombre']);
+      //rol molinero
+      if(id_role == "2"){
+        
+         Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Molinero_Screen()),
+            (Route<dynamic> route) => false,
+          );
+      }
+    }
+  } else {
+    _showCupertinoDialog('Error', response['message']);
+  }
+}
+
+void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Evita que el usuario lo cierre manualmente
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                color: colores.colorPrincipal, // Color del loader
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Iniciando sesión...",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+// Función para ocultar el loader
+void _hideLoadingDialog() {
+  Navigator.pop(context);
+}
+
 
   void _showCupertinoDialog(String title, String message) {
     showDialog(

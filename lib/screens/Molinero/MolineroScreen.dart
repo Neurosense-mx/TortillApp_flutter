@@ -5,14 +5,16 @@ import 'package:tortillapp/screens/Admin/Home/example1.dart';
 import 'package:tortillapp/screens/Admin/Home/example2.dart';
 import 'package:tortillapp/screens/Admin/Home/example3.dart';
 import 'package:tortillapp/screens/Admin/Home/example4.dart';
+import 'package:tortillapp/screens/Molinero/Inicio/Grafica.dart';
+import 'package:tortillapp/screens/Molinero/Inicio/Inicio_Molinero.dart';
 
 
-class Home_Admin extends StatefulWidget {
+class Molinero_Screen extends StatefulWidget {
   @override
-  _Home_AdminState createState() => _Home_AdminState();
+  _Molinero_ScreenState createState() => _Molinero_ScreenState();
 }
 
-class _Home_AdminState extends State<Home_Admin>
+class _Molinero_ScreenState extends State<Molinero_Screen>
     with SingleTickerProviderStateMixin {
   final PaletaDeColores colores = PaletaDeColores();
   bool _isKeyboardVisible = false;
@@ -20,9 +22,8 @@ class _Home_AdminState extends State<Home_Admin>
 
   // Lista de pantallas
   final List<Widget> _screens = [
-    example1(), // Pantalla de inicio
-    example2(), // Pantalla de mis sucursales
-    example3(), // Pantalla de estadísticas
+    HomeMolinero(), // Pantalla de inicio
+    LineChartExample(), // Pantalla de estadísticas
     example4(), // Pantalla de mi perfil
   ];
 
@@ -60,15 +61,7 @@ Widget build(BuildContext context) {
           ),
           label: 'Inicio',
         ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'lib/assets/menu_horizontal/sucursales_icon.svg',
-            width: 20,
-            height: 20,
-            color: _selectedIndex == 1 ? colores.colorPrincipal : Colors.grey,
-          ),
-          label: 'Sucursales',
-        ),
+      
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             'lib/assets/menu_horizontal/estadisticas.svg',
@@ -90,7 +83,7 @@ Widget build(BuildContext context) {
       ],
       currentIndex: _selectedIndex,
       selectedItemColor: colores.colorPrincipal,
-      unselectedItemColor: Colors.grey,
+      unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
       onTap: _onItemTapped,
       selectedLabelStyle: TextStyle(fontSize: 12),
       unselectedLabelStyle: TextStyle(fontSize: 9),

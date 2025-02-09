@@ -36,13 +36,21 @@ class LoginModel {
       var data = json.decode(response.body);
 
       //print("Codigo: " + response.statusCode.toString());
-    
+
       if (response.statusCode == 200) {
-        //baja el diccionario de user
+        // Extre el diccionario de usuario
         var user = data['user'];
-        var config = data['user']['config'];
+        var config = user['config'];
 
         saveDataAdmin(data['token'], user['id'], user['id_rol']);
+        // verificar si el usuario es admin o no
+        if (user['id_rol'] == 1) {
+          print("Hol eres admin");
+        } else {
+          print("No eres admin");
+          print("Nombre: " + user['nombre']);
+        }
+
         return {
           'statusCode': 200, // OK
           'token': data['token'],
@@ -52,17 +60,18 @@ class LoginModel {
             'email': user['email'],
             'id_rol': user['id_rol'],
           },
-          'config': {
-            'negocio': config['negocio'],
-            'sucursal': config['sucursal'],
-            'precio': config['precio'],
-            'productos': config['productos'],
-            'gastos': config['gastos'],
-            'empleados': config['empleados'],
-            },
+          'config': user['id_rol'] == 1
+              ? {
+                  'negocio': config['negocio'],
+                  'sucursal': config['sucursal'],
+                  'precio': config['precio'],
+                  'productos': config['productos'],
+                  'gastos': config['gastos'],
+                  'empleados': config['empleados'],
+                }
+              : [], // Si no es id_rol == 1, retorna un array vacío
         };
       } else {
-        //print(data['error']);
         // Si la respuesta no es exitosa
         return {
           'statusCode': response.statusCode,
