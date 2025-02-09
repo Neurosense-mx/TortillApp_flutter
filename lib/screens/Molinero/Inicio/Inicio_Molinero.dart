@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/resources/Graficas.dart';
 
@@ -84,7 +85,7 @@ class _HomeMolineroState extends State<HomeMolinero> {
               // Texto Acciones
               Text(
                 'Acciones',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
               ),
               SizedBox(height: 8),
 
@@ -96,9 +97,9 @@ class _HomeMolineroState extends State<HomeMolinero> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildSquareCard(Icons.access_alarm, 'Card1', cardSize),
-                        SizedBox(width: 16),
-                        _buildSquareCard(Icons.analytics, 'Card2', cardSize),
+                        _buildSquareCard('lib/assets/cards/molinero/cocer_icon.svg', 'Cocer maíz', cardSize, '21B0E4'),
+                        SizedBox(width: 10),
+                        _buildSquareCard('lib/assets/cards/molinero/pesar_masa_icon.svg', 'Pesar masa', cardSize, '5BA951'),
                       ],
                     ),
                   );
@@ -109,7 +110,7 @@ class _HomeMolineroState extends State<HomeMolinero> {
               // Texto Estadísticas
               Text(
                 'Estadísticas',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
               ),
               SizedBox(height: 8),
 
@@ -124,26 +125,40 @@ class _HomeMolineroState extends State<HomeMolinero> {
     );
   }
 
-  /// Widget para construir los cards cuadrados
-  Widget _buildSquareCard(IconData icon, String text, double size) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        width: size,
-        height: size, // Misma altura que ancho para que sea cuadrado
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.blue),
-            SizedBox(height: 8),
-            Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ),
+
+Widget _buildSquareCard(String imagePath, String text, double size, String color) {
+  return Card(
+    elevation: 3,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    child: Container(
+      width: size,
+      height: size, // Misma altura que ancho para que sea cuadrado
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Color(int.parse("0xFF" + color)), // Se convierte el color de string a Color
+        borderRadius: BorderRadius.circular(10), // Mantiene el redondeo de las esquinas
       ),
-    );
-  }
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Centra todo el contenido verticalmente
+        crossAxisAlignment: CrossAxisAlignment.center, // Centra todo el contenido horizontalmente
+        children: [
+          SvgPicture.asset(
+            imagePath,
+            width: 50,  // Tamaño de la imagen
+            height: 50,
+          ),
+          SizedBox(height: 16), // Espacio entre el icono y el texto
+          Text(
+            text,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
 
   /// Retorna un saludo según la hora actual
   String _getSaludo() {
