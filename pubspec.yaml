@@ -105,6 +105,7 @@ flutter:
       - lib/assets/menu_horizontal/user.svg
       - lib/assets/cards/molinero/pesar_masa_icon.svg
       - lib/assets/cards/molinero/cocer_icon.svg
+      - lib/assets/cards/molinero/molino_icon.svg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

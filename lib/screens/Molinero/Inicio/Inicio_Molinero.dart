@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/resources/Graficas.dart';
 
 class HomeMolinero extends StatefulWidget {
@@ -10,6 +11,7 @@ class HomeMolinero extends StatefulWidget {
 
 class _HomeMolineroState extends State<HomeMolinero> {
   String nombre = "";
+  PaletaDeColores colores = PaletaDeColores();
 
  final Map<String, Map<String, double>> data = {
     "costales_cocidos": {
@@ -45,9 +47,12 @@ class _HomeMolineroState extends State<HomeMolinero> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+@override
+Widget build(BuildContext context) {
+  return Container(
+    color: Color(0xFFF8F8F8), // Fondo gris claro
+    child: Scaffold(
+      backgroundColor: Colors.transparent, // Hace que el fondo del Scaffold sea transparente
       body: Center(
         child: Container(
           width: double.infinity,
@@ -56,38 +61,60 @@ class _HomeMolineroState extends State<HomeMolinero> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 16),
               // Hola, Nombre
               Text(
                 'Hola, $nombre',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colores.colorPrincipal),
               ),
               SizedBox(height: 4),
               Text(
                 _getSaludo(),
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 15, color: Color(0xFF393939)),
               ),
               SizedBox(height: 16),
-
-              // Card Molinero
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Molinero',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
+Text(
+                'Puesto actual',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: colores.colorPrincipal),
               ),
+              SizedBox(height: 10),
+              // Card Molinero
+             Card(
+  color: const Color.fromARGB(255, 255, 255, 255), // Fondo blanco
+  elevation: 2.4,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10),
+    side: BorderSide(color: Color.fromARGB(255, 218, 218, 218), width: 1), // Borde de 2px color #ABBCC9
+  ),
+  child: Padding(
+    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+    child: Row(
+      mainAxisSize: MainAxisSize.min, // Ajusta el ancho al contenido
+      children: [
+        SvgPicture.asset(
+          'lib/assets/cards/molinero/molino_icon.svg',
+          width: 30, // Tamaño del ícono
+          height: 30,
+        ),
+        SizedBox(width: 10), // Espacio entre el ícono y el texto
+        Text(
+          'Molino',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300, color: colores.colorPrincipal),
+        ),
+      ],
+    ),
+  ),
+),
+
+
               SizedBox(height: 16),
 
               // Texto Acciones
               Text(
                 'Acciones',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: colores.colorPrincipal),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 10),
 
               // LayoutBuilder para hacer los cards cuadrados
               LayoutBuilder(
@@ -110,9 +137,9 @@ class _HomeMolineroState extends State<HomeMolinero> {
               // Texto Estadísticas
               Text(
                 'Estadísticas',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: colores.colorPrincipal),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 10),
 
               // Expanded para ocupar el espacio restante
               Expanded(
@@ -122,8 +149,9 @@ class _HomeMolineroState extends State<HomeMolinero> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
 
 Widget _buildSquareCard(String imagePath, String text, double size, String color) {

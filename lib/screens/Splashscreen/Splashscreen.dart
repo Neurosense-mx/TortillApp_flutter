@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Admin/Sucursales/Mis_Sucursales.dart';
 import 'package:tortillapp/screens/Admin/Sucursales/PanelSucursal.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
+import 'package:tortillapp/screens/Molinero/MolineroScreen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -12,14 +15,50 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkSesion();
     // Espera 3 segundos y luego navega a la siguiente pantalla
-    Future.delayed(Duration(seconds: 3), () {
+    
+  }
+
+   void _checkSesion() {
+    SharedPreferences.getInstance().then((prefs) {
+      String token = prefs.getString('token') ?? "";
+      int? idCuenta = prefs.getInt('id_cuenta') ?? 0;
+      int? idRol = prefs.getInt('id_rol') ?? 0;
+
+      if (token != "") {
+        if(idRol == 1){
+          Future.delayed(Duration(seconds: 1), () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Home_Admin()),
+            (Route<dynamic> route) => false,
+          );
+          });
+        }
+        if (idRol == 2) {
+           Future.delayed(Duration(seconds: 1), () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Molinero_Screen()),
+            (Route<dynamic> route) => false,
+          );
+           });
+        }
+        
+       
+      }
+      else{
+        Future.delayed(Duration(seconds: 3), () {
      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
 
      // Cambiar a la siguiente pantalla
     //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Panel_Sucursal()));
     });
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/screens/Admin/Home/example1.dart';
-import 'package:tortillapp/screens/Admin/Home/example2.dart';
-import 'package:tortillapp/screens/Admin/Home/example3.dart';
-import 'package:tortillapp/screens/Admin/Home/example4.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/Grafica.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/Inicio_Molinero.dart';
-
+import 'package:tortillapp/screens/Admin/Home/example4.dart';
 
 class Molinero_Screen extends StatefulWidget {
   @override
   _Molinero_ScreenState createState() => _Molinero_ScreenState();
 }
 
-class _Molinero_ScreenState extends State<Molinero_Screen>
-    with SingleTickerProviderStateMixin {
+class _Molinero_ScreenState extends State<Molinero_Screen> {
   final PaletaDeColores colores = PaletaDeColores();
-  bool _isKeyboardVisible = false;
-  int _selectedIndex = 0; // Índice seleccionado por defecto
+  int _selectedIndex = 0; 
+  final PageController _pageController = PageController();
+
+  void initState() {
+    super.initState();
+    //INSTANCIAR EL MODELO PARA CARGAR LOS DATOS
+  }
 
   // Lista de pantallas
   final List<Widget> _screens = [
@@ -27,70 +27,69 @@ class _Molinero_ScreenState extends State<Molinero_Screen>
     example4(), // Pantalla de mi perfil
   ];
 
-  // Función para cambiar la pantalla
+  // Cambiar pantalla con animación
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Cambiar el índice cuando se selecciona un ítem
-    });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 400), 
+      curve: Curves.easeInOut,
+    );
   }
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-  backgroundColor: colores.colorFondo,
-  body: SafeArea(
-    child: IndexedStack(
-      index: _selectedIndex,
-      children: _screens,
-    ),
-  ),
-  bottomNavigationBar: Theme(
-    data: Theme.of(context).copyWith(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-    ),
-    child: BottomNavigationBar(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: colores.colorFondo,
-      items: [
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'lib/assets/menu_horizontal/home_icon.svg',
-            width: 20,
-            height: 20,
-            color: _selectedIndex == 0 ? colores.colorPrincipal : Colors.grey,
-          ),
-          label: 'Inicio',
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          children: _screens,
+          onPageChanged: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
         ),
-      
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'lib/assets/menu_horizontal/estadisticas.svg',
-            width: 20,
-            height: 20,
-            color: _selectedIndex == 2 ? colores.colorPrincipal : Colors.grey,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: colores.colorFondo,
+        items: [
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'lib/assets/menu_horizontal/home_icon.svg',
+              width: 20,
+              height: 20,
+              color: _selectedIndex == 0 ? colores.colorPrincipal : Colors.grey,
+            ),
+            label: 'Inicio',
           ),
-          label: 'Estadísticas',
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'lib/assets/menu_horizontal/user.svg',
-            width: 20,
-            height: 20,
-            color: _selectedIndex == 3 ? colores.colorPrincipal : Colors.grey,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'lib/assets/menu_horizontal/estadisticas.svg',
+              width: 20,
+              height: 20,
+              color: _selectedIndex == 1 ? colores.colorPrincipal : Colors.grey,
+            ),
+            label: 'Estadísticas',
           ),
-          label: 'Mi Perfil',
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: colores.colorPrincipal,
-      unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-      onTap: _onItemTapped,
-      selectedLabelStyle: TextStyle(fontSize: 12),
-      unselectedLabelStyle: TextStyle(fontSize: 9),
-      type: BottomNavigationBarType.fixed,
-    ),
-  ),
-);
-}
-
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'lib/assets/menu_horizontal/user.svg',
+              width: 20,
+              height: 20,
+              color: _selectedIndex == 2 ? colores.colorPrincipal : Colors.grey,
+            ),
+            label: 'Mi Perfil',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: colores.colorPrincipal,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+        selectedLabelStyle: TextStyle(fontSize: 12),
+        unselectedLabelStyle: TextStyle(fontSize: 9),
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
 }

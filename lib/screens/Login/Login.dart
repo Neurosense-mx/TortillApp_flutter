@@ -25,125 +25,135 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
-  
-Future<void> _login() async {
-  if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-    _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
-    return;
-  }
-  
-  if (!_emailController.text.contains('@')) {
-    _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
-    return;
+  void initState() {
+    super.initState();
+    //Varificar si ya se ha iniciado sesión, con token
+   
   }
 
-  // Mostrar loader
-  _showLoadingDialog();
+ 
+  Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
+      return;
+    }
 
-  // Instanciamos el modelo de Login
-  LoginModel loginModel = LoginModel();
-  loginModel.setEmail(_emailController.text);
-  loginModel.setPassword(_passwordController.text);
+    if (!_emailController.text.contains('@')) {
+      _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
+      return;
+    }
 
-  // Realizar la solicitud de login
-  Map<String, dynamic> response = await loginModel.login();
+    // Mostrar loader
+    _showLoadingDialog();
 
-  // Mantener el loader visible 1 segundo adicional
-  await Future.delayed(Duration(seconds: 1));
+    // Instanciamos el modelo de Login
+    LoginModel loginModel = LoginModel();
+    loginModel.setEmail(_emailController.text);
+    loginModel.setPassword(_passwordController.text);
 
-  // Ocultar loader
-  Navigator.pop(context);
+    // Realizar la solicitud de login
+    Map<String, dynamic> response = await loginModel.login();
 
-  print("Response: ---------------------" + response.toString());
+    // Mantener el loader visible 1 segundo adicional
+    await Future.delayed(Duration(seconds: 1));
 
-  if (response['statusCode'] == 200) {
-    var id_role = response['user']['id_rol'].toString();
-    print("Mi rol es : " + id_role);
+    // Ocultar loader
+    Navigator.pop(context);
 
-    if (id_role == "1") {
+    print("Response: ---------------------" + response.toString());
+
+    if (response['statusCode'] == 200) {
+      var id_role = response['user']['id_rol'].toString();
       print("Mi rol es : " + id_role);
-      var nombre = response['user']['nombre'];
-      var config = response['config'];
 
-      if (nombre == "") {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
-      } else {
-        var negocio = config['negocio'];
-        var sucursal = config['sucursal'];
-        var precio = config['precio'];
-        var productos = config['productos'];
-        var gastos = config['gastos'];
-        var empleados = config['empleados'];
+      if (id_role == "1") {
+        print("Mi rol es : " + id_role);
+        var nombre = response['user']['nombre'];
+        var config = response['config'];
 
-        if (negocio == 1 && sucursal == 1 && precio == 1 && productos == 1 && gastos == 1 && empleados == 1) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => Home_Admin()),
-            (Route<dynamic> route) => false,
-          );
+        if (nombre == "") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
         } else {
-          _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc.');
+          var negocio = config['negocio'];
+          var sucursal = config['sucursal'];
+          var precio = config['precio'];
+          var productos = config['productos'];
+          var gastos = config['gastos'];
+          var empleados = config['empleados'];
+
+          if (negocio == 1 &&
+              sucursal == 1 &&
+              precio == 1 &&
+              productos == 1 &&
+              gastos == 1 &&
+              empleados == 1) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => Home_Admin()),
+              (Route<dynamic> route) => false,
+            );
+          } else {
+            _showCupertinoDialog(
+                'Bienvenido', 'No configurado sucursales, etc.');
+          }
         }
-      }
-    } else {
-      // Lógica para usuario normal si aplica
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('nombre', response['user']['nombre']); //Guardar el token
-    print("Nombre: " + response['user']['nombre']);
-      //rol molinero
-      if(id_role == "2"){
-        
-         Navigator.pushAndRemoveUntil(
+      } else {
+        // Lógica para usuario normal si aplica
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString(
+            'nombre', response['user']['nombre']); //Guardar el token
+        print("Nombre: " + response['user']['nombre']);
+        //rol molinero
+        if (id_role == "2") {
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Molinero_Screen()),
             (Route<dynamic> route) => false,
           );
+        }
       }
+    } else {
+      _showCupertinoDialog('Error', response['message']);
     }
-  } else {
-    _showCupertinoDialog('Error', response['message']);
   }
-}
 
-void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Evita que el usuario lo cierre manualmente
-    builder: (context) {
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Evita que el usuario lo cierre manualmente
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  color: colores.colorPrincipal, // Color del loader
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "Iniciando sesión...",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(
-                color: colores.colorPrincipal, // Color del loader
-              ),
-              SizedBox(height: 16),
-              Text(
-                "Iniciando sesión...",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
 // Función para ocultar el loader
-void _hideLoadingDialog() {
-  Navigator.pop(context);
-}
-
+  void _hideLoadingDialog() {
+    Navigator.pop(context);
+  }
 
   void _showCupertinoDialog(String title, String message) {
     showDialog(
@@ -171,7 +181,7 @@ void _hideLoadingDialog() {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       backgroundColor: colores.colorFondo,
       resizeToAvoidBottomInset:
@@ -237,8 +247,7 @@ void _hideLoadingDialog() {
                   CustomWidgets().ButtonPrimary(
                     text: 'Iniciar sesión',
                     onPressed: () async {
-                     await _login();
-                    
+                      await _login();
                     },
                   ),
                   SizedBox(height: 20),
