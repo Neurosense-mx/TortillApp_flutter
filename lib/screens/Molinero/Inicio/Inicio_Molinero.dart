@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/screens/Molinero/Inicio/resources/Graficas.dart';
+import 'package:tortillapp/models/Molinero%20/MolineroModelo.dart';
+import 'package:tortillapp/screens/Molinero/Inicio/pages/Add_Maiz.dart';
+import 'package:tortillapp/screens/Molinero/Inicio/pages/PesarMasa.dart';
+import 'package:tortillapp/screens/Molinero/Inicio/widgets/WidgetGrafica.dart';
 
 class HomeMolinero extends StatefulWidget {
   @override
@@ -12,6 +15,7 @@ class HomeMolinero extends StatefulWidget {
 class _HomeMolineroState extends State<HomeMolinero> {
   String nombre = "";
   PaletaDeColores colores = PaletaDeColores();
+  MolinoModel molino = MolinoModel(1); // Instancia del modelo
 
  final Map<String, Map<String, double>> data = {
     "costales_cocidos": {
@@ -124,9 +128,9 @@ Text(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildSquareCard('lib/assets/cards/molinero/cocer_icon.svg', 'Cocer maíz', cardSize, '21B0E4'),
+                        _buildSquareCard('lib/assets/cards/molinero/cocer_icon.svg', 'Cocer maíz', cardSize, '21B0E4', Add_maiz_screen(), context),
                         SizedBox(width: 10),
-                        _buildSquareCard('lib/assets/cards/molinero/pesar_masa_icon.svg', 'Pesar masa', cardSize, '5BA951'),
+                        _buildSquareCard('lib/assets/cards/molinero/pesar_masa_icon.svg', 'Pesar masa', cardSize, '5BA951',Pesar_masa(), context),
                       ],
                     ),
                   );
@@ -154,37 +158,61 @@ Text(
 }
 
 
-Widget _buildSquareCard(String imagePath, String text, double size, String color) {
-  return Card(
-    elevation: 3,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    child: Container(
-      width: size,
-      height: size, // Misma altura que ancho para que sea cuadrado
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Color(int.parse("0xFF" + color)), // Se convierte el color de string a Color
-        borderRadius: BorderRadius.circular(10), // Mantiene el redondeo de las esquinas
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, // Centra todo el contenido verticalmente
-        crossAxisAlignment: CrossAxisAlignment.center, // Centra todo el contenido horizontalmente
-        children: [
-          SvgPicture.asset(
-            imagePath,
-            width: 50,  // Tamaño de la imagen
-            height: 50,
-          ),
-          SizedBox(height: 16), // Espacio entre el icono y el texto
-          Text(
-            text,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white),
-          ),
-        ],
+Widget _buildSquareCard(String imagePath, String text, double size, String color, Widget destino, BuildContext context) {
+  return GestureDetector(
+    onTap: () {
+    Navigator.push(
+  context,
+  PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return destino;
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0); // Deslizar desde la derecha
+      const end = Offset.zero;
+      const curve = Curves.easeInOut;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(position: offsetAnimation, child: child);
+    },
+  ),
+);
+
+    },
+    child: Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Container(
+        width: size,
+        height: size, // Misma altura que ancho para que sea cuadrado
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Color(int.parse("0xFF" + color)), // Se convierte el color de string a Color
+          borderRadius: BorderRadius.circular(10), // Mantiene el redondeo de las esquinas
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // Centra todo el contenido verticalmente
+          crossAxisAlignment: CrossAxisAlignment.center, // Centra todo el contenido horizontalmente
+          children: [
+            SvgPicture.asset(
+              imagePath,
+              width: 50,  // Tamaño de la imagen
+              height: 50,
+            ),
+            SizedBox(height: 16), // Espacio entre el icono y el texto
+            Text(
+              text,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white),
+            ),
+          ],
+        ),
       ),
     ),
   );
 }
+
 
 
 

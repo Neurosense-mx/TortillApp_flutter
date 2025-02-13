@@ -7,7 +7,8 @@ class MolinoModel {
   late int id_negocio; // id del negocio
 
   MolinoModel(this.id_account) {
-    _fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
+    //_fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
+    print("Modelo de molino creado");
   }
 
   Future<void> _fetchData(int id_account) async {
