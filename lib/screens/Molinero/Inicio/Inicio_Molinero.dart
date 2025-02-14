@@ -8,6 +8,10 @@ import 'package:tortillapp/screens/Molinero/Inicio/pages/PesarMasa.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/widgets/WidgetGrafica.dart';
 
 class HomeMolinero extends StatefulWidget {
+  final MolinoModel molino; // Parámetro requerido
+
+  HomeMolinero({required this.molino}); // Constructor
+
   @override
   _HomeMolineroState createState() => _HomeMolineroState();
 }
@@ -15,7 +19,7 @@ class HomeMolinero extends StatefulWidget {
 class _HomeMolineroState extends State<HomeMolinero> {
   String nombre = "";
   PaletaDeColores colores = PaletaDeColores();
-  MolinoModel molino = MolinoModel(1); // Instancia del modelo
+  
 
  final Map<String, Map<String, double>> data = {
     "costales_cocidos": {
@@ -128,7 +132,7 @@ Text(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildSquareCard('lib/assets/cards/molinero/cocer_icon.svg', 'Cocer maíz', cardSize, '21B0E4', Add_maiz_screen(), context),
+                        _buildSquareCard('lib/assets/cards/molinero/cocer_icon.svg', 'Cocer maíz', cardSize, '21B0E4', Add_maiz_screen(molino: widget.molino,), context),
                         SizedBox(width: 10),
                         _buildSquareCard('lib/assets/cards/molinero/pesar_masa_icon.svg', 'Pesar masa', cardSize, '5BA951',Pesar_masa(), context),
                       ],

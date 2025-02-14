@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Molinero%20/MolineroModelo.dart';
 import 'package:tortillapp/screens/Molinero/Estad%C3%ADsticas/Estadisticas_Screen.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/Inicio_Molinero.dart';
 import 'package:tortillapp/screens/Admin/Home/example4.dart';
@@ -14,20 +15,28 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
   final PaletaDeColores colores = PaletaDeColores();
   int _selectedIndex = 0; 
   final PageController _pageController = PageController();
+  late MolinoModel molino;
 
+  @override
   void initState() {
     super.initState();
-    //INSTANCIAR EL MODELO PARA CARGAR LOS DATOS
+    molino = MolinoModel(1); // Instanciar el modelo
   }
 
-  // Lista de pantallas
-  final List<Widget> _screens = [
-    HomeMolinero(), // Pantalla de inicio
-    LineChartExample(), // Pantalla de estadísticas
-    example4(), // Pantalla de mi perfil
-  ];
+  // Lista de pantallas con el modelo ya inicializado
+  late final List<Widget> _screens;
 
-  // Cambiar pantalla con animación
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _screens = [
+      HomeMolinero(molino: molino),
+      LineChartExample(),
+      example4(),
+    ];
+  }
+
+  // Método para cambiar de pantalla con animación
   void _onItemTapped(int index) {
     _pageController.animateToPage(
       index,

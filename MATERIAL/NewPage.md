@@ -77,23 +77,32 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
           },
         ),
       ),
-      body: Stack(
-        children: [
-          // formulario
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: CustomWidgets().ButtonPrimary(
-              text: 'Seleccionar ubicación',
-              onPressed: () {
-                // Acción del botón
-                _confirmSelection();
-              },
-            ),
+      body: Center(
+  child: Container(
+    width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de pantalla
+    child: Column(
+      children: [
+        Expanded(
+          child: Stack(
+            children: [
+              // Aquí puedes agregar el contenido principal
+              Positioned(
+                bottom: 20,
+                left: 0,
+                right: 0,
+                child: CustomWidgets().ButtonPrimary(
+                  text: 'Guardar',
+                  onPressed: _confirmSelection,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
+    ),
+  ),
+),
+
     );
   }
 }

@@ -10,7 +10,7 @@ class MolinoModel {
     //_fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
     print("Modelo de molino creado");
   }
-
+  // Método para obtener los datos(id sucursal, id negocio) de la cuenta
   Future<void> _fetchData(int id_account) async {
     try {
       final response = await http.get(Uri.parse('https://miapi.com/getData?id_account=$id_account'));
@@ -27,6 +27,11 @@ class MolinoModel {
     }
   }
 
+  //------------------------- Acciones del molino -------------------------
+  // Método para agregar maíz para cocer
+  Future<void> addMaiz(double maiz) async {
+    print("Agregando maíz: $maiz kg");
+  }
 
   
 }
