@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/models/Molinero%20/MolineroModelo.dart';
+import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/pages/Add_Maiz.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/pages/PesarMasa.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/widgets/WidgetGrafica.dart';

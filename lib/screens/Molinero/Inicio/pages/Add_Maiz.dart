@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tortillapp/models/Molinero%20/MolineroModelo.dart';
+import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 

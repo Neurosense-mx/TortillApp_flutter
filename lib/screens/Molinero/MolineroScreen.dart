@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/models/Molinero%20/MolineroModelo.dart';
+import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/screens/Molinero/Estad%C3%ADsticas/Estadisticas_Screen.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/Inicio_Molinero.dart';
 import 'package:tortillapp/screens/Admin/Home/example4.dart';
