@@ -5,6 +5,7 @@ import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/screens/Molinero/Estad%C3%ADsticas/Estadisticas_Screen.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/Inicio_Molinero.dart';
 import 'package:tortillapp/screens/Admin/Home/example4.dart';
+import 'package:tortillapp/screens/Molinero/Mi%20perfil/MolineroPerfil.dart';
 
 class Molinero_Screen extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
     _screens = [
       HomeMolinero(molino: molino),
       LineChartExample(),
-      example4(),
+      MiPerfilMolinero(),
     ];
   }
 
