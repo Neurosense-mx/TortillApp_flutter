@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomWidgets extends StatelessWidget {
   final PaletaDeColores colores = PaletaDeColores();
@@ -194,6 +195,17 @@ class CustomWidgets extends StatelessWidget {
     );
   }
 
+  Widget Tittle_28({required String text, required Color color}) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: color,
+      ),
+    );
+  }
+
   // Subtittle widget
   Widget Subtittle({required String text, required Color color}) {
     return Text(
@@ -201,6 +213,96 @@ class CustomWidgets extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         color: color,
+      ),
+    );
+  }
+
+  Widget Puesto({
+    required String text,
+    String? icon,
+    Color? color,
+    double? maxWidth, // Añadimos un parámetro opcional para definir el maxWidth
+  }) {
+    return GestureDetector(
+      onTap: () {
+        // Si deseas manejar algún evento al presionar, lo puedes hacer aquí
+        print("Elemento presionado");
+      },
+      child: Align(
+        alignment: Alignment.centerLeft, // Alineación a la izquierda
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          constraints: BoxConstraints(
+            maxWidth: maxWidth ??
+                200, // Definir el maxWidth, si no se pasa, se usa 300 por defecto
+          ),
+          decoration: BoxDecoration(
+            color: color ?? colores.colorFondo,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colores.colorInputs),
+          ),
+          child: Row(
+            children: [
+              if (icon != null) ...[
+                SvgPicture.asset(
+                  icon,
+                  width: 24,
+                  height: 24,
+                ),
+                SizedBox(width: 10.0), // Espacio entre el icono y el texto
+              ],
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: colores.colorPrincipal, // Color del texto
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Metodo para Button de menu
+  Widget ButtonMenu({
+    required String text,
+    required VoidCallback onPressed,
+    String? icon,
+    Color? color, // Parámetro para personalizar el color
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: colores.colorFondo,
+        backgroundColor:
+            color ?? colores.colorPrincipal, // Utiliza el color si se pasa
+        minimumSize: Size(150, 150), // Tamaño cuadrado del botón
+        maximumSize: Size(150, 150),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Esquinas redondeadas
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            SvgPicture.asset(
+              icon,
+              width: 42,
+              height: 42,
+            ),
+            SizedBox(height: 30.0),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.white, // Color del texto
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -25,7 +25,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.neurosense.tortillapp"
     compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion "27.0.12077973" //flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -64,4 +64,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+     implementation 'com.android.tools:desugar_jdk_libs:1.1.5'
+}
