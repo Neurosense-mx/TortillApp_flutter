@@ -1,0 +1,2 @@
+C:/Users/admin1/Desktop/Datos/TortillApp_flutter/android/app/.cxx/Debug/z2k2seo4/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/admin1/Desktop/Datos/TortillApp_flutter/android/app/.cxx/Debug/z2k2seo4/arm64-v8a/CMakeFiles/rebuild_cache.dir
