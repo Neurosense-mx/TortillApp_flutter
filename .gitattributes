@@ -1,0 +1,12 @@
+# Evitar que los archivos de configuración se fusionen en main
+android/app/build.gradle merge=ours
+pubspec.lock merge=ours
+pubspec.yaml merge=ours
+
+# Evitar conflictos en configuraciones específicas de Flutter y Windows
+windows/flutter/generated_plugin_registrant.cc merge=ours
+windows/flutter/generated_plugins.cmake merge=ours
+
+
+# Ignorar archivos de compilación y temporales generados por CMake y Gradle
+android/app/.cxx/** merge=ours

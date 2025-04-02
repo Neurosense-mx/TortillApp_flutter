@@ -11,8 +11,8 @@ class PaletaDeColores {
   final Color colorContornoBlanco = Color(0xFFD4D4D4);
   final Color colorTextRojo = Color.fromARGB(255, 184, 30, 30);
 
-  final Color colorButtonBlue = Color.fromARGB(255, 184, 30, 30);
-  final Color colorButtonBeige = Color.fromARGB(255, 184, 30, 30);
-  final Color colorButtonGreen = Color.fromARGB(255, 184, 30, 30);
-  final Color colorButtonPurple = Color.fromARGB(255, 184, 30, 30);
+  final Color colorButtonBlue = Color(0xFF21B0E4); // Azul
+  final Color colorButtonBeige = Color(0xFFA89287); // Beige
+  final Color colorButtonPurple = Color(0xFF9051A9); // Morado
+  final Color colorButtonGreen = Color(0xFF5BA951); // Verde
 }

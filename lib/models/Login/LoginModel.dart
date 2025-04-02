@@ -42,7 +42,8 @@ class LoginModel {
         var user = data['user'];
         var config = user['config'];
 
-        saveDataAdmin(data['token'], user['id'], user['id_rol']);
+        saveDataAdmin(
+            data['token'], user['id'], user['id_rol'], user['nombre']);
         // verificar si el usuario es admin o no
         if (user['id_rol'] == 1) {
           print("Hol eres admin");
@@ -85,7 +86,8 @@ class LoginModel {
   }
 
   //Funcion para guardar el token en el dispositivo
-  Future<void> saveDataAdmin(String token, int id_cuenta, int id_rol) async {
+  Future<void> saveDataAdmin(
+      String token, int id_cuenta, int id_rol, String nombre) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token); //Guardar el token
     await prefs.setInt('id_cuenta', id_cuenta); //Guardar el nombre
