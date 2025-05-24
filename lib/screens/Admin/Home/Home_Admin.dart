@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/screens/Admin/Home/Home_Mostrador.dart';
 import 'package:tortillapp/screens/Admin/Home/example1.dart';
 import 'package:tortillapp/screens/Admin/Home/example2.dart';
 import 'package:tortillapp/screens/Admin/Home/example3.dart';
@@ -20,8 +19,7 @@ class _Home_AdminState extends State<Home_Admin>
 
   // Lista de pantallas
   final List<Widget> _screens = [
-    Home_Mostrador(),
-    // example1(), // Pantalla de inicio
+    example1(), // Pantalla de inicio
     example2(), // Pantalla de mis sucursales
     example3(), // Pantalla de estadísticas
     example4(), // Pantalla de mi perfil

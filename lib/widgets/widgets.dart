@@ -6,6 +6,28 @@ class CustomWidgets extends StatelessWidget {
   final PaletaDeColores colores = PaletaDeColores();
   bool _isPasswordVisible = false;
 
+  // FIADO ó EFECTIVO
+  Widget opcionRadio({
+    required String valor,
+    required String texto,
+    required String grupoValor,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Radio<String>(
+          value: valor,
+          groupValue: grupoValor,
+          onChanged: (value) {
+            if (value != null) onChanged(value);
+          },
+        ),
+        Text(texto),
+      ],
+    );
+  }
+
   // Método para TextField con icono opcional
   Widget TextfieldPrimary({
     required TextEditingController controller,
@@ -195,17 +217,6 @@ class CustomWidgets extends StatelessWidget {
     );
   }
 
-  Widget Tittle_28({required String text, required Color color}) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-    );
-  }
-
   // Subtittle widget
   Widget Subtittle({required String text, required Color color}) {
     return Text(
@@ -213,54 +224,6 @@ class CustomWidgets extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         color: color,
-      ),
-    );
-  }
-
-  Widget Puesto({
-    required String text,
-    String? icon,
-    Color? color,
-    double? maxWidth, // Añadimos un parámetro opcional para definir el maxWidth
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // Si deseas manejar algún evento al presionar, lo puedes hacer aquí
-        print("Elemento presionado");
-      },
-      child: Align(
-        alignment: Alignment.centerLeft, // Alineación a la izquierda
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          constraints: BoxConstraints(
-            maxWidth: maxWidth ??
-                200, // Definir el maxWidth, si no se pasa, se usa 300 por defecto
-          ),
-          decoration: BoxDecoration(
-            color: color ?? colores.colorFondo,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colores.colorInputs),
-          ),
-          child: Row(
-            children: [
-              if (icon != null) ...[
-                SvgPicture.asset(
-                  icon,
-                  width: 24,
-                  height: 24,
-                ),
-                SizedBox(width: 10.0), // Espacio entre el icono y el texto
-              ],
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: colores.colorPrincipal, // Color del texto
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
