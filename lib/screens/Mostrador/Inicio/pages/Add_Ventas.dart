@@ -20,6 +20,12 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
     {'cantidad': 2, 'unidad': 'Kg', 'producto': 'Tortillas', 'precio': 20.0},
   ];
 
+  List<Map<String, dynamic>> productos = [
+    {'nombre': 'Salsa roja', 'precio': 12.0},
+    {'nombre': 'Salsa verde', 'precio': 10.0},
+    {'nombre': 'Refresco', 'precio': 15.0},
+  ];
+
   Unidad _unidad = Unidad.kg;
 
   @override
@@ -155,9 +161,8 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
 
             // Botón Productos
             ElevatedButton.icon(
-              onPressed: () {
-                // Acción al seleccionar productos
-              },
+              // Acción al seleccionar productos
+              onPressed: mostrarModalProductos,
               icon: Icon(Icons.shopping_bag_outlined),
               label: Text("Productos"),
               style: ElevatedButton.styleFrom(
@@ -305,6 +310,103 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
               ],
             )
           ],
+        );
+      },
+    );
+  }
+
+  void mostrarModalProductos() {
+    String? productoSeleccionado;
+    TextEditingController cantidadController = TextEditingController(text: '1');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          contentPadding: EdgeInsets.all(16),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Selecciona el artículo:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 10),
+
+              // Dropdown de productos
+              DropdownButtonFormField<String>(
+                value: productoSeleccionado,
+                items: productos.map<DropdownMenuItem<String>>((item) {
+                  return DropdownMenuItem<String>(
+                    value: item['nombre'],
+                    child: Text('${item['nombre']} \$${item['precio']}'),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  productoSeleccionado = value;
+                },
+                decoration: InputDecoration(border: OutlineInputBorder()),
+              ),
+
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Cantidad",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+
+              SizedBox(height: 8),
+
+              // Campo de cantidad
+              TextField(
+                controller: cantidadController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(border: OutlineInputBorder()),
+                textAlign: TextAlign.center,
+              ),
+
+              SizedBox(height: 20),
+
+              // Botones Cancelar y Aceptar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child:
+                        Text("Cancelar", style: TextStyle(color: Colors.red)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (productoSeleccionado != null &&
+                          cantidadController.text.isNotEmpty) {
+                        // Lógica para agregar al carrito
+                        final producto = productos.firstWhere(
+                            (e) => e['nombre'] == productoSeleccionado);
+                        setState(() {
+                          carrito.add({
+                            'producto': productoSeleccionado!,
+                            'cantidad': int.parse(cantidadController.text),
+                            'precio': producto['precio'] *
+                                int.parse(cantidadController.text),
+                            'unidad': 'unidad'
+                          });
+                        });
+                        Navigator.pop(context);
+                      }
+                    },
+                    child:
+                        Text("Aceptar", style: TextStyle(color: Colors.green)),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
