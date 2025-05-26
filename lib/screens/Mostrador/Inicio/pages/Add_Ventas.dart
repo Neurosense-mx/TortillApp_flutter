@@ -223,8 +223,12 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
           icon: Icon(Icons.shopping_cart),
           onPressed: () {
             if (_cantidadController.text.isEmpty) {
+              String unidadTexto =
+                  _unidad == Unidad.kg ? "kilogramos" : "pesos";
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Ingresa la cantidad de maíz')),
+                SnackBar(
+                  content: Text('Ingresa la cantidad de $unidadTexto'),
+                ),
               );
             } else {
               double total =
