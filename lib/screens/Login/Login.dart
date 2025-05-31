@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tortillapp/config/Notification.dart';
+import 'package:tortillapp/config/backend.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/main.dart';
 import 'package:tortillapp/models/Login/LoginModel.dart';
@@ -11,7 +14,7 @@ import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Molinero/MolineroScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:tortillapp/screens/Register/RegisterEmail.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,91 +35,113 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
  
-  Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
-      return;
-    }
+Future<void> _login() async {
+  if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    _showCupertinoDialog('Error', 'Por favor, llena todos los campos.');
+    return;
+  }
 
-    if (!_emailController.text.contains('@')) {
-      _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
-      return;
-    }
+  if (!_emailController.text.contains('@')) {
+    _showCupertinoDialog('Error', 'Por favor, ingresa un correo válido.');
+    return;
+  }
 
-    // Mostrar loader
-    _showLoadingDialog();
+  // Mostrar loader
+  _showLoadingDialog();
 
-    // Instanciamos el modelo de Login
-    LoginModel loginModel = LoginModel();
-    loginModel.setEmail(_emailController.text);
-    loginModel.setPassword(_passwordController.text);
+  // Instanciamos el modelo de Login
+  LoginModel loginModel = LoginModel();
+  loginModel.setEmail(_emailController.text);
+  loginModel.setPassword(_passwordController.text);
 
-    // Realizar la solicitud de login
-    Map<String, dynamic> response = await loginModel.login();
+  // Realizar la solicitud de login
+  Map<String, dynamic> response = await loginModel.login();
 
-    // Mantener el loader visible 1 segundo adicional
-    await Future.delayed(Duration(seconds: 1));
+  // Mantener el loader visible 1 segundo adicional
+  await Future.delayed(Duration(seconds: 1));
 
-    // Ocultar loader
-    Navigator.pop(context);
+  // Ocultar loader
+  Navigator.pop(context);
 
-    print("Response: ---------------------" + response.toString());
+  print("Response: ---------------------" + response.toString());
 
-    if (response['statusCode'] == 200) {
-      var id_role = response['user']['id_rol'].toString();
-      print("Mi rol es : " + id_role);
+  if (response['statusCode'] == 200) {
+    var id_role = response['user']['id_rol'].toString();
+    print("Mi rol es : " + id_role);
 
-      if (id_role == "1") {
-        print("Mi rol es : " + id_role);
-        var nombre = response['user']['nombre'];
-        var config = response['config'];
+    // Guardar info en SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final idAdmin = await prefs.getInt('id_admin') ?? 0;
+    await prefs.setString('nombre', response['user']['nombre']);
 
-        if (nombre == "") {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
-        } else {
-          var negocio = config['negocio'];
-          var sucursal = config['sucursal'];
-          var precio = config['precio'];
-          var productos = config['productos'];
-          var gastos = config['gastos'];
-          var empleados = config['empleados'];
+    
+    print("------------------------------- ID Admin: $idAdmin");
+    // Validar facturación
+    final facturacionUrl = Uri.parse('${ApiConfig.backendUrl}/rutinas/facturacion/$idAdmin');
+    final factResponse = await http.get(facturacionUrl);
+    print("Facturación URL: $facturacionUrl");
 
-          if (negocio == 1 &&
-              sucursal == 1 &&
-              precio == 1 &&
-              productos == 1 &&
-              gastos == 1 &&
-              empleados == 1) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => Home_Admin()),
-              (Route<dynamic> route) => false,
-            );
+    if (factResponse.statusCode == 200) {
+      final factData = jsonDecode(factResponse.body);
+      print("Facturación Data: $factData");
+      if (factData['status'] == 1) {
+        // ===>> CONTINUAR CON REDIRECCIONAMIENTO SEGÚN ROL <<===
+
+        if (id_role == "1") {
+          var nombre = response['user']['nombre'];
+          var config = response['config'];
+
+          if (nombre == "") {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
           } else {
-            _showCupertinoDialog(
-                'Bienvenido', 'No configurado sucursales, etc.');
+            var negocio = config['negocio'];
+            var sucursal = config['sucursal'];
+            var precio = config['precio'];
+            var productos = config['productos'];
+            var gastos = config['gastos'];
+            var empleados = config['empleados'];
+
+            if (negocio == 1 &&
+                sucursal == 1 &&
+                precio == 1 &&
+                productos == 1 &&
+                gastos == 1 &&
+                empleados == 1) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Home_Admin()),
+                (Route<dynamic> route) => false,
+              );
+            } else {
+              _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc.');
+            }
           }
-        }
-      } else {
-        // Lógica para usuario normal si aplica
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-            'nombre', response['user']['nombre']); //Guardar el token
-        print("Nombre: " + response['user']['nombre']);
-        //rol molinero
-        if (id_role == "2") {
+        } else if (id_role == "2") {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Molinero_Screen()),
             (Route<dynamic> route) => false,
           );
         }
+
+      } else {
+        
+       if(factData['status'] == 0) {
+        _showCupertinoDialog('Facturación inválida', factData['message'] ?? 'Error, pago no realizado.');
+        //lanzar pantalla de pago
+        } else {
+          print("Error desconocido en la facturación.");
+        }
       }
     } else {
-      _showCupertinoDialog('Error', response['message']);
+      _showCupertinoDialog('Error de red', 'Error al obtener la facturación: ${factResponse.statusCode}');
+      print("Error al obtener la facturación: ${factResponse.statusCode}");
     }
+  } else {
+    _showCupertinoDialog('Error', response['message']);
   }
+}
 
   void _showLoadingDialog() {
     showDialog(

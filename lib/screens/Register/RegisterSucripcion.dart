@@ -233,87 +233,78 @@ class _RegisterSuscripcionState extends State<RegisterSuscripcion>
                                         suscripcion['id'];
 
                                 return Card(
-                                  elevation: isSelected ? 6 : 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    side: BorderSide(
-                                      color: isSelected
-                                          ? colores.colorPrincipal
-                                          : Color.fromARGB(255, 190, 190, 190),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  color: isSelected
-                                      ? Colors.white
-                                      : colores.colorFondo,
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    title: Padding(
-                                      padding: EdgeInsets.only(left: 8),
-                                      child: Text(
-                                        suscripcion['nombre'],
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: isSelected
-                                              ? colores.colorPrincipal
-                                              : colores.colorNegro,
-                                        ),
-                                      ),
-                                    ),
-                                    subtitle: Padding(
-                                      padding: EdgeInsets.only(left: 8),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          print(
-                                              "Ver beneficios de ${suscripcion['nombre']}");
-                                        },
-                                        child: Text(
-                                          "Ver beneficios",
-                                          style: TextStyle(
-                                            color: colores.colorPrincipal,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "\$${suscripcion['precio']}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: isSelected
-                                                ? colores.colorPrincipal
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        if (isSelected)
-                                          Icon(
-                                            Icons.check_circle,
-                                            color: colores.colorPrincipal,
-                                          ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        if (_selectedSubscriptionId.value ==
-                                            suscripcion['id']) {
-                                          _selectedSubscriptionId.value = null;
-                                        } else {
-                                          _selectedSubscriptionId.value =
-                                              suscripcion['id'];
-                                        }
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
+  elevation: isSelected ? 6 : 2,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+    side: BorderSide(
+      color: isSelected
+          ? colores.colorPrincipal
+          : Color.fromARGB(255, 200, 200, 200),
+      width: 1,
+    ),
+  ),
+  color: isSelected ? Colors.white : colores.colorFondo,
+  child: InkWell(
+    onTap: () {
+      setState(() {
+        if (_selectedSubscriptionId.value == suscripcion['id']) {
+          _selectedSubscriptionId.value = null;
+        } else {
+          _selectedSubscriptionId.value = suscripcion['id'];
+        }
+      });
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    suscripcion['nombre'],
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? colores.colorPrincipal
+                          : colores.colorNegro,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    print("Ver beneficios de ${suscripcion['nombre']}");
+                  },
+                  child: Icon(
+                    Icons.remove_red_eye_outlined,
+                    color: colores.colorPrincipal,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 12),
+          Text(
+            "\$${suscripcion['precio']} MXN",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: isSelected ? colores.colorPrincipal : Colors.black,
+            ),
+          ),
+          if (isSelected) ...[
+            SizedBox(width: 6),
+            Icon(Icons.check_circle, color: colores.colorPrincipal, size: 20),
+          ],
+        ],
+      ),
+    ),
+  ),
+);
+},
                             ),
                           ],
                         ),
