@@ -1,0 +1,2 @@
+/home/rs17/Documentos/Proyectos/Trabajo/neurosense/Tortillapp/TortillApp_flutter/android/app/.cxx/Debug/6c4i131h/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/rs17/Documentos/Proyectos/Trabajo/neurosense/Tortillapp/TortillApp_flutter/android/app/.cxx/Debug/6c4i131h/armeabi-v7a/CMakeFiles/rebuild_cache.dir

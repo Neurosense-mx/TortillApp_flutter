@@ -1,0 +1,1 @@
+/home/rs17/Documentos/Proyectos/Trabajo/neurosense/Tortillapp/TortillApp_flutter/build/app/intermediates/cxx/Debug/6c4i131h/obj/arm64-v8a

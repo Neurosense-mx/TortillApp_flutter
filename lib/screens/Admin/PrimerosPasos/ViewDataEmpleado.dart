@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
+
 import 'package:tortillapp/config/Notification.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/pdf/Pdf_Genertor.dart';
@@ -108,7 +110,8 @@ Future<void> _mostrarNotificacion(String titulo, String mensaje) async {
       );
 
       print("✅ PDF guardado en: $pdfPath");
-      Share.shareFiles([pdfPath]);
+      Share.shareXFiles([XFile(pdfPath)]);
+
     } catch (e) {
       print("❌ Error al guardar el PDF: $e");
     }

@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/rs17/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/rs17/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/rs17/Documentos/Proyectos/Trabajo/neurosense/Tortillapp/TortillApp_flutter/android/app/.cxx/Debug/6c4i131h/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/rs17/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/rs17/Documentos/Proyectos/Trabajo/neurosense/Tortillapp/TortillApp_flutter/android/app/.cxx/Debug/6c4i131h/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
