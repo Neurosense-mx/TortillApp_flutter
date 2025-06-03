@@ -1,42 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 
-class Pesar_masa extends StatefulWidget {
+class PesarMasa extends StatefulWidget {
+  final MolinoModel molino;
+
+  const PesarMasa({Key? key, required this.molino}) : super(key: key);
+
   @override
-  _Pesar_masaState createState() => _Pesar_masaState();
+  State<PesarMasa> createState() => _PesarMasaState();
 }
 
-class _Pesar_masaState extends State<Pesar_masa> {
-
+class _PesarMasaState extends State<PesarMasa> {
   final PaletaDeColores colores = PaletaDeColores();
   final CustomWidgets customWidgets = CustomWidgets();
 
-  // Controlador para el campo de texto
   final TextEditingController _kgMasa = TextEditingController();
-
-  // Lista de valores sugeridos
-  final List<Map<String, dynamic>> maiz_registrado = [
-    {
-      "id": 1,
-      "fecha": "2021-10-01 16:00:00",
-      "kg": "10",
-    },
-    {
-      "id": 2,  // El "id" debe ser único para cada registro
-      "fecha": "2021-10-01 16:00:00",
-      "kg": "14",
-    }
-  ];
-
-  int? _selectedMaizId; // Variable para almacenar el valor seleccionado
-  String? _selectedKg; // Variable para almacenar el kg del maíz seleccionado
+  List<Map<String, dynamic>> maizRegistrado = [];
+  int? _selectedMaizId;
+  String? _selectedKg;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-   //obtener del modelo el maiz registrado de ayer
+    _loadMaizRegistrado();
   }
+
+  Future<void> _loadMaizRegistrado() async {
+    try {
+      final data = await widget.molino.getMaizSinPesar();
+      if (!mounted) return;
+
+      final lista = data.map<Map<String, dynamic>>((item) {
+        return {
+          "id": item["id"],
+          "fecha": DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(item["fecha"])),
+          "kg": item["kg_cocidos"].toString()
+        };
+      }).toList();
+
+      setState(() {
+        maizRegistrado = lista;
+        if (maizRegistrado.isNotEmpty) {
+          _selectedMaizId = maizRegistrado[0]["id"];
+          _selectedKg = maizRegistrado[0]["kg"];
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error al cargar maíz registrado: $e");
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _guardarPeso() async {
+    final pesoText = _kgMasa.text.trim();
+    if (pesoText.isEmpty || _selectedMaizId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ingresa la cantidad de maíz')),
+      );
+      return;
+    }
+
+    final kg = double.tryParse(pesoText);
+    if (kg == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El peso ingresado no es válido')),
+      );
+      return;
+    }
+
+    final success = await widget.molino.pesarMasa(_selectedMaizId!, kg);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success
+            ? '¡Peso registrado correctamente!'
+            : 'Ocurrió un error al guardar'),
+        backgroundColor: success ? Colors.green : Colors.red,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    if (success) {
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) Navigator.pop(context);
+    }
+  }
+
   @override
   void dispose() {
     _kgMasa.dispose();
@@ -45,10 +101,13 @@ class _Pesar_masaState extends State<Pesar_masa> {
 
   @override
   Widget build(BuildContext context) {
+    final anchoContenedor = MediaQuery.of(context).size.width * 0.8;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F8F8),
       appBar: AppBar(
         title: Text(
-          'Pesar Masa', 
+          'Pesar Masa',
           style: TextStyle(
             color: colores.colorPrincipal,
             fontSize: 18,
@@ -60,83 +119,66 @@ class _Pesar_masaState extends State<Pesar_masa> {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colores.colorPrincipal),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de pantalla
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20), 
-              customWidgets.Subtittle(
-                text: 'Por favor registra el peso de la masa (kg)', 
-                color: colores.colorPrincipal,
-              ),
-              
-              SizedBox(height: 40), 
-              // TextField para ingresar los kg de maíz
-              customWidgets.TextfieldNumber(
-                controller: _kgMasa,
-                label: "Peso",
-                hasIcon: true,
-                icon: Icons.scale,
-              ),
-
-
-              SizedBox(height: 40),
-              // Dropdown para seleccionar maíz
-              customWidgets.DropdownPrimary(
-                value: _selectedMaizId ?? maiz_registrado[0]['id'], // Usar el primer valor si no se ha seleccionado ninguno
-                items: maiz_registrado.map((maiz) {
-                  return DropdownMenuItem<int>(
-                    value: maiz['id'],
-                    child: Text('${maiz['fecha']} ${maiz['kg']} kg'),
-                  );
-                }).toList(),
-                onChanged: (int? newValue) {
-                  setState(() {
-                    _selectedMaizId = newValue; // Actualizar el estado con el nuevo valor
-                    // Actualizar el kg seleccionado
-                    _selectedKg = maiz_registrado.firstWhere((maiz) => maiz['id'] == newValue)['kg'];
-                  });
-                },
-                label: 'Selecciona Maíz',
-                hasIcon: true,
-                icon: Icons.event_note,
-              ),
-
-              SizedBox(height: 20),
-
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CustomWidgets().ButtonPrimary(
-                    text: 'Guardar',
-                    onPressed: () {
-                      if (_kgMasa.text.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Ingresa la cantidad de maíz')),
-                        );
-                      } else {
-                        // Lógica para guardar los datos
-                        print('ID Maíz seleccionado: $_selectedMaizId');
-                       
-                        print('KG ingresado: ${_kgMasa.text}');
-                        Navigator.pop(context);
-                      }
-                    },
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : maizRegistrado.isEmpty
+              ? const Center(child: Text('No hay registros de maíz sin pesar.'))
+              : Center(
+                  child: Container(
+                    width: anchoContenedor,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        customWidgets.Subtittle(
+                          text: 'Por favor registra el peso de la masa (kg)',
+                          color: colores.colorPrincipal,
+                        ),
+                        const SizedBox(height: 40),
+                        customWidgets.TextfieldNumber(
+                          controller: _kgMasa,
+                          label: "Peso",
+                          hasIcon: true,
+                          icon: Icons.scale,
+                        ),
+                        const SizedBox(height: 40),
+                        customWidgets.DropdownPrimary(
+                          value: (_selectedMaizId ?? maizRegistrado[0]['id']) as int,
+                          items: maizRegistrado.map((maiz) {
+                            return DropdownMenuItem<int>(
+                              value: maiz['id'],
+                              child: Text('${maiz['fecha']} - ${maiz['kg']} kg'),
+                            );
+                          }).toList(),
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              _selectedMaizId = newValue;
+                              _selectedKg = maizRegistrado.firstWhere(
+                                  (maiz) => maiz['id'] == newValue)['kg'];
+                            });
+                          },
+                          label: 'Selecciona Maíz',
+                          hasIcon: true,
+                          icon: Icons.event_note,
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: customWidgets.ButtonPrimary(
+                              text: 'Guardar',
+                              onPressed: _guardarPeso,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

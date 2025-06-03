@@ -107,7 +107,7 @@ Future<void> _login() async {
                 precio == 1 &&
                 productos == 1 &&
                 gastos == 1 &&
-                empleados == 1) {
+                empleados == 1) { //------------------ ROL ADMIN PERO YA CONFIGURADO
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => Home_Admin()),
@@ -117,7 +117,7 @@ Future<void> _login() async {
               _showCupertinoDialog('Bienvenido', 'No configurado sucursales, etc.');
             }
           }
-        } else if (id_role == "2") {
+        } else if (id_role == "2") { //-------------------------------------------- ROL MOLINER
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Molinero_Screen()),

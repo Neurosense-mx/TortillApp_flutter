@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/backend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tortillapp/utils/Data_sesion.dart';
 
 class LoginModel {
   String email = "";
@@ -41,8 +42,17 @@ class LoginModel {
         // Extre el diccionario de usuario
         var user = data['user'];
         var config = user['config'];
+        // Guardar el token y los datos del usuario
+        await DataUser().setCuenta(
+          idCuenta: user['id_cuenta'],
+          idSucursal: user['id_sucursal'],
+          idAdmin: user['id_admin'],
+          idNegocio: user['id_negocio'],
+          token: data['token'],
+        );
 
-        saveDataAdmin(data['token'], user['id'], user['id_rol'], user['id_admin']);
+        saveDataAdmin(
+            data['token'], user['id'], user['id_rol'], user['id_admin']);
         // verificar si el usuario es admin o no
         if (user['id_rol'] == 1) {
           print("Hol eres admin");
@@ -86,7 +96,8 @@ class LoginModel {
   }
 
   //Funcion para guardar el token en el dispositivo
-  Future<void> saveDataAdmin(String token, int id_cuenta, int id_rol, int id_admin) async {
+  Future<void> saveDataAdmin(
+      String token, int id_cuenta, int id_rol, int id_admin) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token); //Guardar el token
     await prefs.setInt('id_cuenta', id_cuenta); //Guardar el nombre

@@ -4,9 +4,10 @@ import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 
 class Add_maiz_screen extends StatefulWidget {
-   final MolinoModel molino; // Parámetro requerido
+  final MolinoModel molino;
 
-  Add_maiz_screen({required this.molino}); // Constructor
+  Add_maiz_screen({required this.molino});
+
   @override
   _Add_maiz_screenState createState() => _Add_maiz_screenState();
 }
@@ -14,7 +15,6 @@ class Add_maiz_screen extends StatefulWidget {
 class _Add_maiz_screenState extends State<Add_maiz_screen> {
   final PaletaDeColores colores = PaletaDeColores();
   final CustomWidgets customWidgets = CustomWidgets();
-
   final TextEditingController _kgMaizController = TextEditingController();
   final List<String> sugerencias = ["1kg", "5kg", "10kg", "15kg", "20kg"];
 
@@ -23,21 +23,49 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
     _kgMaizController.dispose();
     super.dispose();
   }
-  
-  // guardar los kilos de maíz
-  void _guardarMaiz() {
+
+  void _guardarMaiz() async {
     if (_kgMaizController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ingresa la cantidad de maíz')),
+        SnackBar(
+          content: Text('Ingresa la cantidad de maíz'),
+          backgroundColor: Colors.orange,
+        ),
       );
+      return;
+    }
+
+    double kg = double.parse(_kgMaizController.text);
+    bool success = await widget.molino.addMaiz(kg);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('¡Maíz agregado correctamente!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+      });
     } else {
-      widget.molino.addMaiz(double.parse(_kgMaizController.text));
-      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ocurrió un error al guardar'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F8F8),
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
           'Cocer maíz',
@@ -47,83 +75,70 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: colores.colorFondo,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colores.colorPrincipal),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20),
               customWidgets.Subtittle(
                 text: 'Por favor registra los kilogramos de maíz',
                 color: colores.colorPrincipal,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 30),
+
               customWidgets.TextfieldNumber(
                 controller: _kgMaizController,
                 label: "Kilos de maíz",
                 hasIcon: true,
                 icon: Icons.grain,
               ),
-              SizedBox(height: 20),
 
-              // Lista optimizada con 5 botones
-            SingleChildScrollView(
-  scrollDirection: Axis.horizontal,
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: sugerencias.map((valor) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colores.colorFondo,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: Colors.grey, width: 1),
-            ),
-          ),
-          onPressed: () {
-            _kgMaizController.text = valor.replaceAll('kg', '');
-          },
-          child: Text(valor, style: TextStyle(color: Colors.black)),
-        ),
-      );
-    }).toList(),
-  ),
-),
+              const SizedBox(height: 20),
 
-              SizedBox(height: 20),
-
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CustomWidgets().ButtonPrimary(
-                    text: 'Guardar',
-                    onPressed: () {
-                      if (_kgMaizController.text.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Ingresa la cantidad de maíz')),
-                        );
-                      }
-                      else {
-                        _guardarMaiz();
-                      }
-                    },
-                  ),
+              // Botones sugerencia
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: sugerencias.map((valor) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colores.colorFondo,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Colors.grey, width: 1),
+                          ),
+                        ),
+                        onPressed: () {
+                          _kgMaizController.text = valor.replaceAll('kg', '');
+                        },
+                        child: Text(
+                          valor,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-              SizedBox(height: 20),
+
+              const SizedBox(height: 30),
+
+              // Botón principal
+              customWidgets.ButtonPrimary(
+                text: 'Guardar',
+                onPressed: _guardarMaiz,
+              ),
             ],
           ),
         ),
