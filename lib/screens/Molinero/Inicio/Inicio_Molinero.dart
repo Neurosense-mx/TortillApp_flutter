@@ -20,14 +20,40 @@ class _HomeMolineroState extends State<HomeMolinero> {
   late Future<String> _nombreFuture;
   late Future<Map<String, Map<String, double>>> _estadisticasFuture;
 
-  @override
-  void initState() {
-    super.initState();
-    _nombreFuture = _loadNombre();
-    _estadisticasFuture = _getEstadisticas();
-  }
+  late final Widget iconMolinoSvg;
+late final Widget iconAguaSvg;
+late final Widget iconPesoSvg;
 
-  Future<String> _loadNombre() async {
+
+@override
+void initState() {
+  super.initState();
+  _nombreFuture = _loadNombre();
+  _estadisticasFuture = _getEstadisticas();
+
+  iconMolinoSvg = SvgPicture.asset(
+    'lib/assets/cards/molinero/molino_icon.svg',
+    width: 30,
+    height: 30,
+    cacheColorFilter: true,
+  );
+
+  iconAguaSvg = SvgPicture.asset(
+    'lib/assets/cards/molinero/cocer_icon.svg',
+    width: 50,
+    height: 50,
+    cacheColorFilter: true,
+  );
+
+  iconPesoSvg = SvgPicture.asset(
+    'lib/assets/cards/molinero/pesar_masa_icon.svg',
+    width: 50,
+    height: 50,
+    cacheColorFilter: true,
+  );
+}
+
+Future<String> _loadNombre() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('nombre') ?? "Usuario";
   }
@@ -37,7 +63,8 @@ class _HomeMolineroState extends State<HomeMolinero> {
       final rawData = await widget.molino.getEstadisticas();
       return rawData.map((key, value) {
         final innerMap = Map<String, double>.from(
-          (value as Map).map((k, v) => MapEntry(k.toString(), (v as num).toDouble())),
+          (value as Map)
+              .map((k, v) => MapEntry(k.toString(), (v as num).toDouble())),
         );
         return MapEntry(key.toString(), innerMap);
       });
@@ -71,19 +98,29 @@ class _HomeMolineroState extends State<HomeMolinero> {
             future: _nombreFuture,
             builder: (context, snapshotNombre) {
               final nombre = snapshotNombre.data ?? "Usuario";
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SaludoText(nombre: nombre, colorPrincipal: colores.colorPrincipal, saludo: _getSaludo()),
+                  _SaludoText(
+                    nombre: nombre,
+                    colorPrincipal: colores.colorPrincipal,
+                    saludo: _getSaludo(),
+                  ),
                   const SizedBox(height: 16),
-                  _SeccionTitulo(texto: 'Puesto actual', color: colores.colorPrincipal),
+                  _SeccionTitulo(
+                      texto: 'Puesto actual', color: colores.colorPrincipal),
                   const SizedBox(height: 10),
-                  const PuestoCard(),
+                  PuestoCard(icono: iconMolinoSvg),
                   const SizedBox(height: 16),
-                  _SeccionTitulo(texto: 'Acciones', color: colores.colorPrincipal),
+                  _SeccionTitulo(
+                      texto: 'Acciones', color: colores.colorPrincipal),
                   const SizedBox(height: 10),
-                  AccionesRow(molino: widget.molino),
+                  AccionesRow(
+  molino: widget.molino,
+  iconAguaSvg: iconAguaSvg,
+  iconPesoSvg: iconPesoSvg,
+),
+
                   const SizedBox(height: 16),
                   _SeccionEstadisticas(
                     colorPrincipal: colores.colorPrincipal,
@@ -120,16 +157,11 @@ class _SaludoText extends StatelessWidget {
         Text(
           'Hola, $nombre',
           style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: colorPrincipal,
-          ),
+              fontSize: 22, fontWeight: FontWeight.bold, color: colorPrincipal),
         ),
         const SizedBox(height: 4),
-        Text(
-          saludo,
-          style: const TextStyle(fontSize: 15, color: Color(0xFF393939)),
-        ),
+        Text(saludo,
+            style: const TextStyle(fontSize: 15, color: Color(0xFF393939))),
       ],
     );
   }
@@ -139,24 +171,23 @@ class _SeccionTitulo extends StatelessWidget {
   final String texto;
   final Color color;
 
-  const _SeccionTitulo({Key? key, required this.texto, required this.color}) : super(key: key);
+  const _SeccionTitulo({Key? key, required this.texto, required this.color})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      texto,
-      style: TextStyle(fontSize: 16, color: color),
-    );
+    return Text(texto, style: TextStyle(fontSize: 16, color: color));
   }
 }
 
 class PuestoCard extends StatelessWidget {
-  const PuestoCard({Key? key}) : super(key: key);
+  final Widget icono;
+
+  const PuestoCard({Key? key, required this.icono}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final PaletaDeColores colores = PaletaDeColores();
-
     return Card(
       color: Colors.white,
       elevation: 2.4,
@@ -169,16 +200,14 @@ class PuestoCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              'lib/assets/cards/molinero/molino_icon.svg',
-              width: 30,
-              height: 30,
-              cacheColorFilter: true, // Cache para mejorar rendimiento
-            ),
+            icono,
             const SizedBox(width: 10),
             Text(
               'Molino',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300, color: colores.colorPrincipal),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w300,
+                  color: colores.colorPrincipal),
             ),
           ],
         ),
@@ -186,16 +215,23 @@ class PuestoCard extends StatelessWidget {
     );
   }
 }
-
 class AccionesRow extends StatelessWidget {
   final MolinoModel molino;
+  final Widget iconAguaSvg;
+  final Widget iconPesoSvg;
 
-  const AccionesRow({Key? key, required this.molino}) : super(key: key);
+  const AccionesRow({
+    Key? key,
+    required this.molino,
+    required this.iconAguaSvg,
+    required this.iconPesoSvg,
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
     final PaletaDeColores colores = PaletaDeColores();
-
+   
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardSize = (constraints.maxWidth / 2) - 12;
@@ -206,7 +242,7 @@ class AccionesRow extends StatelessWidget {
           child: Row(
             children: [
               _SquareCard(
-                imagePath: 'lib/assets/cards/molinero/cocer_icon.svg',
+                icono: iconAguaSvg,
                 text: 'Cocer maíz',
                 colorHex: '21B0E4',
                 size: cardSize,
@@ -214,12 +250,11 @@ class AccionesRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               _SquareCard(
-                imagePath: 'lib/assets/cards/molinero/pesar_masa_icon.svg',
+                icono: iconPesoSvg,
                 text: 'Pesar masa',
                 colorHex: '5BA951',
                 size: cardSize,
-                destino: PesarMasa(molino: molino)
-,
+                destino: PesarMasa(molino: molino),
               ),
             ],
           ),
@@ -230,7 +265,7 @@ class AccionesRow extends StatelessWidget {
 }
 
 class _SquareCard extends StatelessWidget {
-  final String imagePath;
+  final Widget icono;
   final String text;
   final String colorHex;
   final double size;
@@ -238,7 +273,7 @@ class _SquareCard extends StatelessWidget {
 
   const _SquareCard({
     Key? key,
-    required this.imagePath,
+    required this.icono,
     required this.text,
     required this.colorHex,
     required this.size,
@@ -259,8 +294,10 @@ class _SquareCard extends StatelessWidget {
               const begin = Offset(1.0, 0.0);
               const end = Offset.zero;
               const curve = Curves.easeInOut;
-              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              return SlideTransition(position: animation.drive(tween), child: child);
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              return SlideTransition(
+                  position: animation.drive(tween), child: child);
             },
           ),
         );
@@ -272,22 +309,16 @@ class _SquareCard extends StatelessWidget {
           width: size,
           height: size,
           padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+              color: color, borderRadius: BorderRadius.circular(10)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                imagePath,
-                width: 50,
-                height: 50,
-                cacheColorFilter: true,
-              ),
+              icono,
               const SizedBox(height: 16),
-              Text(
-                text,
-                style: const TextStyle(fontSize: 16, color: Colors.white),
-                textAlign: TextAlign.center,
-              ),
+              Text(text,
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                  textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -296,6 +327,7 @@ class _SquareCard extends StatelessWidget {
   }
 }
 
+// Aquí deberías completar con tu widget _SeccionEstadisticas si no está incluido en otro archivo.
 class _SeccionEstadisticas extends StatelessWidget {
   final Color colorPrincipal;
   final Future<Map<String, Map<String, double>>> estadisticasFuture;
@@ -316,7 +348,8 @@ class _SeccionEstadisticas extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text('Estadísticas', style: TextStyle(fontSize: 16, color: colorPrincipal)),
+              Text('Estadísticas',
+                  style: TextStyle(fontSize: 16, color: colorPrincipal)),
               const Spacer(),
               IconButton(
                 icon: Icon(Icons.refresh, size: 20, color: colorPrincipal),
@@ -332,7 +365,8 @@ class _SeccionEstadisticas extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return const Center(child: Text("Error al cargar estadísticas."));
+                  return const Center(
+                      child: Text("Error al cargar estadísticas."));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("No hay datos disponibles."));
                 } else {
