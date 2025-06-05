@@ -44,7 +44,7 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
           content: Text('¡Maíz agregado correctamente!'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 1),
         ),
       );
       Future.delayed(Duration(seconds: 1), () {

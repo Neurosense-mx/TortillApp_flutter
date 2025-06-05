@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // <-- IMPORTANTE
 import 'package:tortillapp/screens/Splashscreen/Splashscreen.dart';
 
-// Instancia global del plugin de notificaciones locales
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Configura la orientación de la pantalla
   SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp, // Solo permite la orientación vertical normal
+    DeviceOrientation.portraitUp,
   ]);
 
-  // Configura el plugin de notificaciones locales
   await _configureLocalNotifications();
 
   runApp(MyApp());
 }
 
-// Función para configurar las notificaciones locales
 Future<void> _configureLocalNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher'); // Ícono de la app
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -40,11 +37,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TortillApp',
-      initialRoute: '/splashscreen', // Ruta inicial
       debugShowCheckedModeBanner: false,
+      initialRoute: '/splashscreen',
       routes: {
-        '/splashscreen': (context) => SplashScreen(), // Ruta para la pantalla de Splash
+        '/splashscreen': (context) => SplashScreen(),
       },
+
+      // ✅ Agrega estas líneas:
+      supportedLocales: const [
+        Locale('es', ''), // Español
+        Locale('en', ''), // Inglés
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

@@ -83,7 +83,7 @@ class _PesarMasaState extends State<PesarMasa> {
             : 'Ocurrió un error al guardar'),
         backgroundColor: success ? Colors.green : Colors.red,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
       ),
     );
 
@@ -125,7 +125,7 @@ class _PesarMasaState extends State<PesarMasa> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : maizRegistrado.isEmpty
-              ? const Center(child: Text('No hay registros de maíz sin pesar.'))
+              ? const Center(child: Text('No hay registros de maíz cocido sin pesar.'))
               : Center(
                   child: Container(
                     width: anchoContenedor,

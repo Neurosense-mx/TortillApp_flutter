@@ -49,6 +49,8 @@ class LoginModel {
           idAdmin: user['id_admin'],
           idNegocio: user['id_negocio'],
           token: data['token'],
+          email: user['email'],
+          nombre: user['nombre']
         );
 
         saveDataAdmin(

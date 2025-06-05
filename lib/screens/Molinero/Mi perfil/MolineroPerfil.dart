@@ -1,140 +1,276 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
+import 'package:tortillapp/screens/Login/Login.dart';
 
 class MiPerfilMolinero extends StatelessWidget {
-  const MiPerfilMolinero({super.key});
+  final MolinoModel molino;
+  final void Function(int)? onTabSelected;
+
+  MiPerfilMolinero({Key? key, required this.molino, this.onTabSelected}) : super(key: key);
+
+  final PaletaDeColores colores = PaletaDeColores();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi perfil'),
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Color(0xFF1B374D),
+        statusBarIconBrightness: Brightness.light,
       ),
-      body: Center(
-        child: Stack(
-          alignment: Alignment.topCenter,
+    );
+
+    final String username = molino.nombre;
+    final String email = molino.email;
+
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 245, 245, 245),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.height * 0.35,
-              child: Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(top: 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 225.0,
+                  width: double.infinity,
+                  color: const Color(0xFF1B374D),
+                  child: SafeArea(
+                    child: SvgPicture.asset(
+                      'lib/assets/patterns/pattern_molinero.svg',
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                    ),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 60), // Espacio para el círculo
-                    const Text(
-                      'Jose Luis',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'joseluis17@tortillapp.com',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const Spacer(),
-                    // Botón de cerrar sesión
-                    Container(
-                      width: double.infinity, // Ocupa todo el ancho
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, -2),
+
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    child: Container(
+                      height: 56,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => onTabSelected?.call(0),
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Mi perfil',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        borderRadius: BorderRadius.zero,
-                        onPressed: () {
-                          _showCupertinoLogoutDialog(context);
-                        },
-                        child: const Text(
-                          'Cerrar sesión',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  bottom: -80,
+                  left: MediaQuery.of(context).size.width * 0.05,
+                  right: MediaQuery.of(context).size.width * 0.05,
+                  child: Card(
+                    elevation: 2,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(
+                        color: Color(0xFFCDCDCD),
+                        width: 1.0,
                       ),
                     ),
-                  ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 33, 176, 228),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: colores.colorPrincipal,
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: SvgPicture.asset(
+                                'lib/assets/cards/molinero/molino_icon.svg',
+                                width: 40,
+                                height: 40,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                username,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.verified,
+                                color: Colors.amber,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.email_outlined,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                email,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 95),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'General',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ),
-            // Círculo con icono que sobresale
-            Positioned(
-              top: 0,
+            const SizedBox(height: 8),
+
+            GestureDetector(
+              onTap: () async {
+                await molino.logout();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => LoginScreen()),
+                );
+              },
               child: Container(
-                width: 80,
-                height: 80,
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: 65,
+                margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.white,
-                    width: 4,
+                    color: const Color(0xFFDADADA),
+                    width: 1.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.05),
                       blurRadius: 6,
                       offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.person,
-                  size: 40,
-                  color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 47,
+                        height: 47,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD9F5FF),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.exit_to_app,
+                            color: Color(0xFF1B374D),
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cerrar sesión',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Sal de la sesión de este usuario.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey,
+                        size: 32,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showCupertinoLogoutDialog(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Estás seguro de que quieres cerrar tu sesión?'),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('Cancelar'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: const Text('Cerrar sesión'),
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sesión cerrada')),
-              );
-            },
-          ),
-        ],
       ),
     );
   }

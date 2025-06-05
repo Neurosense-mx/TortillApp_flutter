@@ -15,6 +15,8 @@ class DataUser {
   static const String _keyIdSucursal = 'id_sucursal';
   static const String _keyIdAdmin = 'id_admin';
   static const String _keyToken = 'token';
+  static const String _keyEmail = 'email';
+  static const String _keyNombre = 'nombre';
   //id negocio
   static const String _keyIdNegocio = 'id_negocio';
   
@@ -27,9 +29,10 @@ class DataUser {
     required int idCuenta,
     required int idSucursal,
     required int idAdmin,
-
     required String token,
     required int idNegocio,
+    required String email,
+    required String nombre,
   }) async {
     final prefs = await _prefs;
     await prefs.setInt(_keyIdCuenta, idCuenta);
@@ -37,6 +40,8 @@ class DataUser {
     await prefs.setInt(_keyIdAdmin, idAdmin);
     await prefs.setString(_keyToken, token);
     await prefs.setInt(_keyIdNegocio, idNegocio);
+    await prefs.setString(_keyEmail, email);
+    await prefs.setString(_keyNombre, nombre);
   }
   
   // Métodos para recuperar datos
@@ -63,6 +68,14 @@ class DataUser {
     final prefs = await _prefs;
     return prefs.getInt(_keyIdNegocio) ?? 0;
   }
+  Future<String> get email async {
+    final prefs = await _prefs;
+    return prefs.getString(_keyEmail) ?? '';
+  }
+  Future<String> get nombre async {
+    final prefs = await _prefs;
+    return prefs.getString(_keyNombre) ?? '';
+  }
   
   // Método para limpiar los datos (logout)
   Future<void> clear() async {
@@ -72,5 +85,7 @@ class DataUser {
     await prefs.remove(_keyIdAdmin);
     await prefs.remove(_keyToken);
     await prefs.remove(_keyIdNegocio);
+    await prefs.remove(_keyEmail);
+    await prefs.remove(_keyNombre);
   }
 }
