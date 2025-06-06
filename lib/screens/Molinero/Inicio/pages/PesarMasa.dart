@@ -87,10 +87,7 @@ class _PesarMasaState extends State<PesarMasa> {
       ),
     );
 
-    if (success) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) Navigator.pop(context);
-    }
+    
   }
 
   @override

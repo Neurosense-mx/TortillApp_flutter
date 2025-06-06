@@ -7,6 +7,7 @@ import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Molinero/MolineroScreen.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
 import 'package:tortillapp/config/backend.dart';
+import 'package:tortillapp/screens/Mostrador/MostradorScreen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -81,6 +82,9 @@ class _SplashScreenState extends State<SplashScreen> {
         break;
       case 2:
         destino = Molinero_Screen();
+        break;
+      case 3:
+        destino = Mostrador_Screen();
         break;
       default:
         _redirigirAlLogin();

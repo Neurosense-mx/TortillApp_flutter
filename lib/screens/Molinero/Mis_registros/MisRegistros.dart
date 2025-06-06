@@ -100,63 +100,95 @@ class _MisRegistrosMolineroState extends State<MisRegistrosMolinero> {
     return dt != null ? DateFormat.Hm().format(dt) : fecha;
   }
 
-  Widget buildRegistro(Map<String, dynamic> registro) {
-    final maiz = registro['maiz_cocido'];
-    final masa = registro['peso_masa'];
+Widget buildRegistro(Map<String, dynamic> registro) {
+  final maiz = registro['maiz_cocido'];
+  final masa = registro['peso_masa'];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Flexible(
-            flex: 4,
-            child: Container(
-              padding: const EdgeInsets.all(6.0),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Maíz cocido", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text("${maiz['kg_cocido']} kg", style: const TextStyle(fontSize: 13)),
-                  Text(formatearHora(maiz['fecha_cocido']), style: const TextStyle(fontSize: 11)),
-                ],
-              ),
+  double? rendimiento;
+  if (maiz != null && masa != null) {
+    final double? kgCocido = double.tryParse(maiz['kg_cocido'].toString());
+    final double? kgMasa = double.tryParse(masa['peso_masa'].toString());
+    if (kgCocido != null && kgMasa != null && kgCocido > 0) {
+      rendimiento = (kgMasa / kgCocido) * 100;
+    }
+  }
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          flex: 4,
+          child: Container(
+            padding: const EdgeInsets.all(6.0),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Maíz cocido", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                Text("${maiz['kg_cocido']} kg", style: const TextStyle(fontSize: 13)),
+                Text(formatearHora(maiz['fecha_cocido']), style: const TextStyle(fontSize: 11)),
+              ],
             ),
           ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.0),
+          child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
+        ),
+        Flexible(
+          flex: 4,
+          child: masa != null
+              ? Container(
+                  padding: const EdgeInsets.all(6.0),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Masa obtenida", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text("${masa['peso_masa']} kg", style: const TextStyle(fontSize: 13)),
+                      Text(formatearHora(masa['fecha_masa']), style: const TextStyle(fontSize: 11)),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        if (rendimiento != null) ...[
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.0),
             child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
           ),
           Flexible(
-            flex: 4,
-            child: masa != null
-                ? Container(
-                    padding: const EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Masa obtenida", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                        Text("${masa['peso_masa']} kg", style: const TextStyle(fontSize: 13)),
-                        Text(formatearHora(masa['fecha_masa']), style: const TextStyle(fontSize: 11)),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: Colors.purple[100],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Relación Maíz/Masa", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  Text("${rendimiento.toStringAsFixed(1)} %", style: const TextStyle(fontSize: 13)),
+                ],
+              ),
+            ),
           ),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
-  void cargarMasRegistros(String header) {
+void cargarMasRegistros(String header) {
     final total = registrosPorFecha[header]!.length;
     final actuales = registrosMostradosPorFecha[header] ?? 0;
     final nuevos = (actuales + pageSize) > total ? total : (actuales + pageSize);

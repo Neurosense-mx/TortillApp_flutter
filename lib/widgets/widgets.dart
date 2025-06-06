@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomWidgets extends StatelessWidget {
   final PaletaDeColores colores = PaletaDeColores();
   bool _isPasswordVisible = false;
+
+  // FIADO ó EFECTIVO
+  Widget opcionRadio({
+    required String valor,
+    required String texto,
+    required String grupoValor,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Radio<String>(
+          value: valor,
+          groupValue: grupoValor,
+          onChanged: (value) {
+            if (value != null) onChanged(value);
+          },
+        ),
+        Text(texto),
+      ],
+    );
+  }
 
   // Método para TextField con icono opcional
   Widget TextfieldPrimary({
@@ -201,6 +224,48 @@ class CustomWidgets extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         color: color,
+      ),
+    );
+  }
+
+  // Metodo para Button de menu
+  Widget ButtonMenu({
+    required String text,
+    required VoidCallback onPressed,
+    String? icon,
+    Color? color, // Parámetro para personalizar el color
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: colores.colorFondo,
+        backgroundColor:
+            color ?? colores.colorPrincipal, // Utiliza el color si se pasa
+        minimumSize: Size(150, 150), // Tamaño cuadrado del botón
+        maximumSize: Size(150, 150),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Esquinas redondeadas
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            SvgPicture.asset(
+              icon,
+              width: 42,
+              height: 42,
+            ),
+            SizedBox(height: 30.0),
+          ],
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.white, // Color del texto
+            ),
+          ),
+        ],
       ),
     );
   }

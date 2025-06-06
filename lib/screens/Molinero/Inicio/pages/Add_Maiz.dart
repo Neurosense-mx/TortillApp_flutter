@@ -47,9 +47,7 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
           duration: Duration(seconds: 1),
         ),
       );
-      Future.delayed(Duration(seconds: 1), () {
-        Navigator.pop(context);
-      });
+      
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

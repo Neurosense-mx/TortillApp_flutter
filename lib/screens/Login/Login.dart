@@ -13,6 +13,7 @@ import 'package:tortillapp/models/Login/LoginModel.dart';
 import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Molinero/MolineroScreen.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
+import 'package:tortillapp/screens/Mostrador/MostradorScreen.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:tortillapp/screens/Register/RegisterEmail.dart';
@@ -123,6 +124,15 @@ Future<void> _login() async {
             MaterialPageRoute(builder: (context) => Molinero_Screen()),
             (Route<dynamic> route) => false,
           );
+        }
+        else if (id_role == "3") { //-------------------------------------------- ROL MOSTRADOR
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Mostrador_Screen()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          _showCupertinoDialog('Error', 'Rol no reconocido.');
         }
 
       } else {

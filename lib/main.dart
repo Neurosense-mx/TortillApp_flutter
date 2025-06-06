@@ -37,6 +37,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TortillApp',
+      theme: ThemeData(
+        // Personalización del esquema de colores
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 19, 33, 68)),
+        useMaterial3: true, // Puedes poner false si usas Material 2
+        // Opcionalmente, personaliza aún más:
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: Color.fromARGB(255, 15, 50, 87), // Color del CircularProgressIndicator
+        ),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStatePropertyAll(const Color.fromARGB(255, 9, 47, 76)), // Color del radio button
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/splashscreen',
       routes: {
