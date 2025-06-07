@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart'; // <-- IMPORTANTE
+import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/screens/Splashscreen/Splashscreen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -33,20 +34,21 @@ Future<void> _configureLocalNotifications() async {
 }
 
 class MyApp extends StatelessWidget {
+  final PaletaDeColores colores = PaletaDeColores();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TortillApp',
       theme: ThemeData(
         // Personalización del esquema de colores
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 19, 33, 68)),
+        colorScheme: ColorScheme.fromSeed(seedColor: colores.colorPrincipal),
         useMaterial3: true, // Puedes poner false si usas Material 2
         // Opcionalmente, personaliza aún más:
-        progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Color.fromARGB(255, 15, 50, 87), // Color del CircularProgressIndicator
+        progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: colores.colorPrincipal // Color del CircularProgressIndicator
         ),
         radioTheme: RadioThemeData(
-          fillColor: MaterialStatePropertyAll(const Color.fromARGB(255, 9, 47, 76)), // Color del radio button
+          fillColor: MaterialStatePropertyAll(colores.colorPrincipal), // Color del radio button
         ),
       ),
       debugShowCheckedModeBanner: false,
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
       // ✅ Agrega estas líneas:
       supportedLocales: const [
         Locale('es', ''), // Español
-        Locale('en', ''), // Inglés
+       
       ],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

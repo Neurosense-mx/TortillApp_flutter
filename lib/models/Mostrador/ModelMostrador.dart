@@ -19,11 +19,11 @@ class MostradorModel {
   }
   // Método para obtener los datos(id sucursal, id negocio) de la cuenta
 
-  //------------------------- Acciones del molino -------------------------
-  // Método para agregar maíz para cocer
-  Future<bool> addMaiz(double maiz) async {
-    print("Agregando maíz: $maiz kg");
-    final url = Uri.parse(ApiConfig.backendUrl + '/molinero/cocer/maiz');
+  //------------------------- Acciones de mostrador -------------------------
+  // Endpoint oara agregarkilos de tortillas como sobrantes del dia
+  Future<bool> addSobrantes(double kgSobrantes) async {
+    print("Agregando sobrantes: $kgSobrantes kg");
+    final url = Uri.parse(ApiConfig.backendUrl + '/mostrador/tortillas/sobrantes');
 
     final response = await http.post(
       url,
@@ -34,63 +34,22 @@ class MostradorModel {
       body: json.encode({
         'id_cuenta': id_account,
         'id_sucursal': id_sucursal,
-        'kg_cocidos': maiz,
+        'cantidad_kg': kgSobrantes,
       }),
     );
 
     if (response.statusCode == 200) {
-      print("Maíz agregado correctamente");
+      print("Sobrantes agregados correctamente");
       return true;
     } else {
-      print("Error al agregar maíz: ${response.body}");
+      print("Error al agregar sobrantes: ${response.body}");
       return false;
     }
   }
-
-//Obtener los datos de estadistica semanal
-  Future<Map<String, dynamic>> getEstadisticas() async {
-    final url = Uri.parse(
-        ApiConfig.backendUrl + '/molinero/registros/semana/$id_account');
-
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Error al obtener las estadísticas: ${response.body}');
-    }
-  }
-
-//obtener los registros de maiz que no han sido pesados
-  Future<List<Map<String, dynamic>>> getMaizSinPesar() async {
-    final url = Uri.parse(
-        ApiConfig.backendUrl + '/molinero/cocer/maiz/sin_peso/$id_account');
-
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
-    } else {
-      throw Exception(
-          'Error al obtener los maíces sin pesar: ${response.body}');
-    }
-  }
-
-//bool para registrar el peso del maiz /molinero/masa/pesar
-  Future<bool> pesarMasa(int id_maiz, double kg_masa) async {
-    final url = Uri.parse(ApiConfig.backendUrl + '/molinero/masa/pesar');
+  // Endpoint para agregar donaciones de tortillas (cantidad_kg, nombre)
+  Future<bool> addDonaciones(double kgDonacion, String nombre) async {
+    print("Agregando donación: $kgDonacion kg de $nombre");
+    final url = Uri.parse(ApiConfig.backendUrl + '/mostrador/donaciones');
 
     final response = await http.post(
       url,
@@ -101,39 +60,90 @@ class MostradorModel {
       body: json.encode({
         'id_cuenta': id_account,
         'id_sucursal': id_sucursal,
-        'id_costales': id_maiz,
-        'kg_masa': kg_masa,
+        'cantidad_kg': kgDonacion,
+        'nombre': nombre,
       }),
     );
 
     if (response.statusCode == 200) {
+      print("Donación agregada correctamente");
       return true;
     } else {
-      print("Error al pesar masa: ${response.body}");
+      print("Error al agregar donación: ${response.body}");
       return false;
     }
   }
+  
+ Future<List<String>> getEmpleados() async {
+  final url = Uri.parse('${ApiConfig.backendUrl}/mostrador/empleados/$id_sucursal');
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
-//Endpoint para obtener mis registros
-  Future<List<Map<String, dynamic>>> getMisRegistros() async {
-    final url =
-        Uri.parse(ApiConfig.backendUrl + '/molinero/mis_registros/$id_account');
+  if (response.statusCode == 200) {
+    final List<dynamic> empleadosJson = json.decode(response.body);
+    final List<String> empleados = empleadosJson.map((e) => e.toString()).toList();
+    print("Empleados obtenidos: $empleados");
+    return empleados;
+  } else {
+    print("Error al obtener empleados: ${response.body}");
+    throw Exception('Error al obtener empleados');
+  }
+}
 
-    final response = await http.get(
+Future<List<Map<String, dynamic>>> getRepartidores() async {
+  final url = Uri.parse('${ApiConfig.backendUrl}/mostrador/obtener/repartidores/$id_sucursal');
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> repartidoresJson = json.decode(response.body);
+    final List<Map<String, dynamic>> repartidores = repartidoresJson.cast<Map<String, dynamic>>();
+    print("Repartidores obtenidos: $repartidores");
+    return repartidores;
+  } else {
+    print("Error al obtener repartidores: ${response.body}");
+    throw Exception('Error al obtener repartidores');
+  }
+}
+
+//funcion parar agregar la designacion de kilos a un repartidor /mostrador/designar/caja
+  Future<bool> addDesignacion(double kgTortilla, int idRepartidor) async {
+    print("Agregando designación: $kgTortilla kg al repartidor con ID $idRepartidor");
+    final url = Uri.parse(ApiConfig.backendUrl + '/mostrador/designar/caja');
+
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
       },
+      body: json.encode({
+        'id_cuenta': id_account,
+        'id_sucursal': id_sucursal,
+        'cantidad_kg': kgTortilla,
+        'id_repartidor': idRepartidor,
+      }),
     );
 
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
+      print("Designación agregada correctamente");
+      return true;
     } else {
-      throw Exception('Error al obtener mis registros: ${response.body}');
+      print("Error al agregar designación: ${response.body}");
+      return false;
     }
   }
-
+  
   //function para cerrar sesion, elimiar el token
   Future<void> logout() async {
     await DataUser().clear();

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Mostrador/ModelMostrador.dart';
 import 'package:tortillapp/screens/Mostrador/Inicio/pages/Add_Donaciones.dart';
-import 'package:tortillapp/screens/Mostrador/Inicio/pages/Add_Kilos.dart';
+import 'package:tortillapp/screens/Mostrador/Inicio/pages/DesignarCajas.dart';
 import 'package:tortillapp/screens/Mostrador/Inicio/pages/Add_Sobrantes.dart';
 import 'package:tortillapp/screens/Mostrador/Inicio/pages/Add_Ventas.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home_Mostrador extends StatefulWidget {
+  final MostradorModel mostrador;
+  const Home_Mostrador({Key? key, required this.mostrador}) : super(key: key);
   @override
   _Home_MostradorState createState() => _Home_MostradorState();
 }
@@ -121,7 +124,7 @@ class _Home_MostradorState extends State<Home_Mostrador> {
                     'Designar Kilos',
                     150,
                     colorToHex(colores.colorButtonBeige),
-                    AddKilosScreen(),
+                    DesignarCajas(mostrador: widget.mostrador,),
                     context,
                   ),
                 ],
@@ -135,7 +138,9 @@ class _Home_MostradorState extends State<Home_Mostrador> {
                     'Donaciones',
                     150,
                     colorToHex(colores.colorButtonGreen),
-                    AddDonacionesScreen(),
+                    AddDonacionesScreen(
+                      mostrador: widget.mostrador,
+                    ),
                     context,
                   ),
                   SizedBox(width: 23),
@@ -144,7 +149,9 @@ class _Home_MostradorState extends State<Home_Mostrador> {
                     'Sobrantes',
                     150,
                     colorToHex(colores.colorButtonPurple),
-                    AddSobrantesScreen(),
+                    AddSobrantesScreen(
+                      mostrador: widget.mostrador,
+                    ),
                     context,
                   ),
                 ],

@@ -1,27 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Mostrador/ModelMostrador.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
-class AddKilosScreen extends StatefulWidget {
+class DesignarCajas extends StatefulWidget {
+  final MostradorModel mostrador;
+  const DesignarCajas({Key? key, required this.mostrador}) : super(key: key);
   @override
-  _AddKilosScreenState createState() => _AddKilosScreenState();
+  _DesignarCajasState createState() => _DesignarCajasState();
 }
 
-class _AddKilosScreenState extends State<AddKilosScreen> {
+class _DesignarCajasState extends State<DesignarCajas> {
   final PaletaDeColores colores = PaletaDeColores();
   final CustomWidgets customWidgets = CustomWidgets();
 
   final TextEditingController _kgTortillaController = TextEditingController();
   final List<String> sugerencias = ["5kg", "10kg", "15kg", "20kg", "30kg"];
-  final List<Map<String, dynamic>> _repartidores = [
-    {'id': 2, 'nombre': 'Juan', 'apellido': 'Martinez'},
-    {'id': 3, 'nombre': 'Manuel', 'apellido': 'Martinez'}
-  ];
+  List<Map<String, dynamic>> _repartidores = [];
+String? _nombreRepartidor;
+  int? _selectedrepartidorId;
 
   @override
   void dispose() {
     _kgTortillaController.dispose();
     super.dispose();
+  }
+
+  Future<void> obtenerRepartidores() async {
+    final repartidoresObtenidos = await widget.mostrador.getRepartidores();
+    print("Repartidores obtenidos: $repartidoresObtenidos");
+    //imprimir el nombre de los repartidores
+    if (mounted) {
+      _repartidores = repartidoresObtenidos
+          .map((repartidor) => {
+                'id': repartidor['id'],
+                'nombre': repartidor['nombre'],
+              })
+          .toList();
+
+      setState(() {});
+
+//    print("Repartidores asignados: $_repartidores");
+    } else {
+      print("El widget no está montado, no se puede actualizar el estado.");
+    }
+  }
+
+//Fucion para agrar la designacion de kilos a un repartidor
+  Future<void> agregarDesignacion() async {
+    String texto = _kgTortillaController.text.trim();
+// Reemplazar coma por punto
+texto = texto.replaceAll(',', '.');
+
+double? kilos = double.tryParse(texto);
+if (kilos == null || kilos <= 0) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Ingresa una cantidad válida')),
+  );
+  return;
+}
+
+
+    if (_selectedrepartidorId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecciona un repartidor')),
+      );
+      return;
+    }
+
+    bool response = await widget.mostrador.addDesignacion(
+        kilos, int.parse(_selectedrepartidorId.toString()));
+        //imprimir la respuesta
+      print("Respuesta de la designación: $response");
+        ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content: Text(
+      response
+        ? '¡Designaste una caja con ${kilos} a ${_nombreRepartidor}!'
+        : 'Ocurrió un error al guardar',
+    ),
+    backgroundColor: response ? Colors.green : Colors.red,
+    behavior: SnackBarBehavior.floating,
+    duration: const Duration(seconds: 1),
+  ),
+);
+
+
+      _kgTortillaController.clear();
+      setState(() {
+        _selectedrepartidorId = null;
+      });
+  }
+
+  //init state
+  @override
+  void initState() {
+    super.initState();
+    obtenerRepartidores();
   }
 
   @override
@@ -91,48 +166,28 @@ class _AddKilosScreenState extends State<AddKilosScreen> {
               ),
               SizedBox(height: 20),
               DropdownButtonFormField<int>(
+                value: _selectedrepartidorId,
                 decoration: InputDecoration(
-                  labelText: 'Selecciona un repartidor',
-                  labelStyle: TextStyle(color: colores.colorNegro),
+                  labelText: 'Selecciona un empleado',
                   filled: true,
                   fillColor: colores.colorInputs,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: colores.colorContornoBlanco, width: 0),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: colores.colorPrincipal, width: 1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 9, horizontal: 12),
                 ),
-                items: _repartidores.map((repartidor) {
+                items: _repartidores.map((item) {
                   return DropdownMenuItem<int>(
-                    value: repartidor['id'],
-                    child: Text(
-                      repartidor['nombre'],
-                      style: TextStyle(
-                        color: colores.colorNegro,
-                        fontSize: 16,
-                      ),
-                    ),
+                    value: item['id'],
+                    child: Text(item['nombre']),
                   );
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    // _selectedrepartidorId = value;
+                    _selectedrepartidorId = value;
+                    _nombreRepartidor = _repartidores
+                        .firstWhere((item) => item['id'] == value)['nombre'];
                   });
                 },
-                dropdownColor: colores.colorInputs,
-                icon:
-                    Icon(Icons.arrow_drop_down, color: colores.colorPrincipal),
-                style: TextStyle(
-                  color: colores.colorNegro,
-                  fontSize: 16,
-                ),
               ),
               SizedBox(height: 20),
               Expanded(
@@ -150,6 +205,7 @@ class _AddKilosScreenState extends State<AddKilosScreen> {
                         );
                       } else {
                         // Guardar
+                        agregarDesignacion();
                       }
                     },
                   ),
