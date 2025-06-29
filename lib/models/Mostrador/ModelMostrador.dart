@@ -11,9 +11,13 @@ class MostradorModel {
   late String token; // id del molino
   late String email; // email del molino
   late String nombre; // nombre del molino
+  late double PrecioPublico = 0.0; // precio publico de las tortillas
+  late double PrecioCliente = 0.0; // precio de mayoreo de las tortillas
 
-  MostradorModel(this.id_account, this.id_sucursal, this.id_negocio, this.id_admin,
-      this.token, this.email, this.nombre) {
+  late List<Map<String, dynamic>> _productos = [];
+
+  MostradorModel(this.id_account, this.id_sucursal, this.id_negocio,
+      this.id_admin, this.token, this.email, this.nombre) {
     //_fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
     print("Modelo de molino creado");
   }
@@ -23,7 +27,8 @@ class MostradorModel {
   // Endpoint oara agregarkilos de tortillas como sobrantes del dia
   Future<bool> addSobrantes(double kgSobrantes) async {
     print("Agregando sobrantes: $kgSobrantes kg");
-    final url = Uri.parse(ApiConfig.backendUrl + '/mostrador/tortillas/sobrantes');
+    final url =
+        Uri.parse(ApiConfig.backendUrl + '/mostrador/tortillas/sobrantes');
 
     final response = await http.post(
       url,
@@ -46,6 +51,7 @@ class MostradorModel {
       return false;
     }
   }
+
   // Endpoint para agregar donaciones de tortillas (cantidad_kg, nombre)
   Future<bool> addDonaciones(double kgDonacion, String nombre) async {
     print("Agregando donación: $kgDonacion kg de $nombre");
@@ -73,52 +79,57 @@ class MostradorModel {
       return false;
     }
   }
-  
- Future<List<String>> getEmpleados() async {
-  final url = Uri.parse('${ApiConfig.backendUrl}/mostrador/empleados/$id_sucursal');
-  final response = await http.get(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
 
-  if (response.statusCode == 200) {
-    final List<dynamic> empleadosJson = json.decode(response.body);
-    final List<String> empleados = empleadosJson.map((e) => e.toString()).toList();
-    print("Empleados obtenidos: $empleados");
-    return empleados;
-  } else {
-    print("Error al obtener empleados: ${response.body}");
-    throw Exception('Error al obtener empleados');
+  Future<List<String>> getEmpleados() async {
+    final url =
+        Uri.parse('${ApiConfig.backendUrl}/mostrador/empleados/$id_sucursal');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> empleadosJson = json.decode(response.body);
+      final List<String> empleados =
+          empleadosJson.map((e) => e.toString()).toList();
+      print("Empleados obtenidos: $empleados");
+      return empleados;
+    } else {
+      print("Error al obtener empleados: ${response.body}");
+      throw Exception('Error al obtener empleados');
+    }
   }
-}
 
-Future<List<Map<String, dynamic>>> getRepartidores() async {
-  final url = Uri.parse('${ApiConfig.backendUrl}/mostrador/obtener/repartidores/$id_sucursal');
-  final response = await http.get(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+  Future<List<Map<String, dynamic>>> getRepartidores() async {
+    final url = Uri.parse(
+        '${ApiConfig.backendUrl}/mostrador/obtener/repartidores/$id_sucursal');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final List<dynamic> repartidoresJson = json.decode(response.body);
-    final List<Map<String, dynamic>> repartidores = repartidoresJson.cast<Map<String, dynamic>>();
-    print("Repartidores obtenidos: $repartidores");
-    return repartidores;
-  } else {
-    print("Error al obtener repartidores: ${response.body}");
-    throw Exception('Error al obtener repartidores');
+    if (response.statusCode == 200) {
+      final List<dynamic> repartidoresJson = json.decode(response.body);
+      final List<Map<String, dynamic>> repartidores =
+          repartidoresJson.cast<Map<String, dynamic>>();
+      print("Repartidores obtenidos: $repartidores");
+      return repartidores;
+    } else {
+      print("Error al obtener repartidores: ${response.body}");
+      throw Exception('Error al obtener repartidores');
+    }
   }
-}
 
 //funcion parar agregar la designacion de kilos a un repartidor /mostrador/designar/caja
   Future<bool> addDesignacion(double kgTortilla, int idRepartidor) async {
-    print("Agregando designación: $kgTortilla kg al repartidor con ID $idRepartidor");
+    print(
+        "Agregando designación: $kgTortilla kg al repartidor con ID $idRepartidor");
     final url = Uri.parse(ApiConfig.backendUrl + '/mostrador/designar/caja');
 
     final response = await http.post(
@@ -143,7 +154,57 @@ Future<List<Map<String, dynamic>>> getRepartidores() async {
       return false;
     }
   }
-  
+
+  //Pbtener los productos de la sucursal, /mostrador/productos/sucursal
+  Future<Map<String, dynamic>> getProductosSucursal() async {
+    final url =
+        Uri.parse(ApiConfig.backendUrl + '/mostrador/productos/$id_sucursal');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print("Obteniendo productos de la sucursal: $id_sucursal");
+
+    if (response.statusCode == 200) {
+      print("Respuesta del servidor: ${response.body}");
+
+      // Decodificar como Map (porque el JSON es un objeto, no una lista)
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      // Extraer precios
+      PrecioPublico = data['precio_publico']?.toDouble() ?? 0.0;
+      PrecioCliente = data['precio_cliente']?.toDouble() ?? 0.0;
+
+      print("Precio Público: $PrecioPublico, Precio Cliente: $PrecioCliente");
+
+      // Extraer productos (es una lista anidada)
+      final List<dynamic> productosAnidados = data['productos'];
+      final List<Map<String, dynamic>> productos = productosAnidados.isNotEmpty
+          ? List<Map<String, dynamic>>.from(productosAnidados[0])
+          : [];
+
+      print("Productos obtenidos: $productos");
+
+      // Regresar todo el JSON para uso general si lo necesitas
+      return {
+        'precio_publico': PrecioPublico,
+        'precio_cliente': PrecioCliente,
+        'productos': productos,
+      };
+    } else {
+      print("Error al obtener productos: ${response.body}");
+      throw Exception('Error al obtener productos');
+    }
+  }
+
+// Método para registrar ventas
+  Future<bool> registrarVenta() async {
+    return true; // Implementar lógica de registro de ventas
+  }
   //function para cerrar sesion, elimiar el token
   Future<void> logout() async {
     await DataUser().clear();

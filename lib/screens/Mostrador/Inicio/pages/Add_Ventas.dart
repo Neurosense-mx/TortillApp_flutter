@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:tortillapp/models/Mostrador/ModelMostrador.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 
 class AddVentasScreen extends StatefulWidget {
+  MostradorModel mostrador;
+  AddVentasScreen({Key? key, required this.mostrador}) : super(key: key);
   @override
   _AddVentasScreenState createState() => _AddVentasScreenState();
 }
@@ -12,21 +15,93 @@ enum Unidad { kg, pesos }
 class _AddVentasScreenState extends State<AddVentasScreen> {
   final PaletaDeColores colores = PaletaDeColores();
   final CustomWidgets customWidgets = CustomWidgets();
+  //obtener el precio publico y precio tienda de las tortillas y la lista de productos
 
   final TextEditingController _cantidadController = TextEditingController();
   final List<String> sugerencias = ["1kg", "5kg", "10kg", "15kg", "20kg"];
+  late double precioPublico;
+  List<Map<String, dynamic>> carrito = [];
 
-  List<Map<String, dynamic>> carrito = [
-    {'cantidad': 2, 'unidad': 'Kg', 'producto': 'Tortillas', 'precio': 20.0},
-  ];
-
-  List<Map<String, dynamic>> productos = [
-    {'nombre': 'Salsa roja', 'precio': 12.0},
-    {'nombre': 'Salsa verde', 'precio': 10.0},
-    {'nombre': 'Refresco', 'precio': 15.0},
-  ];
+  List<Map<String, dynamic>> productos = [];
 
   Unidad _unidad = Unidad.kg;
+  @override
+  void initState() {
+    super.initState();
+    fetchProductosSucursal();
+  }
+
+  Future<void> fetchProductosSucursal() async {
+    try {
+      final Map<String, dynamic> nuevosDatos =
+          await widget.mostrador.getProductosSucursal();
+
+      setState(() {
+        productos =
+            List<Map<String, dynamic>>.from(nuevosDatos['productos'] ?? []);
+        precioPublico = nuevosDatos['precio_publico'] ?? 0.0;
+        print("Precio Publico: $precioPublico");
+      });
+
+      print("Productos cargados: $productos");
+    } catch (e) {
+      print("Error al cargar productos: $e");
+    }
+  }
+
+void _agregarTortillasAlCarrito() {
+  if (_cantidadController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Ingresa una cantidad válida'),
+      ),
+    );
+    return;
+  }
+
+  try {
+    double cantidad = double.parse(_cantidadController.text);
+    double precio;
+
+    if (_unidad == Unidad.kg) {
+      // Calcular precio basado en kilos
+      precio = cantidad * precioPublico;
+    } else {
+      // El usuario ingresó pesos, la cantidad es el precio
+      precio = cantidad;
+      // Convertir a kilos para mostrar en el carrito
+      cantidad = cantidad / precioPublico;
+    }
+
+    setState(() {
+      // Buscar si ya hay tortillas en el carrito
+      int index = carrito.indexWhere((item) => item['producto'] == 'Tortillas');
+      
+      if (index != -1) {
+        // Si ya existe, actualizar cantidad y precio
+        carrito[index]['cantidad'] += cantidad;
+        carrito[index]['precio'] += precio;
+      } else {
+        // Si no existe, agregar nuevo item
+        carrito.add({
+          'producto': 'Tortillas',
+          'cantidad': cantidad,
+          'precio': precio,
+          'unidad': _unidad == Unidad.kg ? 'kg' : 'pesos',
+        });
+      }
+    });
+
+    // Limpiar el campo después de agregar
+    _cantidadController.clear();
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Ingresa una cantidad válida'),
+      ),
+    );
+  }
+}
 
   @override
   void dispose() {
@@ -121,15 +196,13 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
                 ),
                 SizedBox(width: 8), // Espaciado entre el campo y el botón
                 ElevatedButton(
-                  onPressed: () {
-                    // Acción al presionar "+"
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(16),
-                    shape: CircleBorder(),
-                  ),
-                  child: Icon(Icons.add),
-                ),
+  onPressed: _agregarTortillasAlCarrito,
+  style: ElevatedButton.styleFrom(
+    padding: EdgeInsets.all(16),
+    shape: CircleBorder(),
+  ),
+  child: Icon(Icons.add),
+),
               ],
             ),
             SizedBox(height: 20),
@@ -150,6 +223,7 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
                       ),
                       onPressed: () {
                         _cantidadController.text = valor.replaceAll('kg', '');
+                        _agregarTortillasAlCarrito(); // Agregar directamente al carrito
                       },
                       child: Text(valor, style: TextStyle(color: Colors.black)),
                     ),
@@ -180,38 +254,45 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
 
             SizedBox(height: 8),
             // Lista de productos
-            ...carrito.map((item) {
-              return Container(
-                margin: EdgeInsets.only(bottom: 8),
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${item['cantidad']} ${item['unidad']} de ${item['producto']} \$${item['precio'].toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 14),
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          carrito.remove(item);
-                        });
-                      },
-                      icon: Icon(Icons.delete_outline, color: Colors.red),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+           ...carrito.map((item) {
+  String cantidadTexto;
+  if (item['producto'] == 'Tortillas') {
+    cantidadTexto = '${item['cantidad'].toStringAsFixed(2)} ${item['unidad']}';
+  } else {
+    cantidadTexto = '${item['cantidad']} ${item['unidad']}';
+  }
+  
+  return Container(
+    margin: EdgeInsets.only(bottom: 8),
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.grey[100],
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Colors.grey.shade300),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            '$cantidadTexto de ${item['producto']} \$${item['precio'].toStringAsFixed(2)}',
+            style: TextStyle(fontSize: 14),
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            setState(() {
+              carrito.remove(item);
+            });
+          },
+          icon: Icon(Icons.delete_outline, color: Colors.red),
+        ),
+      ],
+    ),
+  );
+}).toList(),
             SizedBox(height: 50)
           ],
         ),
@@ -389,18 +470,36 @@ class _AddVentasScreenState extends State<AddVentasScreen> {
                     onPressed: () {
                       if (productoSeleccionado != null &&
                           cantidadController.text.isNotEmpty) {
-                        // Lógica para agregar al carrito
                         final producto = productos.firstWhere(
-                            (e) => e['nombre'] == productoSeleccionado);
+                          (e) => e['nombre'] == productoSeleccionado,
+                        );
+                        int cantidadNueva = int.parse(cantidadController.text);
+                        double precioUnitario =
+                            double.parse(producto['precio']);
+
                         setState(() {
-                          carrito.add({
-                            'producto': productoSeleccionado!,
-                            'cantidad': int.parse(cantidadController.text),
-                            'precio': producto['precio'] *
-                                int.parse(cantidadController.text),
-                            'unidad': 'unidad'
-                          });
+                          // Buscar si el producto ya existe en el carrito
+                          int indexExistente = carrito.indexWhere(
+                            (item) => item['producto'] == productoSeleccionado,
+                          );
+
+                          if (indexExistente != -1) {
+                            // Ya existe, actualizamos cantidad y precio
+                            carrito[indexExistente]['cantidad'] +=
+                                cantidadNueva;
+                            carrito[indexExistente]['precio'] +=
+                                precioUnitario * cantidadNueva;
+                          } else {
+                            // No existe, lo agregamos
+                            carrito.add({
+                              'producto': productoSeleccionado!,
+                              'cantidad': cantidadNueva,
+                              'precio': precioUnitario * cantidadNueva,
+                              'unidad': 'unidad',
+                            });
+                          }
                         });
+
                         Navigator.pop(context);
                       }
                     },

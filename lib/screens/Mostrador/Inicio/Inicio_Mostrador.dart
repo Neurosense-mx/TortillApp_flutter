@@ -115,7 +115,7 @@ class _Home_MostradorState extends State<Home_Mostrador> {
                     'Ventas',
                     150.0,
                     colorToHex(colores.colorButtonBlue),
-                    AddVentasScreen(),
+                    AddVentasScreen(mostrador: widget.mostrador,),
                     context,
                   ),
                   SizedBox(width: 23),
