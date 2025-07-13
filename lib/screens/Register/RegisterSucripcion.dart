@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Para cargar el archivo SVG
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/Register/RegisterModel.dart';
+import 'package:tortillapp/screens/Admin/PrimerosPasos/NombreScreen.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,29 +95,37 @@ class _RegisterSuscripcionState extends State<RegisterSuscripcion>
     final response = await widget.registerModel.sendRegister();
     // Verificar si la respuesta fue exitosa
     if (response['statusCode'] == 200) {
+      //PENDIENTE OBETENER EL ID CUENTA
+      final cuenta_id = response['ID'];
+      print('----------------------- ID Cuenta: $cuenta_id');
       // Mostrar un diálogo de éxito
       _showCupertinoDialog('Registro exitoso', response['message']);
-        // Ir a la siguiente pantalla RegisterPassword()
-  Navigator.pushAndRemoveUntil(
-    context,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return LoginScreen(); // Aquí va tu pantalla de login
-      },
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(-1.0, 0.0); // Deslizar desde la izquierda
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
-  
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-  
-        return SlideTransition(position: offsetAnimation, child: child); // Aplicar la animación de deslizamiento
-      },
-    ),
-    (route) => false, // Elimina todas las pantallas anteriores
-  );
-     
+
+      // Ir a la siguiente pantalla RegisterPassword()
+      Navigator.pushAndRemoveUntil(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return PP_Nombre_Screen(
+              id_Cuenta: cuenta_id,
+            ); // Aquí REEMPLAZAR POR EL ID_CUENTA
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(-1.0, 0.0); // Deslizar desde la izquierda
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+                position: offsetAnimation,
+                child: child); // Aplicar la animación de deslizamiento
+          },
+        ),
+        (route) => false, // Elimina todas las pantallas anteriores
+      );
     } else {
       // Mostrar un diálogo de error
       _showCupertinoDialog('Error', response['message']);
@@ -233,78 +242,92 @@ class _RegisterSuscripcionState extends State<RegisterSuscripcion>
                                         suscripcion['id'];
 
                                 return Card(
-  elevation: isSelected ? 6 : 2,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
-    side: BorderSide(
-      color: isSelected
-          ? colores.colorPrincipal
-          : Color.fromARGB(255, 200, 200, 200),
-      width: 1,
-    ),
-  ),
-  color: isSelected ? Colors.white : colores.colorFondo,
-  child: InkWell(
-    onTap: () {
-      setState(() {
-        if (_selectedSubscriptionId.value == suscripcion['id']) {
-          _selectedSubscriptionId.value = null;
-        } else {
-          _selectedSubscriptionId.value = suscripcion['id'];
-        }
-      });
-    },
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    suscripcion['nombre'],
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? colores.colorPrincipal
-                          : colores.colorNegro,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    print("Ver beneficios de ${suscripcion['nombre']}");
-                  },
-                  child: Icon(
-                    Icons.remove_red_eye_outlined,
-                    color: colores.colorPrincipal,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 12),
-          Text(
-            "\$${suscripcion['precio']} MXN",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? colores.colorPrincipal : Colors.black,
-            ),
-          ),
-          if (isSelected) ...[
-            SizedBox(width: 6),
-            Icon(Icons.check_circle, color: colores.colorPrincipal, size: 20),
-          ],
-        ],
-      ),
-    ),
-  ),
-);
-},
+                                  elevation: isSelected ? 6 : 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color: isSelected
+                                          ? colores.colorPrincipal
+                                          : Color.fromARGB(255, 200, 200, 200),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  color: isSelected
+                                      ? Colors.white
+                                      : colores.colorFondo,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        if (_selectedSubscriptionId.value ==
+                                            suscripcion['id']) {
+                                          _selectedSubscriptionId.value = null;
+                                        } else {
+                                          _selectedSubscriptionId.value =
+                                              suscripcion['id'];
+                                        }
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    suscripcion['nombre'],
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isSelected
+                                                          ? colores
+                                                              .colorPrincipal
+                                                          : colores.colorNegro,
+                                                    ),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    print(
+                                                        "Ver beneficios de ${suscripcion['nombre']}");
+                                                  },
+                                                  child: Icon(
+                                                    Icons
+                                                        .remove_red_eye_outlined,
+                                                    color:
+                                                        colores.colorPrincipal,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          Text(
+                                            "\$${suscripcion['precio']} MXN",
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: isSelected
+                                                  ? colores.colorPrincipal
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                          if (isSelected) ...[
+                                            SizedBox(width: 6),
+                                            Icon(Icons.check_circle,
+                                                color: colores.colorPrincipal,
+                                                size: 20),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),

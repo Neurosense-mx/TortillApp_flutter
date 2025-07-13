@@ -9,6 +9,10 @@ import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 
 class PP_Nombre_Screen extends StatefulWidget {
+  final dynamic id_Cuenta;
+
+  const PP_Nombre_Screen({super.key, required this.id_Cuenta});
+
   @override
   _PP_Nombre_ScreenState createState() => _PP_Nombre_ScreenState();
 }
@@ -120,6 +124,9 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
       //Guardar el nombre en el modelo
       pp_model.setNombre(_nombreController.text);
 
+      //SETEAR EL ID DE CUENTA
+      pp_model.setID_Cuenta(widget.id_Cuenta);
+
       //Mostrar la siguiente pantalla PP_Negocio_Screen()
       await _animationController.forward();
 
@@ -211,7 +218,7 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
                                 );
                               },
                             ),
-                             SizedBox(height: 50),
+                            SizedBox(height: 50),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: CustomWidgets().Tittle(
@@ -274,5 +281,4 @@ class _PP_Nombre_ScreenState extends State<PP_Nombre_Screen>
       ),
     );
   }
-
 }

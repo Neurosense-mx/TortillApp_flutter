@@ -5,6 +5,7 @@ import 'package:tortillapp/models/PrimerosPasos/PP_Model.dart';
 import 'package:tortillapp/screens/Admin/Home/Home_Admin.dart';
 import 'package:tortillapp/screens/Admin/PrimerosPasos/Add_Empleados.dart'; // Importar la pantalla de agregar empleados
 import 'package:tortillapp/screens/Admin/PrimerosPasos/ViewDataEmpleado.dart';
+import 'package:tortillapp/screens/Login/Login.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:confetti/confetti.dart';
@@ -199,7 +200,7 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
    
     Navigator.pushAndRemoveUntil(
   context,
-  MaterialPageRoute(builder: (context) => Home_Admin()), // Nueva pantalla
+  MaterialPageRoute(builder: (context) => LoginScreen()), // PENDIENTE. IR AL LOGIN 
   (Route<dynamic> route) => false, // Esto elimina todas las rutas anteriores
 );
 

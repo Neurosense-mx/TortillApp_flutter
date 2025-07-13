@@ -5,6 +5,7 @@ import 'package:tortillapp/config/backend.dart';
 import 'package:http/http.dart' as http;
 
 class PP_Model {
+  int idCuenta = 0;
   String nombre = ""; // Nombre del administrador
   String nombreNegocio = ""; // Nombre del negocio
   String nombreDominio = ""; // Nombre del dominio
@@ -87,6 +88,10 @@ class PP_Model {
     this.empleados = empleados;
   }
 
+  void setID_Cuenta(int id) {
+    this.idCuenta = id;
+  }
+
   //gets para el dominio
   String getDominio() {
     return nombreDominio;
@@ -94,7 +99,7 @@ class PP_Model {
 
   Future<void> build_json() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int? idCuenta = prefs.getInt('id_cuenta');
+    //int? idCuenta = prefs.getInt('id_cuenta');
 
     PP_MODEL_JSON = [
       {

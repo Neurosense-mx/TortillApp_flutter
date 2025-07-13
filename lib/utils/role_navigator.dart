@@ -21,7 +21,7 @@ class RoleNavigator {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
-            MaterialPageRoute(builder: (_) => PP_Nombre_Screen()),
+            MaterialPageRoute(builder: (_) => PP_Nombre_Screen(id_Cuenta: 1,)), //de prueba
           );
           return;
         }

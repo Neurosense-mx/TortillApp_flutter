@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:tortillapp/config/backend.dart';
 import 'package:flutter/material.dart';
 
-
 class RegisterModel {
   String email = "";
   String password = "";
@@ -63,12 +62,13 @@ class RegisterModel {
 
 //funcion para enviar un code al email
   Future<Map<String, dynamic>> sendCode() async {
-    final url = Uri.parse(ApiConfig.backendUrl + '/register/sendCode/' + this.email);
+    final url =
+        Uri.parse(ApiConfig.backendUrl + '/register/sendCode/' + this.email);
     try {
       // Realizamos la solicitud HTTP POST
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},     
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -76,12 +76,12 @@ class RegisterModel {
         var data = json.decode(response.body);
         this.code = data['code'].toString();
         //imprimir el codigo
-        print("--------------------------------------"+ data['code'].toString());
-          return {
-            'statusCode': 200, // OK
-            'message': 'El correo electrónico está disponible.'
-          };
-        
+        print(
+            "--------------------------------------" + data['code'].toString());
+        return {
+          'statusCode': 200, // OK
+          'message': 'El correo electrónico está disponible.'
+        };
       } else {
         // Si la respuesta no es exitosa
         return {
@@ -95,12 +95,11 @@ class RegisterModel {
     }
   }
 
-
-
 //Set para id_suscription
   void setIdSuscription(int id_suscription) {
     this.id_suscription = id_suscription;
   }
+
 // ----------------------------------------------------------------------------- Gets de los atributos
   String getEmail() {
     return this.email;
@@ -126,9 +125,12 @@ class RegisterModel {
       );
 
       if (response.statusCode == 200) {
+        //obtener el ID del response
+        final respuesta = jsonDecode(response.body);
         return {
           'statusCode': 200, // OK
-          'message': 'Registro exitoso, por favor inicia sesión.'
+          'message': 'Registro exitoso, por favor inicia sesión.',
+          'ID': respuesta['ID']
         };
       } else {
         // Si la respuesta no es exitosa
@@ -143,5 +145,3 @@ class RegisterModel {
     }
   }
 }
-
-

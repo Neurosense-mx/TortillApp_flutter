@@ -94,7 +94,7 @@ Future<void> _login() async {
 
           if (nombre == "") {
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => PP_Nombre_Screen()));
+                MaterialPageRoute(builder: (context) => PP_Nombre_Screen(id_Cuenta: 1,))); // PENDIENTE eliminar el redireccionamiento
           } else {
             var negocio = config['negocio'];
             var sucursal = config['sucursal'];
