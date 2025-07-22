@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:math';
 
+
 class PP_Empleados_Screen extends StatefulWidget {
   final PP_Model pp_model;
   const PP_Empleados_Screen({super.key, required this.pp_model});
@@ -31,6 +32,7 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
   late ConfettiController _confettiController;
   late String _dominioname;
   List<Map<String, dynamic>> empleados = [];
+bool _isContinueButtonDisabled = false;
 
   @override
   void initState() {
@@ -166,6 +168,7 @@ class _PP_Empleados_ScreenState extends State<PP_Empleados_Screen>
               });
             },
             dominoname: _dominioname, // Pasa el valor aquí
+            empleadosExistentes: empleados, // << Agrega esto
           );
         },
         transitionDuration: Duration(milliseconds: 500),

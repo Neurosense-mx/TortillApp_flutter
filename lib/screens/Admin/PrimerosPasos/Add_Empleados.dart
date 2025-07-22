@@ -9,8 +9,8 @@ import 'package:tortillapp/config/backend.dart';
 class PP_AddEmpleados_Screen extends StatefulWidget {
   final Function(Map<String, dynamic>) onSave; // Callback para guardar el empleado
   final String dominoname; // Agregamos este nuevo parámetro
-
-  PP_AddEmpleados_Screen({required this.onSave, required this.dominoname}); // Recibir el callback
+final List<Map<String, dynamic>> empleadosExistentes;
+  PP_AddEmpleados_Screen({required this.onSave, required this.dominoname, required this.empleadosExistentes}); // Recibir el callback
 
   @override
   _PP_AddEmpleados_ScreenState createState() => _PP_AddEmpleados_ScreenState();
@@ -165,6 +165,14 @@ Future<void> _fetchPuestos() async {
       return;
     }
 
+final emailCompleto = _emailController.text + '@' + widget.dominoname + '.com';
+
+// Validación de unicidad del email
+  final yaExiste = widget.empleadosExistentes.any((empleado) => empleado['email'] == emailCompleto);
+  if (yaExiste) {
+    _showCupertinoDialog('Error', 'Ya existe un empleado con ese nombre de usuario, usa otro que no haya sido utilizado.');
+    return;
+  }
     // Crear un mapa con los datos del nuevo empleado
     Map<String, dynamic> nuevoEmpleado = {
       "id": DateTime.now().millisecondsSinceEpoch, // Generar un ID único
