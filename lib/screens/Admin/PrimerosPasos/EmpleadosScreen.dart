@@ -194,6 +194,9 @@ bool _isContinueButtonDisabled = false;
     var response = await widget.pp_model.enviarData();
     print(response);
     if(response['statusCode'] == 200){
+      setState(() {
+    _isContinueButtonDisabled = true; // Deshabilita el botón
+  });
      _showConfetti();
     await _animationController.forward();
     print("Se registró correctamente");
@@ -404,8 +407,10 @@ bool _isContinueButtonDisabled = false;
                       child: CustomWidgets().ButtonPrimary(
                         text: 'Continuar',
                         onPressed: () {
-                          _continue();
-                        },
+  if (!_isContinueButtonDisabled) {
+    _continue();
+  }
+},             
                       ),
                     ),
                     SizedBox(height: 30),
