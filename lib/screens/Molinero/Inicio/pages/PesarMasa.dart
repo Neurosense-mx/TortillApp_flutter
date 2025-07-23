@@ -76,6 +76,9 @@ class _PesarMasaState extends State<PesarMasa> {
     }
 
     final success = await widget.molino.pesarMasa(_selectedMaizId!, kg);
+    //si fue exitoso, limpiar el campo de texto y actualizar la lista
+    
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(success
@@ -86,7 +89,11 @@ class _PesarMasaState extends State<PesarMasa> {
         duration: const Duration(seconds: 1),
       ),
     );
-
+if (success) {
+      _kgMasa.clear();
+      // cerrar esta pantalla
+      Navigator.pop(context);
+    }
     
   }
 

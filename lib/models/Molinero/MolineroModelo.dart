@@ -49,6 +49,7 @@ class MolinoModel {
 
 //Obtener los datos de estadistica semanal
   Future<Map<String, dynamic>> getEstadisticas() async {
+    print("Obteniendo estadísticas semanales para la cuenta: $id_account");
     final url = Uri.parse(
         ApiConfig.backendUrl + '/molinero/registros/semana/$id_account');
 

@@ -39,6 +39,8 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
     bool success = await widget.molino.addMaiz(kg);
 
     if (success) {
+      //limpiar el campo de texto
+      _kgMaizController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('¡Maíz agregado correctamente!'),
@@ -47,6 +49,7 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
           duration: Duration(seconds: 1),
         ),
       );
+      Navigator.pop(context); // cerrar esta pantalla
       
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

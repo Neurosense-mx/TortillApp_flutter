@@ -62,7 +62,8 @@ class LineChartWidget extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
-                interval: (maxY - minY) / 5, // Escala razonable
+                interval: ((maxY - minY) / 5).clamp(1, double.infinity),
+
                 getTitlesWidget: (value, meta) {
                   return Text(value.toStringAsFixed(0));
                 },
