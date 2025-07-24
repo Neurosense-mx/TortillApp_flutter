@@ -16,6 +16,8 @@ class MostradorModel {
 
   late List<Map<String, dynamic>> _productos = [];
 
+  late List<Map<String, dynamic>> _designaciones = [];
+
   MostradorModel(this.id_account, this.id_sucursal, this.id_negocio,
       this.id_admin, this.token, this.email, this.nombre) {
     //_fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
@@ -24,7 +26,61 @@ class MostradorModel {
   // Método para obtener los datos(id sucursal, id negocio) de la cuenta
 
   //------------------------- Acciones de mostrador -------------------------
-  // Endpoint oara agregarkilos de tortillas como sobrantes del dia
+
+ // Obtener designaciones diarias de los repartidores
+Future<List<Map<String, dynamic>>> getDesignaciones() async {
+  final url = Uri.parse(
+    '${ApiConfig.backendUrl}/mostrador/designaciones/hoy/$id_sucursal',
+  );
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> designacionesJson = json.decode(response.body);
+    _designaciones = designacionesJson.cast<Map<String, dynamic>>();
+    print("Designaciones obtenidas: $_designaciones");
+
+    return _designaciones; // ← Este return es obligatorio
+  } else {
+    print("Error al obtener designaciones: ${response.body}");
+    throw Exception('Error al obtener designaciones');
+  }
+}
+
+
+//get para devolver las designaciones
+List<Map<String, dynamic>> get designaciones{
+ return _designaciones;
+}
+
+// Método para eliminar una designación de un repartidor
+  Future<bool> eliminarDesignacion(int idDesignacion) async {
+    final url = Uri.parse(
+        '${ApiConfig.backendUrl}/mostrador/designar/caja/$idDesignacion');
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json', // Asegúrate de que el token esté definido
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print("Designación eliminada correctamente");
+      return true;
+    } else {
+      print("Error al eliminar designación: ${response.body}");
+      return false;
+    }
+  }
+
+  // Endpoint para agregar kilos de tortillas como sobrantes del dia
   Future<bool> addSobrantes(double kgSobrantes) async {
     print("Agregando sobrantes: $kgSobrantes kg");
     final url =
@@ -205,6 +261,7 @@ class MostradorModel {
   Future<bool> registrarVenta() async {
     return true; // Implementar lógica de registro de ventas
   }
+
   //function para cerrar sesion, elimiar el token
   Future<void> logout() async {
     await DataUser().clear();

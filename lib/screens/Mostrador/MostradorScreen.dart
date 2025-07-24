@@ -44,6 +44,7 @@ class _Mostrador_ScreenState extends State<Mostrador_Screen> {
       await dataUser.email,
       await dataUser.nombre,
     );
+   
 
     _screens = [
       Home_Mostrador(mostrador: mostrador),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
@@ -79,20 +81,30 @@ class _PesarMasaState extends State<PesarMasa> {
     //si fue exitoso, limpiar el campo de texto y actualizar la lista
     
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(success
-            ? '¡Peso registrado correctamente!'
-            : 'Ocurrió un error al guardar'),
-        backgroundColor: success ? Colors.green : Colors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-      ),
-    );
+   
 if (success) {
       _kgMasa.clear();
-      // cerrar esta pantalla
-      Navigator.pop(context);
+       QuickAlert.show(
+ context: context,
+ type: QuickAlertType.success,
+ text: 'Peso de masa registrado exitosamente!',
+ title: '¡Éxito!',
+        confirmBtnText: 'Aceptar',
+        onConfirmBtnTap: () {
+          Navigator.pop(context); // cerrar esta pantalla
+          //cerrar ventana
+          Navigator.pop(context);
+        },
+);
+    }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Ocurrió un error al guardar'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
     
   }

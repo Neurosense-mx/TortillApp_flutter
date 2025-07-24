@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
+import 'package:quickalert/quickalert.dart';
 
 class Add_maiz_screen extends StatefulWidget {
   final MolinoModel molino;
@@ -41,6 +42,7 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
     if (success) {
       //limpiar el campo de texto
       _kgMaizController.clear();
+      /*
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('¡Maíz agregado correctamente!'),
@@ -49,7 +51,20 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
           duration: Duration(seconds: 1),
         ),
       );
-      Navigator.pop(context); // cerrar esta pantalla
+      */
+      QuickAlert.show(
+ context: context,
+ type: QuickAlertType.success,
+ text: 'Registro de maíz exitoso!',
+ title: '¡Éxito!',
+        confirmBtnText: 'Aceptar',
+        onConfirmBtnTap: () {
+          Navigator.pop(context); // cerrar esta pantalla
+          //cerrar ventana
+          Navigator.pop(context);
+        },
+);
+  //  Navigator.pop(context); // cerrar esta pantalla
       
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
