@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 import 'package:tortillapp/models/Mostrador/ModelMostrador.dart';
 import 'package:tortillapp/widgets/widgets.dart';
@@ -87,28 +89,24 @@ class _AddDonacionesScreenState extends State<AddDonacionesScreen> {
     bool response = await widget.mostrador.addDonaciones(kilos, nombre);
 
     if (response) {
-      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          response ? '¡Donación agregada correctamente!' : 'Ocurrió un error al guardar',
-        ),
-        backgroundColor: response ? Colors.green : Colors.red,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-      ),
-    );
+  QuickAlert.show(
+    context: context,
+    type: QuickAlertType.success,
+    title: 'Donación realizada',
+    text: 'La donación se registró correctamente.',
+    confirmBtnText: 'Aceptar',
+    confirmBtnColor: Colors.green,
+    onConfirmBtnTap: () {
+      Navigator.of(context).pop(); // Cierra el diálogo
+      Navigator.of(context).pop(); // Regresa a la pantalla anterior
+    },
+  );
+} else {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Error al guardar la donación')),
+  );
+}
 
-    setState(() {
-      _kgTortillaController.clear();
-      _otroNombreController.clear();
-      esEmpleado = true;
-      _empleadoSeleccionado = null;
-    });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al guardar la donación')),
-      );
-    }
   }
 
   @override

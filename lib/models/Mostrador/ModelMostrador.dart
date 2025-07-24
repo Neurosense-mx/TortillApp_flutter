@@ -257,6 +257,53 @@ List<Map<String, dynamic>> get designaciones{
     }
   }
 
+  // Obtener los sobrantes del día
+  Future<List<Map<String, dynamic>>> getSobrantesHoy() async {
+    final url = Uri.parse(
+      '${ApiConfig.backendUrl}/mostrador/tortillas/sobrantes/hoy/$id_sucursal',
+    );  
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> sobrantesJson = json.decode(response.body);
+      final List<Map<String, dynamic>> sobrantes =
+          sobrantesJson.cast<Map<String, dynamic>>();
+      print("Sobrantes obtenidos: $sobrantes");
+      return sobrantes;
+    } else {
+      print("Error al obtener sobrantes: ${response.body}");
+      throw Exception('Error al obtener sobrantes');
+    }
+  }
+
+  // eliminar un sobrante por su ID
+  Future<bool> eliminarSobrante(int idSobrante) async {
+    final url = Uri.parse(
+      '${ApiConfig.backendUrl}/mostrador/tortillas/sobrantes/$idSobrante',
+    );
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print("Sobrante eliminado correctamente");
+      return true;
+    } else {
+      print("Error al eliminar sobrante: ${response.body}");
+      return false;
+    }
+  }
+
 // Método para registrar ventas
   Future<bool> registrarVenta() async {
     return true; // Implementar lógica de registro de ventas
