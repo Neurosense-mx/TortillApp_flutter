@@ -27,37 +27,36 @@ class MostradorModel {
 
   //------------------------- Acciones de mostrador -------------------------
 
- // Obtener designaciones diarias de los repartidores
-Future<List<Map<String, dynamic>>> getDesignaciones() async {
-  final url = Uri.parse(
-    '${ApiConfig.backendUrl}/mostrador/designaciones/hoy/$id_sucursal',
-  );
+  // Obtener designaciones diarias de los repartidores
+  Future<List<Map<String, dynamic>>> getDesignaciones() async {
+    final url = Uri.parse(
+      '${ApiConfig.backendUrl}/mostrador/designaciones/hoy/$id_sucursal',
+    );
 
-  final response = await http.get(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final List<dynamic> designacionesJson = json.decode(response.body);
-    _designaciones = designacionesJson.cast<Map<String, dynamic>>();
-    print("Designaciones obtenidas: $_designaciones");
+    if (response.statusCode == 200) {
+      final List<dynamic> designacionesJson = json.decode(response.body);
+      _designaciones = designacionesJson.cast<Map<String, dynamic>>();
+      print("Designaciones obtenidas: $_designaciones");
 
-    return _designaciones; // ← Este return es obligatorio
-  } else {
-    print("Error al obtener designaciones: ${response.body}");
-    throw Exception('Error al obtener designaciones');
+      return _designaciones; // ← Este return es obligatorio
+    } else {
+      print("Error al obtener designaciones: ${response.body}");
+      throw Exception('Error al obtener designaciones');
+    }
   }
-}
-
 
 //get para devolver las designaciones
-List<Map<String, dynamic>> get designaciones{
- return _designaciones;
-}
+  List<Map<String, dynamic>> get designaciones {
+    return _designaciones;
+  }
 
 // Método para eliminar una designación de un repartidor
   Future<bool> eliminarDesignacion(int idDesignacion) async {
@@ -66,7 +65,8 @@ List<Map<String, dynamic>> get designaciones{
     final response = await http.delete(
       url,
       headers: {
-        'Content-Type': 'application/json', // Asegúrate de que el token esté definido
+        'Content-Type':
+            'application/json', // Asegúrate de que el token esté definido
         'Authorization': 'Bearer $token',
       },
     );
@@ -261,7 +261,7 @@ List<Map<String, dynamic>> get designaciones{
   Future<List<Map<String, dynamic>>> getSobrantesHoy() async {
     final url = Uri.parse(
       '${ApiConfig.backendUrl}/mostrador/tortillas/sobrantes/hoy/$id_sucursal',
-    );  
+    );
     final response = await http.get(
       url,
       headers: {
@@ -303,11 +303,106 @@ List<Map<String, dynamic>> get designaciones{
       return false;
     }
   }
+Future<bool> registrarVenta(
+  List<Map<String, dynamic>> carrito,
+  int tipoPago, {
+  required Map<String, double> ubicacion,
+}) async {
+  print("Registrando venta: $carrito");
+  print("Tipo de pago: $tipoPago");
 
-// Método para registrar ventas
-  Future<bool> registrarVenta() async {
-    return true; // Implementar lógica de registro de ventas
+  final tortillas = carrito.where((item) => item['tipo'] == 1).toList();
+  final otrosProductos = carrito.where((item) => item['tipo'] != 1).toList();
+
+  bool ventaTortillasRegistrada = true;
+
+  // Si hay tortillas, registrar la venta de tortillas
+  if (tortillas.isNotEmpty) {
+    final double tortillas_kg = tortillas.fold(
+      0.0,
+      (sum, item) => sum + (item['cantidad'] as double),
+    );
+    final double precio = tortillas.fold(
+      0.0,
+      (sum, item) => sum + (item['precio'] as double),
+    );
+
+    print("Total de kilos de tortillas: $tortillas_kg");
+    print("Total de precio de tortillas: $precio");
+
+    final data = {
+      "id_sucursal": id_sucursal,
+      "id_cuenta": id_account,
+      "cantidad_kg": tortillas_kg,
+      "longitud": ubicacion['longitud'] ?? 0.0,
+      "latitud": ubicacion['latitud'] ?? 0.0,
+      "tipo_venta": tipoPago,
+      "lugar_venta": 1,
+      "devoluciones_kg": 0,
+    };
+
+    print("Datos a enviar (tortillas): $data");
+
+    final url =
+        Uri.parse(ApiConfig.backendUrl + '/mostrador/ventas/tortillas');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200) {
+      print("Venta de tortillas registrada correctamente.");
+    } else {
+      print("Error al registrar venta de tortillas: ${response.body}");
+      ventaTortillasRegistrada = false;
+    }
   }
+
+  // Registrar productos adicionales
+  bool productosRegistradosCorrectamente = true;
+
+  if (otrosProductos.isNotEmpty) {
+    print("----- Otros productos a registrar: $otrosProductos");
+
+    for (var producto in otrosProductos) {
+      final productoData = {
+        "id_sucursal": id_sucursal,
+        "id_cuenta": id_account,
+        "id_producto": producto['id_producto'],
+        "cantidad": producto['cantidad'],
+        "total_venta": producto['precio']
+      };
+
+      final productoUrl =
+          Uri.parse(ApiConfig.backendUrl + '/mostrador/ventas/productos');
+
+      final productoResponse = await http.post(
+        productoUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(productoData),
+      );
+
+      if (productoResponse.statusCode == 200) {
+        print("Producto ${producto['producto']} registrado correctamente.");
+      } else {
+        print(
+            "Error al registrar producto ${producto['producto']}: ${productoResponse.body}");
+        productosRegistradosCorrectamente = false;
+      }
+    }
+  }
+
+  return ventaTortillasRegistrada && productosRegistradosCorrectamente;
+}
+
+
 
   //function para cerrar sesion, elimiar el token
   Future<void> logout() async {
