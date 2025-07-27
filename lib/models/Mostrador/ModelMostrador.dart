@@ -402,7 +402,44 @@ Future<bool> registrarVenta(
   return ventaTortillasRegistrada && productosRegistradosCorrectamente;
 }
 
+//Obtener una lista de los registros de ventas del mostrador
+Future<List<Map<String, dynamic>>> getVentasProductos() async {
+  final url = Uri.parse(
+    '${ApiConfig.backendUrl}/mostrador/ventas/productos/$id_account/$id_sucursal',
+  );  
 
+  final response = await http.get(url, headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  });
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    return List<Map<String, dynamic>>.from(data);
+  } else {
+    print("Error al obtener registros: ${response.body}");
+    return [];
+  }
+}
+//Obtener una lista de los registros de ventas del mostrador
+Future<List<Map<String, dynamic>>> getVentasTortillas() async {
+  final url = Uri.parse(
+    '${ApiConfig.backendUrl}/mostrador/ventas/tortillas/$id_account/$id_sucursal',
+  );  
+
+  final response = await http.get(url, headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  });
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    return List<Map<String, dynamic>>.from(data);
+  } else {
+    print("Error al obtener registros: ${response.body}");
+    return [];
+  }
+}
 
   //function para cerrar sesion, elimiar el token
   Future<void> logout() async {

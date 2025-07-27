@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tortillapp/config/paletteColor.dart';
-import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
+
 import 'package:tortillapp/models/Mostrador/ModelMostrador.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
 
@@ -120,7 +120,7 @@ class MiPerfilMostrador extends StatelessWidget {
                             ),
                             child: Center(
                               child: SvgPicture.asset(
-                                'lib/assets/cards/molinero/molino_icon.svg',
+                                'lib/assets/cards/mostrador/mostrador.svg',
                                 width: 40,
                                 height: 40,
                                 color: Colors.white,

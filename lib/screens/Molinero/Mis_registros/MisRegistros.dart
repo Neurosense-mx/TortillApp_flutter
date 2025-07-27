@@ -4,9 +4,10 @@ import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 
 class MisRegistrosMolinero extends StatefulWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
 
-  const MisRegistrosMolinero({Key? key, required this.molino}) : super(key: key);
+  const MisRegistrosMolinero({Key? key, required this.molino})
+      : super(key: key);
 
   @override
   State<MisRegistrosMolinero> createState() => _MisRegistrosMolineroState();
@@ -68,13 +69,16 @@ class _MisRegistrosMolineroState extends State<MisRegistrosMolinero> {
 
       setState(() {
         registrosPorFecha = agrupados;
-        registrosOriginales = Map<String, List<Map<String, dynamic>>>.from(agrupados);
+        registrosOriginales =
+            Map<String, List<Map<String, dynamic>>>.from(agrupados);
         headersOrdenados = keys;
         headersOriginales = List<String>.from(keys);
 
         registrosMostradosPorFecha = {
           for (var key in headersOrdenados)
-            key: agrupados[key]!.length > pageSize ? pageSize : agrupados[key]!.length
+            key: agrupados[key]!.length > pageSize
+                ? pageSize
+                : agrupados[key]!.length
         };
         _loading = false;
         fechaFiltro = null;
@@ -100,98 +104,110 @@ class _MisRegistrosMolineroState extends State<MisRegistrosMolinero> {
     return dt != null ? DateFormat.Hm().format(dt) : fecha;
   }
 
-Widget buildRegistro(Map<String, dynamic> registro) {
-  final maiz = registro['maiz_cocido'];
-  final masa = registro['peso_masa'];
+  Widget buildRegistro(Map<String, dynamic> registro) {
+    final maiz = registro['maiz_cocido'];
+    final masa = registro['peso_masa'];
 
-  double? rendimiento;
-  if (maiz != null && masa != null) {
-    final double? kgCocido = double.tryParse(maiz['kg_cocido'].toString());
-    final double? kgMasa = double.tryParse(masa['peso_masa'].toString());
-    if (kgCocido != null && kgMasa != null && kgCocido > 0) {
-      rendimiento = (kgMasa / kgCocido) * 100;
+    double? rendimiento;
+    if (maiz != null && masa != null) {
+      final double? kgCocido = double.tryParse(maiz['kg_cocido'].toString());
+      final double? kgMasa = double.tryParse(masa['peso_masa'].toString());
+      if (kgCocido != null && kgMasa != null && kgCocido > 0) {
+        rendimiento = (kgMasa / kgCocido) * 100;
+      }
     }
-  }
 
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Flexible(
-          flex: 4,
-          child: Container(
-            padding: const EdgeInsets.all(6.0),
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Maíz cocido", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text("${maiz['kg_cocido']} kg", style: const TextStyle(fontSize: 13)),
-                Text(formatearHora(maiz['fecha_cocido']), style: const TextStyle(fontSize: 11)),
-              ],
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 6.0),
-          child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
-        ),
-        Flexible(
-          flex: 4,
-          child: masa != null
-              ? Container(
-                  padding: const EdgeInsets.all(6.0),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Masa obtenida", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      Text("${masa['peso_masa']} kg", style: const TextStyle(fontSize: 13)),
-                      Text(formatearHora(masa['fecha_masa']), style: const TextStyle(fontSize: 11)),
-                    ],
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-        if (rendimiento != null) ...[
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6.0),
-            child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
-          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
           Flexible(
-            flex: 3,
+            flex: 4,
             child: Container(
               padding: const EdgeInsets.all(6.0),
               decoration: BoxDecoration(
-                color: Colors.purple[100],
+                color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Relación Maíz/Masa", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                  Text("${rendimiento.toStringAsFixed(1)} %", style: const TextStyle(fontSize: 13)),
+                  const Text("Maíz cocido",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  Text("${maiz['kg_cocido']} kg",
+                      style: const TextStyle(fontSize: 13)),
+                  Text(formatearHora(maiz['fecha_cocido']),
+                      style: const TextStyle(fontSize: 11)),
                 ],
               ),
             ),
           ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.0),
+            child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
+          ),
+          Flexible(
+            flex: 4,
+            child: masa != null
+                ? Container(
+                    padding: const EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Masa obtenida",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
+                        Text("${masa['peso_masa']} kg",
+                            style: const TextStyle(fontSize: 13)),
+                        Text(formatearHora(masa['fecha_masa']),
+                            style: const TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          if (rendimiento != null) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6.0),
+              child: Icon(Icons.arrow_forward, size: 18, color: Colors.grey),
+            ),
+            Flexible(
+              flex: 3,
+              child: Container(
+                padding: const EdgeInsets.all(6.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Relación Maíz/Masa",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text("${rendimiento.toStringAsFixed(1)} %",
+                        style: const TextStyle(fontSize: 13)),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
-void cargarMasRegistros(String header) {
+  void cargarMasRegistros(String header) {
     final total = registrosPorFecha[header]!.length;
     final actuales = registrosMostradosPorFecha[header] ?? 0;
-    final nuevos = (actuales + pageSize) > total ? total : (actuales + pageSize);
+    final nuevos =
+        (actuales + pageSize) > total ? total : (actuales + pageSize);
 
     setState(() {
       registrosMostradosPorFecha[header] = nuevos;
@@ -243,7 +259,9 @@ void cargarMasRegistros(String header) {
       // Ajustar paginación para filtro
       registrosMostradosPorFecha = {
         for (var key in headersOrdenados)
-          key: filtrados[key]!.length > pageSize ? pageSize : filtrados[key]!.length
+          key: filtrados[key]!.length > pageSize
+              ? pageSize
+              : filtrados[key]!.length
       };
 
       fechaFiltro = fecha;
@@ -252,12 +270,15 @@ void cargarMasRegistros(String header) {
 
   void limpiarFiltro() {
     setState(() {
-      registrosPorFecha = Map<String, List<Map<String, dynamic>>>.from(registrosOriginales);
+      registrosPorFecha =
+          Map<String, List<Map<String, dynamic>>>.from(registrosOriginales);
       headersOrdenados = List<String>.from(headersOriginales);
 
       registrosMostradosPorFecha = {
         for (var key in headersOrdenados)
-          key: registrosPorFecha[key]!.length > pageSize ? pageSize : registrosPorFecha[key]!.length
+          key: registrosPorFecha[key]!.length > pageSize
+              ? pageSize
+              : registrosPorFecha[key]!.length
       };
       fechaFiltro = null;
     });
@@ -288,7 +309,8 @@ void cargarMasRegistros(String header) {
               GestureDetector(
                 onTap: limpiarFiltro,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: colores.colorPrincipal.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -297,10 +319,12 @@ void cargarMasRegistros(String header) {
                     children: [
                       Text(
                         DateFormat('dd/MM/yyyy').format(fechaFiltro!),
-                        style: TextStyle(color: colores.colorPrincipal, fontSize: 14),
+                        style: TextStyle(
+                            color: colores.colorPrincipal, fontSize: 14),
                       ),
                       const SizedBox(width: 4),
-                      Icon(Icons.close, size: 16, color: colores.colorPrincipal),
+                      Icon(Icons.close,
+                          size: 16, color: colores.colorPrincipal),
                     ],
                   ),
                 ),
@@ -325,7 +349,8 @@ void cargarMasRegistros(String header) {
                         fechaFiltro != null
                             ? 'No hay registros para la fecha seleccionada'
                             : 'No hay registros disponibles',
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     )
                   : ListView.builder(
@@ -334,24 +359,30 @@ void cargarMasRegistros(String header) {
                       itemBuilder: (context, index) {
                         final header = headersOrdenados[index];
                         final registrosGrupo = registrosPorFecha[header]!;
-                        final mostrarCantidad = registrosMostradosPorFecha[header] ?? pageSize;
+                        final mostrarCantidad =
+                            registrosMostradosPorFecha[header] ?? pageSize;
 
-                        final registrosAMostrar = registrosGrupo.take(mostrarCantidad).toList();
+                        final registrosAMostrar =
+                            registrosGrupo.take(mostrarCantidad).toList();
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
                               child: Row(
                                 children: [
                                   Text(
                                     header,
-                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(width: 8),
                                   const Expanded(
-                                    child: Divider(color: Colors.grey, thickness: 0.4),
+                                    child: Divider(
+                                        color: Colors.grey, thickness: 0.4),
                                   ),
                                 ],
                               ),
@@ -361,7 +392,8 @@ void cargarMasRegistros(String header) {
                               Center(
                                 child: TextButton(
                                   onPressed: () => cargarMasRegistros(header),
-                                  child: const Text("Cargar más", style: TextStyle(fontSize: 14)),
+                                  child: const Text("Cargar más",
+                                      style: TextStyle(fontSize: 14)),
                                 ),
                               ),
                             const SizedBox(height: 10),

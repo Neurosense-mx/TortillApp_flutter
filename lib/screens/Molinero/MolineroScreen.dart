@@ -9,17 +9,17 @@ import 'package:tortillapp/screens/Molinero/Mis_registros/MisRegistros.dart';
 import 'package:tortillapp/utils/Data_sesion.dart';
 
 class Molinero_Screen extends StatefulWidget {
-  
   @override
   _Molinero_ScreenState createState() => _Molinero_ScreenState();
 }
+
 class _Molinero_ScreenState extends State<Molinero_Screen> {
   final PaletaDeColores colores = PaletaDeColores();
 
   int _selectedIndex = 0;
   late PageController _pageController;
 
-  late MolinoModel molino;
+  late MostradorModel molino;
   bool _isLoading = true;
   late final List<Widget> _screens;
 
@@ -34,7 +34,7 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
 
   Future<void> _inicializarModelo() async {
     final dataUser = DataUser();
-    molino = MolinoModel(
+    molino = MostradorModel(
       await dataUser.idCuenta,
       await dataUser.idSucursal,
       await dataUser.idNegocio,
@@ -57,7 +57,8 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
     ];
 
     // Inicializamos el controlador en el "medio" para permitir scroll infinito
-    int initialPage = _virtualPageCount ~/ 2 - ((_virtualPageCount ~/ 2) % _screens.length);
+    int initialPage =
+        _virtualPageCount ~/ 2 - ((_virtualPageCount ~/ 2) % _screens.length);
     _pageController = PageController(initialPage: initialPage);
 
     setState(() {
@@ -77,7 +78,8 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
 
   void _jumpToVirtualPage(int index) {
     int currentVirtualPage = _pageController.page?.round() ?? 0;
-    int targetPage = currentVirtualPage - (_getRealIndex(currentVirtualPage)) + index;
+    int targetPage =
+        currentVirtualPage - (_getRealIndex(currentVirtualPage)) + index;
     _pageController.animateToPage(
       targetPage,
       duration: const Duration(milliseconds: 300),
@@ -129,11 +131,13 @@ class _Molinero_ScreenState extends State<Molinero_Screen> {
               type: BottomNavigationBarType.fixed,
               items: [
                 BottomNavigationBarItem(
-                  icon: _buildNavIcon('lib/assets/menu_horizontal/home_icon.svg', 0),
+                  icon: _buildNavIcon(
+                      'lib/assets/menu_horizontal/home_icon.svg', 0),
                   label: 'Inicio',
                 ),
                 BottomNavigationBarItem(
-                  icon: _buildNavIcon('lib/assets/menu_horizontal/estadisticas.svg', 1),
+                  icon: _buildNavIcon(
+                      'lib/assets/menu_horizontal/estadisticas.svg', 1),
                   label: 'Registros',
                 ),
                 BottomNavigationBarItem(

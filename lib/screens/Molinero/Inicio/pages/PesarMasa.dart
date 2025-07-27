@@ -7,7 +7,7 @@ import 'package:tortillapp/widgets/widgets.dart';
 import 'package:tortillapp/config/paletteColor.dart';
 
 class PesarMasa extends StatefulWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
 
   const PesarMasa({Key? key, required this.molino}) : super(key: key);
 
@@ -39,7 +39,8 @@ class _PesarMasaState extends State<PesarMasa> {
       final lista = data.map<Map<String, dynamic>>((item) {
         return {
           "id": item["id"],
-          "fecha": DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(item["fecha"])),
+          "fecha": DateFormat('dd/MM/yyyy HH:mm')
+              .format(DateTime.parse(item["fecha"])),
           "kg": item["kg_cocidos"].toString()
         };
       }).toList();
@@ -79,25 +80,22 @@ class _PesarMasaState extends State<PesarMasa> {
 
     final success = await widget.molino.pesarMasa(_selectedMaizId!, kg);
     //si fue exitoso, limpiar el campo de texto y actualizar la lista
-    
-    
-   
-if (success) {
+
+    if (success) {
       _kgMasa.clear();
-       QuickAlert.show(
- context: context,
- type: QuickAlertType.success,
- text: 'Peso de masa registrado exitosamente!',
- title: '¡Éxito!',
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        text: 'Peso de masa registrado exitosamente!',
+        title: '¡Éxito!',
         confirmBtnText: 'Aceptar',
         onConfirmBtnTap: () {
           Navigator.pop(context); // cerrar esta pantalla
           //cerrar ventana
           Navigator.pop(context);
         },
-);
-    }
-    else{
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Ocurrió un error al guardar'),
@@ -106,7 +104,6 @@ if (success) {
         ),
       );
     }
-    
   }
 
   @override
@@ -141,7 +138,8 @@ if (success) {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : maizRegistrado.isEmpty
-              ? const Center(child: Text('No hay registros de maíz cocido sin pesar.'))
+              ? const Center(
+                  child: Text('No hay registros de maíz cocido sin pesar.'))
               : Center(
                   child: Container(
                     width: anchoContenedor,
@@ -162,11 +160,13 @@ if (success) {
                         ),
                         const SizedBox(height: 40),
                         customWidgets.DropdownPrimary(
-                          value: (_selectedMaizId ?? maizRegistrado[0]['id']) as int,
+                          value: (_selectedMaizId ?? maizRegistrado[0]['id'])
+                              as int,
                           items: maizRegistrado.map((maiz) {
                             return DropdownMenuItem<int>(
                               value: maiz['id'],
-                              child: Text('${maiz['fecha']} - ${maiz['kg']} kg'),
+                              child:
+                                  Text('${maiz['fecha']} - ${maiz['kg']} kg'),
                             );
                           }).toList(),
                           onChanged: (int? newValue) {

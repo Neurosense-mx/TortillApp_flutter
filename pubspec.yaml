@@ -115,6 +115,7 @@ flutter:
       - lib/assets/cards/mostrador/ventas.svg
       - lib/assets/cards/mostrador/reparto.svg
       - lib/assets/cards/mostrador/molino_.svg
+      - lib/assets/cards/mostrador/mostrador.svg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

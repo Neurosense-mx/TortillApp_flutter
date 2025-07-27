@@ -6,6 +6,7 @@ import 'package:tortillapp/screens/Admin/Home/example2.dart';
 import 'package:tortillapp/screens/Admin/Home/example3.dart';
 import 'package:tortillapp/screens/Mostrador/Inicio/Inicio_Mostrador.dart';
 import 'package:tortillapp/screens/Mostrador/Mi_perfil/MostradorPerfil.dart';
+import 'package:tortillapp/screens/Mostrador/MisRegistros/RegistrosMostrador.dart';
 import 'package:tortillapp/utils/Data_sesion.dart';
 
 class Mostrador_Screen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _Mostrador_ScreenState extends State<Mostrador_Screen> {
 
     _screens = [
       Home_Mostrador(mostrador: mostrador),
-      example2(),
+      MisRegistrosMostrador(mostrador: mostrador),
       MiPerfilMostrador(
         mostrador: mostrador,
         onTabSelected: (index) {

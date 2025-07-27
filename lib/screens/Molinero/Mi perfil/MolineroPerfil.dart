@@ -6,10 +6,11 @@ import 'package:tortillapp/models/Molinero/MolineroModelo.dart';
 import 'package:tortillapp/screens/Login/Login.dart';
 
 class MiPerfilMolinero extends StatelessWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
   final void Function(int)? onTabSelected;
 
-  MiPerfilMolinero({Key? key, required this.molino, this.onTabSelected}) : super(key: key);
+  MiPerfilMolinero({Key? key, required this.molino, this.onTabSelected})
+      : super(key: key);
 
   final PaletaDeColores colores = PaletaDeColores();
 
@@ -46,7 +47,6 @@ class MiPerfilMolinero extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 0,
                   left: 0,
@@ -79,7 +79,6 @@ class MiPerfilMolinero extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Positioned(
                   bottom: -80,
                   left: MediaQuery.of(context).size.width * 0.05,
@@ -95,7 +94,8 @@ class MiPerfilMolinero extends StatelessWidget {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 32.0, horizontal: 16.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -171,9 +171,7 @@ class MiPerfilMolinero extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 95),
-
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Align(
@@ -189,7 +187,6 @@ class MiPerfilMolinero extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-
             GestureDetector(
               onTap: () async {
                 await molino.logout();

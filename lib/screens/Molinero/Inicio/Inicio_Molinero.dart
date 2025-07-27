@@ -8,7 +8,7 @@ import 'package:tortillapp/screens/Molinero/Inicio/pages/PesarMasa.dart';
 import 'package:tortillapp/screens/Molinero/Inicio/widgets/WidgetGrafica.dart';
 
 class HomeMolinero extends StatefulWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
   const HomeMolinero({Key? key, required this.molino}) : super(key: key);
 
   @override
@@ -21,39 +21,38 @@ class _HomeMolineroState extends State<HomeMolinero> {
   late Future<Map<String, Map<String, double>>> _estadisticasFuture;
 
   late final Widget iconMolinoSvg;
-late final Widget iconAguaSvg;
-late final Widget iconPesoSvg;
+  late final Widget iconAguaSvg;
+  late final Widget iconPesoSvg;
 
+  @override
+  void initState() {
+    super.initState();
+    _nombreFuture = _loadNombre();
+    _estadisticasFuture = _getEstadisticas();
 
-@override
-void initState() {
-  super.initState();
-  _nombreFuture = _loadNombre();
-  _estadisticasFuture = _getEstadisticas();
+    iconMolinoSvg = SvgPicture.asset(
+      'lib/assets/cards/molinero/molino_icon.svg',
+      width: 30,
+      height: 30,
+      cacheColorFilter: true,
+    );
 
-  iconMolinoSvg = SvgPicture.asset(
-    'lib/assets/cards/molinero/molino_icon.svg',
-    width: 30,
-    height: 30,
-    cacheColorFilter: true,
-  );
+    iconAguaSvg = SvgPicture.asset(
+      'lib/assets/cards/molinero/cocer_icon.svg',
+      width: 50,
+      height: 50,
+      cacheColorFilter: true,
+    );
 
-  iconAguaSvg = SvgPicture.asset(
-    'lib/assets/cards/molinero/cocer_icon.svg',
-    width: 50,
-    height: 50,
-    cacheColorFilter: true,
-  );
+    iconPesoSvg = SvgPicture.asset(
+      'lib/assets/cards/molinero/pesar_masa_icon.svg',
+      width: 50,
+      height: 50,
+      cacheColorFilter: true,
+    );
+  }
 
-  iconPesoSvg = SvgPicture.asset(
-    'lib/assets/cards/molinero/pesar_masa_icon.svg',
-    width: 50,
-    height: 50,
-    cacheColorFilter: true,
-  );
-}
-
-Future<String> _loadNombre() async {
+  Future<String> _loadNombre() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('nombre') ?? "Usuario";
   }
@@ -116,11 +115,10 @@ Future<String> _loadNombre() async {
                       texto: 'Acciones', color: colores.colorPrincipal),
                   const SizedBox(height: 10),
                   AccionesRow(
-  molino: widget.molino,
-  iconAguaSvg: iconAguaSvg,
-  iconPesoSvg: iconPesoSvg,
-),
-
+                    molino: widget.molino,
+                    iconAguaSvg: iconAguaSvg,
+                    iconPesoSvg: iconPesoSvg,
+                  ),
                   const SizedBox(height: 16),
                   _SeccionEstadisticas(
                     colorPrincipal: colores.colorPrincipal,
@@ -215,8 +213,9 @@ class PuestoCard extends StatelessWidget {
     );
   }
 }
+
 class AccionesRow extends StatelessWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
   final Widget iconAguaSvg;
   final Widget iconPesoSvg;
 
@@ -227,11 +226,10 @@ class AccionesRow extends StatelessWidget {
     required this.iconPesoSvg,
   }) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     final PaletaDeColores colores = PaletaDeColores();
-   
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final cardSize = (constraints.maxWidth / 2) - 12;

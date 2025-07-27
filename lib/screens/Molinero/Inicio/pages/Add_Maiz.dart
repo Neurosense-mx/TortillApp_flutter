@@ -5,7 +5,7 @@ import 'package:tortillapp/config/paletteColor.dart';
 import 'package:quickalert/quickalert.dart';
 
 class Add_maiz_screen extends StatefulWidget {
-  final MolinoModel molino;
+  final MostradorModel molino;
 
   Add_maiz_screen({required this.molino});
 
@@ -53,19 +53,18 @@ class _Add_maiz_screenState extends State<Add_maiz_screen> {
       );
       */
       QuickAlert.show(
- context: context,
- type: QuickAlertType.success,
- text: 'Registro de maíz exitoso!',
- title: '¡Éxito!',
+        context: context,
+        type: QuickAlertType.success,
+        text: 'Registro de maíz exitoso!',
+        title: '¡Éxito!',
         confirmBtnText: 'Aceptar',
         onConfirmBtnTap: () {
           Navigator.pop(context); // cerrar esta pantalla
           //cerrar ventana
           Navigator.pop(context);
         },
-);
-  //  Navigator.pop(context); // cerrar esta pantalla
-      
+      );
+      //  Navigator.pop(context); // cerrar esta pantalla
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:tortillapp/config/backend.dart';
 import 'package:tortillapp/utils/Data_sesion.dart';
 
-class MolinoModel {
+class MostradorModel {
   late int id_account; // id de la cuenta
   late int id_sucursal; // id de la sucursal
   late int id_negocio; // id del negocio
@@ -12,8 +12,8 @@ class MolinoModel {
   late String email; // email del molino
   late String nombre; // nombre del molino
 
-  MolinoModel(this.id_account, this.id_sucursal, this.id_negocio, this.id_admin,
-      this.token, this.email, this.nombre) {
+  MostradorModel(this.id_account, this.id_sucursal, this.id_negocio,
+      this.id_admin, this.token, this.email, this.nombre) {
     //_fetchData(id_account); // Llamamos al método para obtener los datos al instanciar el modelo
     print("Modelo de molino creado");
   }
